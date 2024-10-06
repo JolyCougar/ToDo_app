@@ -12,3 +12,6 @@ class Task(models.Model):
     description = models.TextField(null=False, blank=True, db_index=True)
     create_at = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False, db_index=True)
+
+    def __str__(self):
+        return self.name
