@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tasks.apps.TasksConfig',
+    'my_auth.apps.MyAuthConfig',
 ]
 
 MIDDLEWARE = [
