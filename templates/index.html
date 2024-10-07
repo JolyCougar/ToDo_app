@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do App</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css" media="all">
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="header-info">
+            <span id="dateDisplay"></span>
+            <span id="taskCount">Невыполненные задачи: <span id="incompleteCount">0</span></span>
+        </div>
+        <div class="header-buttons">
+            <button class="settings">Настройки</button>
+            <button class="add-task" id="addTaskButton">+</button>
+        </div>
+    </header>
+
+    <div id="modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Добавить новую задачу</h2>
+            <input type="text" id="taskInput" placeholder="Введите новую задачу" required>
+            <button id="confirmAddTask">Добавить</button>
+        </div>
+    </div>
+
+    <main>
+        <section>
+            <h2>Невыполненные задачи</h2>
+            <ul class="task-list" id="taskList">
+                {% for task in task_list %}
+                    {% if not task.complete %}
+                        <li class="task-item">
+                            <input type="checkbox" id="task{{ forloop.counter }}">
+                            <label for="task{{ forloop.counter }}">{{ task.name }}</label>
+                            <label for="task{{ forloop.counter }}">{{ task.description }}</label>
+                            <button class="delete-task">🗑️</button>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section>
+            <h2>
+                Выполненные задачи
+                <button id="toggleCompletedList">Свернуть</button>
+            </h2>
+            <ul class="completed-list" id="completedList" style="display: none;">
+                {% for task in task_list %}
+                    {% if task.complete %}
+                        <li class="completed-item">
+                            <label class="completed-label">{{ task.name }}</label>
+                            <label class="completed-label">{{ task.description }}</label>
+                            <button class="delete-task">🗑️</button>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+</div>
+
+<div class="cookie-banner" id="cookieBanner">
+    <p>Этот сайт использует cookies для улучшения пользовательского опыта.
+        <button id="acceptCookies">Принять</button>
+    </p>
+</div>
+
+<script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>
