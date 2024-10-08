@@ -297,3 +297,34 @@ button:hover {
     transform: translateY(0);
     display: block; /* Показываем элемент */
 }
+
+/*Profile*/
+
+.avatar-container {
+    display: flex;
+    flex-direction: column; /* Изменяем направление на колонку */
+    align-items: center; /* Центрируем элементы по горизонтали */
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    width: 100px; /* Ширина аватарки */
+    height: 100px; /* Высота аватарки */
+    border-radius: 50%; /* Круглая форма */
+    margin-bottom: 10px; /* Отступ снизу для кнопки */
+}
+
+.small-button {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px; /* Уменьшаем отступы для кнопки */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 14px; /* Уменьшаем размер шрифта */
+}
+
+.small-button:hover {
+    background-color: var(--primary-hover);
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль пользователя</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css" media="all">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Профиль пользователя</h1>
+        <div class="header-buttons">
+            <button class="edit-profile" id="editProfileButton">Редактировать профиль</button>
+        </div>
+    </header>
+
+    <section class="user-info">
+        <h2>Информация о пользователе</h2>
+        <div class="user-details">
+            <div class="avatar-container">
+                <img src="{% static 'images/default-avatar.png' %}" alt="Аватар пользователя" id="userAvatar" class="user-avatar">
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                <button id="uploadAvatarButton" class="small-button">Загрузить</button>
+            </div>
+            <p><strong>Имя:</strong> <span id="userName">Иван Иванов</span></p>
+            <p><strong>Email:</strong> <span id="userEmail">ivan@example.com</span></p>
+            <p><strong>Дата регистрации:</strong> <span id="registrationDate">01 января 2023</span></p>
+        </div>
+    </section>
+</div>
+
+<div class="cookie-banner" id="cookieBanner">
+    <p>Этот сайт использует cookies для улучшения пользовательского опыта.
+        <button id="acceptCookies">Принять</button>
+    </p>
+</div>
+
+<script src="{% static 'js/scripts.js' %}"></script>
+<script>
+    document.getElementById('uploadAvatarButton').addEventListener('click', function() {
+        document.getElementById('avatarUpload').click();
+    });
+
+    document.getElementById('avatarUpload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('userAvatar').src = e.target.result; // Обновляем аватарку
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+</body>
+</html>
