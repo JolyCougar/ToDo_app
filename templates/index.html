@@ -24,8 +24,12 @@
         <div class="modal-content">
             <span class="close" id="closeModal">&times;</span>
             <h2>Добавить новую задачу</h2>
-            <input type="text" id="taskInput" placeholder="Введите новую задачу" required>
-            <button id="confirmAddTask">Добавить</button>
+            <form id="taskForm" novalidate>
+                {% csrf_token %}
+                <input type="text" id="taskInput" placeholder="Введите название задачи" required>
+                <textarea id="taskDescription" placeholder="Введите описание задачи"></textarea>
+                <button id="confirmAddTask" type="submit">Добавить</button>
+            </form>
         </div>
     </div>
 
@@ -38,9 +42,10 @@
                         <li class="task-item" data-task-id="{{ task.id }}">
                             <input type="checkbox" id="task{{ task.id }}">
                             <label for="task{{ task.id }}">{{ task.name }}</label>
-                            <label for="task{{ task.id }}">{{ task.description }}</label>
-                            <label for="task{{ task.id }}">{{ task.create_at }}</label>
-                            <button class="delete-task">🗑️</button>
+                            <span class="task-details">
+                                <span>{{ task.description }}</span>
+                            </span>
+                            <button class="delete-task" aria-label="Удалить задачу">🗑️</button>
                         </li>
                     {% endif %}
                 {% endfor %}
@@ -56,9 +61,9 @@
                 {% for task in task_list %}
                     {% if task.complete %}
                         <li class="completed-item" data-task-id="{{ task.id }}">
-                            <label class="completed-label">{{ task.name }}</label>
-                            <label class="completed-label">{{ task.description }}</label>
-                            <button class="delete-task">🗑️</button>
+                            <span class="completed-label">{{ task.name }}</span>
+                            <span class="completed-label">{{ task.description }}</span>
+                            <button class="delete-task" aria-label="Удалить задачу">🗑️</button>
                         </li>
                     {% endif %}
                 {% endfor %}

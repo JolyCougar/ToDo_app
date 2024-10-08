@@ -5,7 +5,7 @@
     --white: #ffffff;
     --gray-light: #f9f9f9;
     --gray-dark: #6c757d;
-    --modal-background: rgba(0, 0, 0, 0.4);
+    --modal-background: rgba(0, 0, 0, 0.5);
 }
 
 body {
@@ -87,6 +87,18 @@ body {
     font-size: 16px;
 }
 
+.task-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.task-date {
+    font-size: 12px;
+    color: var(--gray-dark);
+}
+
 .delete-task {
     background: none;
     border: none;
@@ -94,11 +106,19 @@ body {
     color: #ff4d4d;
     font-size: 18px;
     transition: color 0.3s;
+    width: 40px; /* Фиксированная ширина */
+    height: 40px; /* Фиксированная высота */
+    display: flex; /* Используем flex для центрирования содержимого */
+    align-items: center; /* Центрируем по вертикали */
+    justify-content: center; /* Центрируем по горизонтали */
+    border-radius: 5px; /* Закругленные углы */
 }
 
 .delete-task:hover {
     color: #ff1a1a;
+    background-color: rgba(255, 77, 77, 0.1); /* Легкий фон при наведении */
 }
+
 
 /* Стили для всплывающего уведомления о cookies */
 .cookie-banner {
@@ -127,11 +147,6 @@ body {
     background-color: #004494;
 }
 
-/* Стили для списка выполненных задач */
-.completed-list {
-    display: none; /* Скрываем список выполненных задач по умолчанию */
-}
-
 /* Стили для модального окна */
 .modal {
     display: flex;
@@ -142,16 +157,32 @@ body {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: var(--modal-background);
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease;
 }
 
 .modal-content {
     background-color: var(--white);
-    margin: 15% auto;
+    margin: 15px;
     padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
     max-width: 500px;
+    animation: slideIn 0.3s ease; /* Добавляем анимацию */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .close {
@@ -159,11 +190,97 @@ body {
     float: right;
     font-size: 28px;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .close:hover,
 .close:focus {
     color: black;
     text-decoration: none;
+}
+
+/* Стили для полей ввода и кнопки в модальном окне */
+input[type="text"], textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid var(--gray-dark);
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box; /* Учитываем padding и border в ширине */
+}
+
+button {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
     cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%; /* Кнопка на всю ширину */
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Стили для списка выполненных задач */
+.completed-list {
+    display: none; /* Скрываем список выполненных задач по умолчанию */
+}
+
+/* Стили для анимации модального окна */
+.modal.show {
+    display: flex; /* Показываем модальное окно */
+    opacity: 1; /* Полная непрозрачность */
+}
+
+.modal.hide {
+    opacity: 0; /* Полупрозрачность для скрытия */
+    transition: opacity 0.3s ease; /* Плавный переход */
+}
+
+/* Стили для кнопки "Свернуть" в списке выполненных задач */
+#toggleCompletedList {
+    margin-top: 10px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#toggleCompletedList:hover {
+    background-color: var(--primary-hover);
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: var(--gray-light);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+.task-item input[type="checkbox"] {
+    margin-right: 15px; /* Отступ между чекбоксом и текстом задачи */
+}
+
+.task-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.task-date {
+    font-size: 12px;
+    color: var(--gray-dark);
 }
