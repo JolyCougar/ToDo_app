@@ -2,7 +2,7 @@ from django.http import JsonResponse
 import json
 from django.views.generic import ListView, View
 from .models import Task
-from datetime import datetime
+
 
 class TaskView(ListView):
     model = Task

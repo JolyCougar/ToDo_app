@@ -55,9 +55,9 @@
         <section>
             <h2>
                 Выполненные задачи
-                <button id="toggleCompletedList">Свернуть</button>
+                <button id="toggleCompletedList" aria-label="Развернуть список выполненных задач">Развернуть</button>
             </h2>
-            <ul class="completed-list" id="completedList" style="display: none;">
+            <ul class="completed-list" id="completedList">
                 {% for task in task_list %}
                     {% if task.complete %}
                         <li class="completed-item" data-task-id="{{ task.id }}">

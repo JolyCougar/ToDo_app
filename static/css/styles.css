@@ -284,3 +284,16 @@ button:hover {
     font-size: 12px;
     color: var(--gray-dark);
 }
+
+.completed-list {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    display: none; /* Скрываем элемент по умолчанию */
+}
+
+.completed-list.show {
+    opacity: 1;
+    transform: translateY(0);
+    display: block; /* Показываем элемент */
+}

@@ -30,6 +30,9 @@ addTaskButton.addEventListener('click', showModal);
 closeModal.addEventListener('click', hideModal);
 window.addEventListener('click', hideModalOnClickOutside);
 document.getElementById('taskForm').addEventListener('submit', addTask);
+taskList.addEventListener('change', handleTaskChange);
+taskList.addEventListener('click', handleDeleteTask);
+completedList.addEventListener('click', handleDeleteTask);
 
 // Функции
 function hideCookieBanner() {
@@ -37,9 +40,14 @@ function hideCookieBanner() {
 }
 
 function toggleCompletedList() {
-    const isHidden = completedList.style.display === 'none' || completedList.style.display === '';
-    completedList.style.display = isHidden ? 'block' : 'none';
-    toggleCompletedListButton.textContent = isHidden ? 'Свернуть' : 'Развернуть';
+    const isHidden = completedList.classList.contains('show');
+    if (isHidden) {
+        completedList.classList.remove('show'); // Убираем класс для скрытия
+        toggleCompletedListButton.textContent = 'Развернуть';
+    } else {
+        completedList.classList.add('show'); // Добавляем класс для показа
+        toggleCompletedListButton.textContent = 'Свернуть';
+    }
 }
 
 function showModal() {
@@ -73,21 +81,21 @@ function addTask(event) {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken')
         },
-        body: JSON.stringify({ name: taskName, description: taskDescriptionText })
+        body: JSON.stringify({name: taskName, description: taskDescriptionText})
     })
-    .then(handleResponse)
-    .then(data => {
-        if (data.success) {
-            addTaskToDOM(data.task_id, taskName, taskDescriptionText, data.create_at); // Передаем время создания
-            taskInput.value = '';
-            taskDescription.value = '';
-            hideModal();
-            updateIncompleteCount();
-        } else {
-            alert('Ошибка добавления задачи: ' + data.error);
-        }
-    })
-    .catch(handleError);
+        .then(handleResponse)
+        .then(data => {
+            if (data.success) {
+                addTaskToDOM(data.task_id, taskName, taskDescriptionText);
+                taskInput.value = '';
+                taskDescription.value = '';
+                hideModal();
+                updateIncompleteCount();
+            } else {
+                alert('Ошибка добавления задачи: ' + data.error);
+            }
+        })
+        .catch(handleError);
 }
 
 function handleResponse(response) {
@@ -103,33 +111,32 @@ function handleError(error) {
 }
 
 function addTaskToDOM(taskId, taskName, taskDescriptionText) {
-    const newTaskItem = document.createElement('li');
-    newTaskItem.className = 'task-item';
-    newTaskItem.setAttribute('data-task-id', taskId);
-    newTaskItem.innerHTML = `
+    const newTaskItem = createTaskElement(taskId, taskName, taskDescriptionText);
+    taskList.appendChild(newTaskItem);
+}
+
+function createTaskElement(taskId, taskName, taskDescriptionText) {
+    const taskItem = document.createElement('li');
+    taskItem.className = 'task-item';
+    taskItem.setAttribute('data-task-id', taskId);
+    taskItem.innerHTML = `
         <input type="checkbox" id="task${taskId}" complete="false">
         <label for="task${taskId}">${taskName}</label>
         <span class="task-details">
             <span>${taskDescriptionText}</span>
         </span>
-        <button class="delete-task">🗑️</button>
+        <button class="delete-task" aria-label="Удалить задачу">🗑️</button>
     `;
-
-    taskList.appendChild(newTaskItem);
-    addDeleteTaskHandler(newTaskItem, taskId);
+    return taskItem;
 }
 
-
-
-// Функция для обновления счетчика невыполненных задач
 function updateIncompleteCount() {
     const checkboxes = taskList.querySelectorAll('input[type="checkbox"]');
     const completedCount = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
     incompleteCount.textContent = checkboxes.length - completedCount; // Обновляем текст счетчика
 }
 
-// Обработчик нажатия на чекбоксы
-taskList.addEventListener('change', function (event) {
+function handleTaskChange(event) {
     if (event.target.type === 'checkbox') {
         const taskItem = event.target.closest('.task-item');
         const taskId = taskItem.getAttribute('data-task-id'); // Получаем ID задачи
@@ -141,50 +148,73 @@ taskList.addEventListener('change', function (event) {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken') // Получаем CSRF-токен
             },
-            body: JSON.stringify({ complete: event.target.checked }) // Отправляем статус задачи
+            body: JSON.stringify({complete: event.target.checked}) // Отправляем статус задачи
         })
-        .then(handleResponse)
-        .then(data => {
-            if (data.success) {
-                // Обновляем интерфейс в зависимости от статуса
-                if (event.target.checked) {
-                    // Перемещаем задачу в список выполненных
-                    const completedItem = document.createElement('li');
-                    completedItem.className = 'completed-item';
-                    completedItem.setAttribute('data-task-id', taskId); // Устанавливаем ID задачи
-                    completedItem.innerHTML = `
-                        <label class="completed-label">${taskItem.querySelector('label').textContent}</label>
-                        <button class="delete-task">🗑️</button>
-                    `;
-                    completedList.appendChild(completedItem);
-                    taskItem.remove(); // Удаляем задачу из списка невыполненных
-                    addDeleteTaskHandler(completedItem, taskId); // Добавляем обработчик для удаления выполненной задачи
+            .then(handleResponse)
+            .then(data => {
+                if (data.success) {
+                    if (event.target.checked) {
+                        moveToCompletedList(taskItem, taskId);
+                    } else {
+                        moveToTaskList(taskItem, taskId);
+                    }
+                    updateIncompleteCount(); // Обновляем счетчик невыполненных задач
                 } else {
-                    // Если чекбокс снят, возвращаем задачу обратно
-                    const newTaskItem = document.createElement('li');
-                    newTaskItem.className = 'task-item';
-                    newTaskItem.setAttribute('data-task-id', taskId); // Устанавливаем ID задачи
-                    newTaskItem.innerHTML = `
-                        <input type="checkbox" id="task${taskId}">
-                        <label for="task${taskId}">${taskItem.querySelector('label').textContent}</label>
-                        <span class="task-details">
-                            <span>${taskItem.querySelector('.task-details span').textContent}</span>
-                            <span class="task-date">${taskItem.querySelector('.task-date').textContent}</span>
-                        </span>
-                        <button class="delete-task">🗑️</button>
-                    `;
-                    taskList.appendChild(newTaskItem);
-                    taskItem.remove(); // Удаляем задачу из списка выполненных
-                    addDeleteTaskHandler(newTaskItem, taskId); // Добавляем обработчик для новой задачи
+                    alert('Ошибка обновления задачи: ' + data.error);
                 }
-                updateIncompleteCount(); // Обновляем счетчик невыполненных задач
-            } else {
-                alert('Ошибка обновления задачи: ' + data.error);
+            })
+            .catch(handleError);
+    }
+}
+
+function moveToCompletedList(taskItem, taskId) {
+    const completedItem = createCompletedElement(taskId, taskItem);
+    completedList.appendChild(completedItem);
+    taskItem.remove(); // Удаляем задачу из списка невыполненных
+}
+
+function moveToTaskList(taskItem, taskId) {
+    const newTaskItem = createTaskElement(taskId, taskItem.querySelector('label').textContent, taskItem.querySelector('.task-details span').textContent);
+    taskList.appendChild(newTaskItem);
+    taskItem.remove(); // Удаляем задачу из списка выполненных
+}
+
+function createCompletedElement(taskId, taskItem) {
+    const completedItem = document.createElement('li');
+    completedItem.className = 'completed-item';
+    completedItem.setAttribute('data-task-id', taskId);
+    completedItem.innerHTML = `
+        <label class="completed-label">${taskItem.querySelector('label').textContent}</label>
+        <button class="delete-task" aria-label="Удалить задачу">🗑️</button>
+    `;
+    return completedItem;
+}
+
+function handleDeleteTask(event) {
+    if (event.target.classList.contains('delete-task')) {
+        const taskItem = event.target.closest('[data-task-id]');
+        const taskId = taskItem.getAttribute('data-task-id'); // Получаем ID задачи
+
+        // Отправляем запрос на сервер для удаления задачи
+        fetch(`/delete-task/${taskId}/`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') // Получаем CSRF-токен
             }
         })
-        .catch(handleError);
+            .then(handleResponse)
+            .then(data => {
+                if (data.success) {
+                    taskItem.remove(); // Удаляем задачу из списка
+                    updateIncompleteCount(); // Обновляем счетчик невыполненных задач
+                } else {
+                    alert('Ошибка удаления задачи: ' + data.error);
+                }
+            })
+            .catch(handleError);
     }
-});
+}
 
 // Функция для получения CSRF-токена
 function getCookie(name) {
@@ -201,6 +231,18 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+// Примените обработчик к задачам, загружаемым из базы данных
+document.querySelectorAll('.task-item').forEach(taskItem => {
+    const taskId = taskItem.getAttribute('data-task-id'); // Получаем ID из атрибута
+    addDeleteTaskHandler(taskItem, taskId); // Передаем ID
+});
+
+// Примените обработчик к выполненным задачам
+document.querySelectorAll('.completed-item').forEach(completedItem => {
+    const taskId = completedItem.getAttribute('data-task-id'); // Получаем ID из атрибута
+    addDeleteTaskHandler(completedItem, taskId); // Передаем ID
+});
 
 // Функция для добавления обработчика удаления задачи
 function addDeleteTaskHandler(taskItem, taskId) {
@@ -226,18 +268,4 @@ function addDeleteTaskHandler(taskItem, taskId) {
         .catch(handleError);
     });
 }
-
-// Примените обработчик к задачам, загружаемым из базы данных
-document.querySelectorAll('.task-item').forEach(taskItem => {
-    const taskId = taskItem.getAttribute('data-task-id'); // Получаем ID из атрибута
-    addDeleteTaskHandler(taskItem, taskId); // Передаем ID
-});
-
-// Примените обработчик к выполненным задачам
-document.querySelectorAll('.completed-item').forEach(completedItem => {
-    const taskId = completedItem.getAttribute('data-task-id'); // Получаем ID из атрибута
-    addDeleteTaskHandler(completedItem, taskId); // Передаем ID
-});
-
-
 
