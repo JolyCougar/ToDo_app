@@ -12,6 +12,15 @@ const modal = document.getElementById('modal');
 const closeModal = document.getElementById('closeModal');
 const confirmAddTask = document.getElementById('confirmAddTask');
 
+// Настройки
+const settingsButton = document.querySelector('.settings');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettingsModal = document.getElementById('closeSettingsModal');
+const settingsForm = document.getElementById('settingsForm');
+const fontSelect = document.getElementById('fontSelect');
+const fontSizeSelect = document.getElementById('fontSizeSelect');
+const showCompletedTasksCheckbox = document.getElementById('showCompletedTasks');
+
 // Устанавливаем текущую дату
 const currentDate = new Date();
 dateDisplay.textContent = currentDate.toLocaleDateString('ru-RU', {
@@ -33,6 +42,11 @@ document.getElementById('taskForm').addEventListener('submit', addTask);
 taskList.addEventListener('change', handleTaskChange);
 taskList.addEventListener('click', handleDeleteTask);
 completedList.addEventListener('click', handleDeleteTask);
+
+// Обработчики для настроек
+settingsButton.addEventListener('click', showSettingsModal);
+closeSettingsModal.addEventListener('click', hideSettingsModal);
+settingsForm.addEventListener('submit', saveSettings);
 
 // Функции
 function hideCookieBanner() {
@@ -63,6 +77,14 @@ function hideModalOnClickOutside(event) {
     if (event.target === modal) {
         hideModal();
     }
+}
+
+function showSettingsModal() {
+    settingsModal.style.display = 'flex'; // Или 'block', в зависимости от ваших стилей
+}
+
+function hideSettingsModal() {
+    settingsModal.style.display = 'none';
 }
 
 function addTask(event) {
@@ -185,6 +207,7 @@ function createCompletedElement(taskId, taskItem) {
     completedItem.setAttribute('data-task-id', taskId);
     completedItem.innerHTML = `
         <label class="completed-label">${taskItem.querySelector('label').textContent}</label>
+        <span class="completed-label">${taskItem.querySelector('.task-details span').textContent}</span>
         <button class="delete-task" aria-label="Удалить задачу">🗑️</button>
     `;
     return completedItem;
@@ -256,16 +279,75 @@ function addDeleteTaskHandler(taskItem, taskId) {
                 'X-CSRFToken': getCookie('csrftoken') // Получаем CSRF-токен
             }
         })
-        .then(handleResponse)
-        .then(data => {
-            if (data.success) {
-                taskItem.remove(); // Удаляем задачу из списка
-                updateIncompleteCount(); // Обновляем счетчик невыполненных задач
-            } else {
-                alert('Ошибка удаления задачи: ' + data.error);
-            }
-        })
-        .catch(handleError);
+            .then(handleResponse)
+            .then(data => {
+                if (data.success) {
+                    taskItem.remove(); // Удаляем задачу из списка
+                    updateIncompleteCount(); // Обновляем счетчик невыполненных задач
+                } else {
+                    alert('Ошибка удаления задачи: ' + data.error);
+                }
+            })
+            .catch(handleError);
     });
 }
 
+// Функция для сохранения настроек
+function saveSettings(event) {
+    event.preventDefault();
+    const selectedFont = fontSelect.value;
+    const selectedFontSize = fontSizeSelect.value;
+    const showCompletedTasks = showCompletedTasksCheckbox.checked;
+
+    // Сохранение в localStorage
+    localStorage.setItem('font', selectedFont);
+    localStorage.setItem('fontSize', selectedFontSize);
+    localStorage.setItem('showCompletedTasks', showCompletedTasks);
+
+    // Применение настроек
+    applySettings();
+}
+
+
+// Обработчик для чекбокса "Отображать выполненные задачи"
+showCompletedTasksCheckbox.addEventListener('change', toggleCompletedTasksVisibility);
+
+function toggleCompletedTasksVisibility() {
+    const completedSection = document.querySelector('section:nth-of-type(2)'); // Получаем секцию с выполненными задачами
+    if (showCompletedTasksCheckbox.checked) {
+        completedSection.style.display = 'block'; // Показываем секцию выполненных задач
+    } else {
+        completedSection.style.display = 'none'; // Скрываем секцию выполненных задач
+    }
+}
+
+// Примените настройки при загрузке страницы
+window.onload = function () {
+    applySettings(); // Применяем настройки при загрузке
+    toggleCompletedTasksVisibility(); // Применяем видимость выполненных задач при загрузке
+};
+
+
+// Функция для применения настроек
+function applySettings() {
+    const font = localStorage.getItem('font');
+    const fontSize = localStorage.getItem('fontSize');
+    const showCompletedTasks = localStorage.getItem('showCompletedTasks') === 'true';
+
+    if (font) {
+        document.body.style.fontFamily = font;
+        fontSelect.value = font; // Устанавливаем выбранный шрифт в селекторе
+    }
+    if (fontSize) {
+        document.body.style.fontSize = fontSize + 'px';
+        fontSizeSelect.value = fontSize; // Устанавливаем выбранный размер шрифта в селекторе
+    }
+    showCompletedTasksCheckbox.checked = showCompletedTasks;
+
+    // Применяем видимость выполненных задач
+    toggleCompletedTasksVisibility();
+}
+
+
+// Применение настроек при загрузке страницы
+window.onload = applySettings;

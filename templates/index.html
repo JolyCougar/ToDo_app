@@ -15,11 +15,12 @@
             <span id="taskCount">Невыполненные задачи: <span id="incompleteCount">0</span></span>
         </div>
         <div class="header-buttons">
-            <button class="settings">Настройки</button>
+            <button class="settings" id="settingsBtn">Настройки</button>
             <button class="add-task" id="addTaskButton">+</button>
         </div>
     </header>
 
+    <!-- Модальное окно для добавления задачи -->
     <div id="modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close" id="closeModal">&times;</span>
@@ -29,6 +30,39 @@
                 <input type="text" id="taskInput" placeholder="Введите название задачи" required>
                 <textarea id="taskDescription" placeholder="Введите описание задачи"></textarea>
                 <button id="confirmAddTask" type="submit">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно для настроек -->
+    <div id="settingsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" id="closeSettingsModal">&times;</span>
+            <h2>Настройки</h2>
+            <form id="settingsForm">
+                <label for="fontSelect">Шрифт:</label>
+                <select id="fontSelect">
+                    <option value="Arial">Arial</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Verdana">Verdana</option>
+                </select>
+
+                <label for="fontSizeSelect">Размер шрифта:</label>
+                <select id="fontSizeSelect">
+                    <option value="14">14px</option>
+                    <option value="16" selected>16px</option>
+                    <option value="18">18px</option>
+                    <option value="20">20px</option>
+                </select>
+
+                <label>
+                    <input type="checkbox" id="showCompletedTasks" checked>
+                    Отображать выполненные задачи
+                </label>
+
+                <button type="submit">Сохранить настройки</button>
             </form>
         </div>
     </div>

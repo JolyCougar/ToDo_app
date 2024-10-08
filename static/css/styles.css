@@ -119,7 +119,6 @@ body {
     background-color: rgba(255, 77, 77, 0.1); /* Легкий фон при наведении */
 }
 
-
 /* Стили для всплывающего уведомления о cookies */
 .cookie-banner {
     position: fixed;
@@ -298,8 +297,7 @@ button:hover {
     display: block; /* Показываем элемент */
 }
 
-/*Profile*/
-
+/* Стили для профиля */
 .avatar-container {
     display: flex;
     flex-direction: column; /* Изменяем направление на колонку */
@@ -327,4 +325,45 @@ button:hover {
 
 .small-button:hover {
     background-color: var(--primary-hover);
+}
+
+/* Стили для заголовков */
+h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* Стили для форм */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    margin: 10px 0 5px;
+}
+
+/* Стили для чекбоксов */
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* Стили для кнопок в заголовках */
+.header-buttons button {
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
+/* Стили для уведомлений об ошибках */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Стили для успешных сообщений */
+.success-message {
+    color: green;
+    font-size: 14px;
+    margin-top: 10px;
 }
