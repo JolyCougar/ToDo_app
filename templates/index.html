@@ -35,10 +35,11 @@
             <ul class="task-list" id="taskList">
                 {% for task in task_list %}
                     {% if not task.complete %}
-                        <li class="task-item">
-                            <input type="checkbox" id="task{{ forloop.counter }}">
-                            <label for="task{{ forloop.counter }}">{{ task.name }}</label>
-                            <label for="task{{ forloop.counter }}">{{ task.description }}</label>
+                        <li class="task-item" data-task-id="{{ task.id }}">
+                            <input type="checkbox" id="task{{ task.id }}">
+                            <label for="task{{ task.id }}">{{ task.name }}</label>
+                            <label for="task{{ task.id }}">{{ task.description }}</label>
+                            <label for="task{{ task.id }}">{{ task.create_at }}</label>
                             <button class="delete-task">🗑️</button>
                         </li>
                     {% endif %}
@@ -54,7 +55,7 @@
             <ul class="completed-list" id="completedList" style="display: none;">
                 {% for task in task_list %}
                     {% if task.complete %}
-                        <li class="completed-item">
+                        <li class="completed-item" data-task-id="{{ task.id }}">
                             <label class="completed-label">{{ task.name }}</label>
                             <label class="completed-label">{{ task.description }}</label>
                             <button class="delete-task">🗑️</button>

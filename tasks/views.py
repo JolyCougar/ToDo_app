@@ -1,6 +1,5 @@
 from django.http import JsonResponse
 import json
-from django.views.decorators.http import require_POST
 from django.views.generic import ListView, View
 from .models import Task
 
@@ -22,3 +21,12 @@ class UpdateTaskView(View):
         except Task.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Task not found'})
 
+
+class DeleteTaskView(View):
+    def delete(self, request, task_id):
+        try:
+            task = Task.objects.get(pk=task_id)
+            task.delete()
+            return JsonResponse({'success': True})
+        except Task.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Задача не найдена.'})
