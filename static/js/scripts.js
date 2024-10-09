@@ -56,10 +56,10 @@ function hideCookieBanner() {
 function toggleCompletedList() {
     const isHidden = completedList.classList.contains('show');
     if (isHidden) {
-        completedList.classList.remove('show'); // Убираем класс для скрытия
+        completedList.classList.remove('show');
         toggleCompletedListButton.textContent = 'Развернуть';
     } else {
-        completedList.classList.add('show'); // Добавляем класс для показа
+        completedList.classList.add('show');
         toggleCompletedListButton.textContent = 'Свернуть';
     }
 }
@@ -80,7 +80,7 @@ function hideModalOnClickOutside(event) {
 }
 
 function showSettingsModal() {
-    settingsModal.style.display = 'flex'; // Или 'block', в зависимости от ваших стилей
+    settingsModal.style.display = 'flex';
 }
 
 function hideSettingsModal() {
@@ -161,16 +161,16 @@ function updateIncompleteCount() {
 function handleTaskChange(event) {
     if (event.target.type === 'checkbox') {
         const taskItem = event.target.closest('.task-item');
-        const taskId = taskItem.getAttribute('data-task-id'); // Получаем ID задачи
+        const taskId = taskItem.getAttribute('data-task-id');
 
         // Отправляем запрос на сервер для обновления статуса задачи
         fetch(`/update-task/${taskId}/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken') // Получаем CSRF-токен
+                'X-CSRFToken': getCookie('csrftoken')
             },
-            body: JSON.stringify({complete: event.target.checked}) // Отправляем статус задачи
+            body: JSON.stringify({complete: event.target.checked})
         })
             .then(handleResponse)
             .then(data => {
@@ -180,7 +180,7 @@ function handleTaskChange(event) {
                     } else {
                         moveToTaskList(taskItem, taskId);
                     }
-                    updateIncompleteCount(); // Обновляем счетчик невыполненных задач
+                    updateIncompleteCount();
                 } else {
                     alert('Ошибка обновления задачи: ' + data.error);
                 }
@@ -192,13 +192,13 @@ function handleTaskChange(event) {
 function moveToCompletedList(taskItem, taskId) {
     const completedItem = createCompletedElement(taskId, taskItem);
     completedList.appendChild(completedItem);
-    taskItem.remove(); // Удаляем задачу из списка невыполненных
+    taskItem.remove();
 }
 
 function moveToTaskList(taskItem, taskId) {
     const newTaskItem = createTaskElement(taskId, taskItem.querySelector('label').textContent, taskItem.querySelector('.task-details span').textContent);
     taskList.appendChild(newTaskItem);
-    taskItem.remove(); // Удаляем задачу из списка выполненных
+    taskItem.remove();
 }
 
 function createCompletedElement(taskId, taskItem) {
@@ -216,21 +216,21 @@ function createCompletedElement(taskId, taskItem) {
 function handleDeleteTask(event) {
     if (event.target.classList.contains('delete-task')) {
         const taskItem = event.target.closest('[data-task-id]');
-        const taskId = taskItem.getAttribute('data-task-id'); // Получаем ID задачи
+        const taskId = taskItem.getAttribute('data-task-id');
 
         // Отправляем запрос на сервер для удаления задачи
         fetch(`/delete-task/${taskId}/`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken') // Получаем CSRF-токен
+                'X-CSRFToken': getCookie('csrftoken')
             }
         })
             .then(handleResponse)
             .then(data => {
                 if (data.success) {
-                    taskItem.remove(); // Удаляем задачу из списка
-                    updateIncompleteCount(); // Обновляем счетчик невыполненных задач
+                    taskItem.remove();
+                    updateIncompleteCount();
                 } else {
                     alert('Ошибка удаления задачи: ' + data.error);
                 }
@@ -257,33 +257,32 @@ function getCookie(name) {
 
 // Примените обработчик к задачам, загружаемым из базы данных
 document.querySelectorAll('.task-item').forEach(taskItem => {
-    const taskId = taskItem.getAttribute('data-task-id'); // Получаем ID из атрибута
-    addDeleteTaskHandler(taskItem, taskId); // Передаем ID
+    const taskId = taskItem.getAttribute('data-task-id');
+    addDeleteTaskHandler(taskItem, taskId);
 });
 
 // Примените обработчик к выполненным задачам
 document.querySelectorAll('.completed-item').forEach(completedItem => {
-    const taskId = completedItem.getAttribute('data-task-id'); // Получаем ID из атрибута
-    addDeleteTaskHandler(completedItem, taskId); // Передаем ID
+    const taskId = completedItem.getAttribute('data-task-id');
+    addDeleteTaskHandler(completedItem, taskId);
 });
 
 // Функция для добавления обработчика удаления задачи
 function addDeleteTaskHandler(taskItem, taskId) {
     const deleteButton = taskItem.querySelector('.delete-task');
     deleteButton.addEventListener('click', function () {
-        // Отправляем запрос на сервер для удаления задачи
         fetch(`/delete-task/${taskId}/`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken') // Получаем CSRF-токен
+                'X-CSRFToken': getCookie('csrftoken')
             }
         })
             .then(handleResponse)
             .then(data => {
                 if (data.success) {
-                    taskItem.remove(); // Удаляем задачу из списка
-                    updateIncompleteCount(); // Обновляем счетчик невыполненных задач
+                    taskItem.remove();
+                    updateIncompleteCount();
                 } else {
                     alert('Ошибка удаления задачи: ' + data.error);
                 }
@@ -306,8 +305,10 @@ function saveSettings(event) {
 
     // Применение настроек
     applySettings();
-}
 
+    // Закрытие модального окна настроек
+    hideSettingsModal();
+}
 
 // Обработчик для чекбокса "Отображать выполненные задачи"
 showCompletedTasksCheckbox.addEventListener('change', toggleCompletedTasksVisibility);
@@ -326,7 +327,6 @@ window.onload = function () {
     applySettings(); // Применяем настройки при загрузке
     toggleCompletedTasksVisibility(); // Применяем видимость выполненных задач при загрузке
 };
-
 
 // Функция для применения настроек
 function applySettings() {
@@ -348,6 +348,6 @@ function applySettings() {
     toggleCompletedTasksVisibility();
 }
 
-
 // Применение настроек при загрузке страницы
 window.onload = applySettings;
+

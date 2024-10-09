@@ -1,13 +1,16 @@
 from django.http import JsonResponse
 import json
+from django.urls import reverse_lazy
 from django.views.generic import ListView, View
 from .models import Task
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class TaskView(ListView):
+class TaskView(LoginRequiredMixin, ListView):
     model = Task
     template_name = 'index.html'
     context_object_name = 'task_list'
+    login_url = reverse_lazy('my_auth:login')
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)

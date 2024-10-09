@@ -11,12 +11,17 @@
 <div class="container">
     <header>
         <div class="header-info">
-            <span id="dateDisplay"></span>
+            <span id="dateDisplay"></span> <!-- Элемент для отображения даты -->
             <span id="taskCount">Невыполненные задачи: <span id="incompleteCount">0</span></span>
+            <form method="post" action="{% url 'my_auth:logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="small-button">Выйти</button>
+            </form>
         </div>
+
         <div class="header-buttons">
             <button class="settings" id="settingsBtn">Настройки</button>
-            <button class="add-task" id="addTaskButton">+</button>
+            <button class="large-button" id="addTaskButton">Добавить задачу</button>
         </div>
     </header>
 
@@ -39,28 +44,34 @@
         <div class="modal-content">
             <span class="close" id="closeSettingsModal">&times;</span>
             <h2>Настройки</h2>
-            <form id="settingsForm">
-                <label for="fontSelect">Шрифт:</label>
-                <select id="fontSelect">
-                    <option value="Arial">Arial</option>
-                    <option value="Courier New">Courier New</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Verdana">Verdana</option>
-                </select>
+            <form id="settingsForm" novalidate>
+                <div class="form-group">
+                    <label for="fontSelect">Шрифт:</label>
+                    <select id="fontSelect">
+                        <option value="Arial">Arial</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Verdana">Verdana</option>
+                    </select>
+                </div>
 
-                <label for="fontSizeSelect">Размер шрифта:</label>
-                <select id="fontSizeSelect">
-                    <option value="14">14px</option>
-                    <option value="16" selected>16px</option>
-                    <option value="18">18px</option>
-                    <option value="20">20px</option>
-                </select>
+                <div class="form-group">
+                    <label for="fontSizeSelect">Размер шрифта:</label>
+                    <select id="fontSizeSelect">
+                        <option value="14">14px</option>
+                        <option value="16" selected>16px</option>
+                        <option value="18">18px</option>
+                        <option value="20">20px</option>
+                    </select>
+                </div>
 
-                <label>
-                    <input type="checkbox" id="showCompletedTasks" checked>
-                    Отображать выполненные задачи
-                </label>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="showCompletedTasks" checked>
+                        Отображать выполненные задачи
+                    </label>
+                </div>
 
                 <button type="submit">Сохранить настройки</button>
             </form>

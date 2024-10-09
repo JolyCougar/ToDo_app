@@ -6,50 +6,91 @@
     --gray-light: #f9f9f9;
     --gray-dark: #6c757d;
     --modal-background: rgba(0, 0, 0, 0.5);
+    --border-radius: 8px;
+    --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Основные стили */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--background-color);
     margin: 0;
     padding: 0;
 }
 
+/* Контейнер для формы и других элементов */
 .container {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
     background: var(--white);
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 
+/* Заголовки */
+h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+/* Стили для верхней части с кнопками и количеством задач */
 .header-info {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    justify-content: space-between; /* Размещаем элементы по краям */
+    align-items: center; /* Центрируем по вертикали */
+}
+
+.logout-form {
+    margin-left: auto; /* Отодвигаем форму с кнопкой "Выйти" вправо */
 }
 
 .header-buttons {
     display: flex;
-    gap: 10px;
+    flex-direction: column; /* Размещаем кнопки вертикально */
+    gap: 10px; /* Отступ между кнопками */
+    margin-top: 20px; /* Отступ сверху для разделения с верхней частью */
 }
 
-.header-buttons button, .add-task {
+/* Стили для кнопок */
+button {
     background-color: var(--primary-color);
     color: var(--white);
     border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    padding: 5px 10px; /* Уменьшенные отступы для кнопок */
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
+    width: auto; /* Убираем фиксированную ширину */
+    font-size: 14px; /* Уменьшаем размер шрифта */
 }
 
-.header-buttons button:hover, .add-task:hover {
-    background-color: var(--primary-hover);
+.large-button {
+    padding: 10px 20px; /* Увеличенные отступы для больших кнопок */
+    font-size: 16px; /* Увеличенный размер шрифта */
+    width: 100%; /* Кнопки на всю ширину */
 }
 
+/* Поля ввода */
+input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid var(--gray-dark);
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+input:focus, textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Стили для списка задач */
 .task-list, .completed-list {
     list-style: none;
     padding: 0;
@@ -62,9 +103,9 @@ body {
     justify-content: space-between;
     padding: 15px;
     margin-bottom: 10px;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     background-color: var(--gray-light);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--box-shadow);
     transition: background-color 0.3s;
 }
 
@@ -81,42 +122,88 @@ body {
     color: var(--gray-dark);
 }
 
-.task-item label {
-    flex-grow: 1;
-    margin-left: 10px;
-    font-size: 16px;
-}
-
-.task-details {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    margin-left: 10px;
-}
-
-.task-date {
-    font-size: 12px;
-    color: var(--gray-dark);
-}
-
+/* Стили для удаления задач */
 .delete-task {
+    width: 40px; /* Фиксированная ширина */
+    height: 40px; /* Фиксированная высота */
     background: none;
     border: none;
     cursor: pointer;
     color: #ff4d4d;
     font-size: 18px;
     transition: color 0.3s;
-    width: 40px; /* Фиксированная ширина */
-    height: 40px; /* Фиксированная высота */
     display: flex; /* Используем flex для центрирования содержимого */
     align-items: center; /* Центрируем по вертикали */
-    justify-content: center; /* Центрируем по горизонтали */
-    border-radius: 5px; /* Закругленные углы */
+    justify-content: center;
+    /* Центрируем по горизонтали
+       justify-content: center; /* Центрируем по горизонтали */
+    border-radius: var(--border-radius); /* Закругленные углы */
 }
 
 .delete-task:hover {
     color: #ff1a1a;
     background-color: rgba(255, 77, 77, 0.1); /* Легкий фон при наведении */
+}
+
+/* Стили для модального окна */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed; /* Окно фиксировано */
+    z-index: 1; /* На переднем плане */
+    left: 0;
+    top: 0;
+    width: 100%; /* Полная ширина */
+    height: 100%; /* Полная высота */
+    overflow: auto; /* Прокрутка, если необходимо */
+    background-color: rgb(0,0,0); /* Черный фон */
+    background-color: rgba(0,0,0,0.4); /* Полупрозрачный фон */
+}
+
+.modal-content {
+    background-color: #fefefe; /* Белый фон */
+    margin: 15% auto; /* 15% сверху и центрирование */
+    padding: 20px; /* Отступы */
+    border: 1px solid #888; /* Граница */
+    width: 500px; /* Ширина */
+    border-radius: 8px; /* Закругленные углы */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень */
+}
+
+.form-group {
+    margin-bottom: 15px; /* Отступ между элементами формы */
+}
+
+label {
+    display: block; /* Каждый элемент метки на новой строке */
+    margin-bottom: 5px; /* Отступ между меткой и элементом управления */
+}
+
+button {
+    background-color: var(--primary-color); /* Зеленый фон */
+    color: white; /* Белый текст */
+    padding: 10px 15px; /* Отступы */
+    border: none; /* Без границы */
+    border-radius: 5px; /* Закругленные углы */
+    cursor: pointer; /* Указатель при наведении */
+}
+
+button:hover {
+    background-color: #0056b3; /* Темнее при наведении */
+}
+
+
+/* Стили для уведомлений об ошибках и успешных сообщений */
+.error-message, .success-message {
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.error-message {
+    color: red;
+}
+
+.success-message {
+    color: green;
 }
 
 /* Стили для всплывающего уведомления о cookies */
@@ -130,98 +217,22 @@ body {
     padding: 15px;
     text-align: center;
     z-index: 1000;
+    border-top: 2px solid var(--primary-hover);
 }
 
 .cookie-banner button {
     background-color: var(--primary-hover);
     color: var(--white);
     border: none;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     padding: 5px 10px;
     cursor: pointer;
     margin-left: 10px;
+    transition: background-color 0.3s;
 }
 
 .cookie-banner button:hover {
     background-color: #004494;
-}
-
-/* Стили для модального окна */
-.modal {
-    display: flex;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.3s ease;
-}
-
-.modal-content {
-    background-color: var(--white);
-    margin: 15px;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 500px;
-    animation: slideIn 0.3s ease; /* Добавляем анимацию */
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-}
-
-/* Стили для полей ввода и кнопки в модальном окне */
-input[type="text"], textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid var(--gray-dark);
-    border-radius: 5px;
-    font-size: 16px;
-    box-sizing: border-box; /* Учитываем padding и border в ширине */
-}
-
-button {
-    background-color: var(--primary-color);
-    color: var(--white);
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    width: 100%; /* Кнопка на всю ширину */
-}
-
-button:hover {
-    background-color: var(--primary-hover);
 }
 
 /* Стили для списка выполненных задач */
@@ -229,7 +240,13 @@ button:hover {
     display: none; /* Скрываем список выполненных задач по умолчанию */
 }
 
-/* Стили для анимации модального окна */
+.completed-list.show {
+    opacity: 1;
+    transform: translateY(0);
+    display: block; /* Показываем элемент */
+}
+
+/* Анимация для модального окна */
 .modal.show {
     display: flex; /* Показываем модальное окно */
     opacity: 1; /* Полная непрозрачность */
@@ -240,61 +257,26 @@ button:hover {
     transition: opacity 0.3s ease; /* Плавный переход */
 }
 
+/* Стили для чекбоксов */
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
 /* Стили для кнопки "Свернуть" в списке выполненных задач */
 #toggleCompletedList {
     margin-top: 10px;
     background-color: var(--primary-color);
     color: var(--white);
     border: none;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     padding: 5px 10px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 #toggleCompletedList:hover {
     background-color: var(--primary-hover);
-}
-
-.task-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    background-color: var(--gray-light);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s;
-}
-
-.task-item input[type="checkbox"] {
-    margin-right: 15px; /* Отступ между чекбоксом и текстом задачи */
-}
-
-.task-details {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    margin-left: 10px;
-}
-
-.task-date {
-    font-size: 12px;
-    color: var(--gray-dark);
-}
-
-.completed-list {
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    display: none; /* Скрываем элемент по умолчанию */
-}
-
-.completed-list.show {
-    opacity: 1;
-    transform: translateY(0);
-    display: block; /* Показываем элемент */
+    transform: translateY(-2px);
 }
 
 /* Стили для профиля */
@@ -312,11 +294,12 @@ button:hover {
     margin-bottom: 10px; /* Отступ снизу для кнопки */
 }
 
+/* Стили для маленьких кнопок */
 .small-button {
     background-color: var(--primary-color);
     color: var(--white);
     border: none;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     padding: 5px 10px; /* Уменьшаем отступы для кнопки */
     cursor: pointer;
     transition: background-color 0.3s;
@@ -325,45 +308,4 @@ button:hover {
 
 .small-button:hover {
     background-color: var(--primary-hover);
-}
-
-/* Стили для заголовков */
-h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-/* Стили для форм */
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-form label {
-    margin: 10px 0 5px;
-}
-
-/* Стили для чекбоксов */
-input[type="checkbox"] {
-    cursor: pointer;
-}
-
-/* Стили для кнопок в заголовках */
-.header-buttons button {
-    padding: 10px 15px;
-    font-size: 16px;
-}
-
-/* Стили для уведомлений об ошибках */
-.error-message {
-    color: red;
-    font-size: 14px;
-    margin-top: 10px;
-}
-
-/* Стили для успешных сообщений */
-.success-message {
-    color: green;
-    font-size: 14px;
-    margin-top: 10px;
 }
