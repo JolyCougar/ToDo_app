@@ -309,3 +309,39 @@ input[type="checkbox"] {
 .small-button:hover {
     background-color: var(--primary-hover);
 }
+
+/* Дополнительные стили для формы регистрации */
+#registrationForm {
+    margin-top: 20px; /* Отступ сверху для формы */
+}
+
+.error-message, .success-message {
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.error-message {
+    color: red;
+}
+
+.success-message {
+    color: green;
+}
+
+/* Поля ввода */
+input[type="text"], input[type="password"], input[type="email"], textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid var(--gray-dark);
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+input:focus, textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}

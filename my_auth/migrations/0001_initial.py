@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('bio', models.TextField(blank=True, max_length=500)),
                 ('agreement_accepted', models.BooleanField(default=False)),
-                ('avatar', models.ImageField(blank=True, null=True, upload_to=my_auth.models.product_preview_directory_path)),
+                ('avatar', models.ImageField(blank=True, null=True, upload_to=my_auth.models.profile_preview_directory_path)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
