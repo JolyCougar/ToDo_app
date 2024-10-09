@@ -1,3 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import redirect
+from django.contrib.auth.views import LoginView, LogoutView
 
-# Create your views here.
+
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+
+
+class CustomLogoutView(LogoutView):
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        return response

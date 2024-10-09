@@ -1,15 +1,17 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Форма авторизации</title>
-    <link rel="stylesheet" href="../static/css/styles.css"> <!-- Подключите ваш CSS файл -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}"> <!-- Подключите ваш CSS файл -->
 </head>
 <body>
     <div class="container">
         <h2>Авторизация</h2>
-        <form id="loginForm">
+        <form id="loginForm" method="post" action="{% url 'my_auth:login' %}">
+            {% csrf_token %}
             <div class="form-group">
                 <label for="username">Имя пользователя:</label>
                 <input type="text" id="username" name="username" required>
@@ -18,28 +20,13 @@
                 <label for="password">Пароль:</label>
                 <input type="password" id="password" name="password" required>
             </div>
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
             <button type="submit">Войти</button>
         </form>
-        <p>Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p> <!-- Ссылка на страницу регистрации, если нужно -->
+        <p>Нет аккаунта? <a href="">Зарегистрироваться</a></p> <!-- Ссылка на страницу регистрации -->
     </div>
-
-    <script>
-        // Обработчик отправки формы
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Предотвращаем перезагрузку страницы
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            // Здесь вы можете добавить код для проверки авторизации
-            console.log('Имя пользователя:', username);
-            console.log('Пароль:', password);
-
-            // Пример: просто выводим сообщение об успешной авторизации
-            alert('Вы успешно авторизованы!');
-            // После успешной авторизации можно перенаправить на главную страницу
-            // window.location.href = 'index.html'; // Замените на вашу главную страницу
-        });
-    </script>
 
     <style>
         /* Простейшие стили для формы */
