@@ -1,5 +1,8 @@
 from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth import update_session_auth_hash
 from .models import Profile
+from django.http import JsonResponse
+from django.views import View
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import CreateView, DetailView
 from django.contrib.auth.models import User
@@ -8,6 +11,7 @@ from django.contrib import messages
 from .forms import UserRegistrationForm, ProfileForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 
 
 class CustomLoginView(LoginView):
@@ -66,3 +70,15 @@ class ProfileView(DetailView):
         else:
             messages.error(request, 'Ошибка при обновлении профиля. Пожалуйста, проверьте введенные данные.')
         return self.get(request, *args, **kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class ChangePasswordView(View):
+    def post(self, request, *args, **kwargs):
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Обновляем сессию, чтобы пользователь не вышел
+            return JsonResponse({'success': True, 'message': 'Пароль успешно изменен!'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})

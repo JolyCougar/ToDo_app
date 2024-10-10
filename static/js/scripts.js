@@ -22,25 +22,43 @@ const fontSizeSelect = document.getElementById('fontSizeSelect');
 const showCompletedTasksCheckbox = document.getElementById('showCompletedTasks');
 const profileModal = document.getElementById('profileModal');
 const editProfileBtn = document.getElementById('editProfileButton');
-const closeProfileModalBtn = document.getElementsByClassName('close')[0];
+const closeProfileModalBtn = document.querySelector('#profileModal .close');
+const changePasswordButton = document.getElementById('changePasswordButton');
+const changePasswordModal = document.getElementById('changePasswordModal');
+const closeChangePasswordModal = document.getElementById('closeChangePasswordModal');
 
 if (editProfileBtn) {
-    editProfileBtn.onclick = function() {
+    editProfileBtn.onclick = function () {
         profileModal.style.display = 'flex';
     }
 }
 
-// Закрытие модального окна при нажатии на "x"
 if (closeProfileModalBtn) {
-    closeProfileModalBtn.onclick = function() {
+    closeProfileModalBtn.onclick = function () {
         profileModal.style.display = 'none';
     }
 }
 
+// Открытие модального окна смены пароля
+if (changePasswordButton) {
+    changePasswordButton.onclick = function () {
+        changePasswordModal.style.display = 'flex';
+    }
+}
+
+if (closeChangePasswordModal) {
+    closeChangePasswordModal.onclick = function () {
+        changePasswordModal.style.display = 'none';
+    }
+}
+
 // Закрытие модального окна при клике вне его
-window.onclick = function(event) {
-    if (event.target == profileModal) {
+window.onclick = function (event) {
+    if (event.target === profileModal) {
         profileModal.style.display = 'none';
+    }
+    if (event.target === changePasswordModal) {
+        changePasswordModal.style.display = 'none';
     }
 }
 
@@ -156,7 +174,7 @@ function addTask(event) {
 
 function handleResponse(response) {
     if (!response.ok) {
-                throw new Error('Network response was not ok');
+        throw new Error('Network response was not ok');
     }
     return response.json();
 }
@@ -386,7 +404,7 @@ function previewAvatar(event) {
     const file = event.target.files[0]; // Получаем файл из input
     const reader = new FileReader(); // Создаем новый объект FileReader
 
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const avatarPreview = document.getElementById('avatarPreview'); // Находим элемент для превью
         avatarPreview.src = e.target.result; // Устанавливаем новое изображение
     }
@@ -401,5 +419,8 @@ function previewAvatar(event) {
 }
 
 // Применение настроек при загрузке страницы
-window.onload = applySettings;
+window.onload = function () {
+    applySettings(); // Применяем настройки при загрузке
+    toggleCompletedTasksVisibility(); // Применяем видимость выполненных задач при загрузке
+};
 
