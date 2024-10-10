@@ -382,6 +382,24 @@ function applySettings() {
     toggleCompletedTasksVisibility();
 }
 
+function previewAvatar(event) {
+    const file = event.target.files[0]; // Получаем файл из input
+    const reader = new FileReader(); // Создаем новый объект FileReader
+
+    reader.onload = function(e) {
+        const avatarPreview = document.getElementById('avatarPreview'); // Находим элемент для превью
+        avatarPreview.src = e.target.result; // Устанавливаем новое изображение
+    }
+
+    if (file) {
+        reader.readAsDataURL(file); // Читаем файл как Data URL
+    } else {
+        // Если файл не выбран, устанавливаем изображение по умолчанию
+        const defaultAvatar = "{% static 'images/default-avatar.png' %}";
+        document.getElementById('avatarPreview').src = defaultAvatar;
+    }
+}
+
 // Применение настроек при загрузке страницы
 window.onload = applySettings;
 
