@@ -6,53 +6,182 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль пользователя</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css" media="all">
+    <script src="{% static 'js/scripts.js' %}" defer></script>
+     <style>
+        /* Ваши стили */
+        * {
+            box-sizing: border-box; /* Убедитесь, что отступы учитываются в ширине */
+        }
+
+        .modal {
+            display: none; /* Скрыто по умолчанию */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4); /* Черный с прозрачностью */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto; /* Уменьшите отступ сверху */
+            padding: 20px; /* Увеличьте внутренние отступы */
+            border: 1px solid #888;
+            width: 80%; /* Увеличьте ширину модального окна */
+            max-width: 800px; /* Установите максимальную ширину */
+            height: auto; /* Установите высоту на автоматическую */
+            min-height: 400px; /* Установите минимальную высоту для модального окна */
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .form-group {
+            display: flex; /* Используйте Flexbox для выравнивания по горизонтали */
+            align-items: center; /* Центрируйте элементы по вертикали */
+            margin: 10px 0; /* Установите отступы между элементами формы */
+        }
+
+        .form-group label {
+            width: 30%; /* Установите ширину метки */
+            margin-right: 10px; /* Отступ между меткой и полем ввода */
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group textarea {
+            width: 70%; /* Установите ширину на 70% от родительского элемента */
+            padding: 5px; /* Уменьшите внутренние отступы для удобства ввода */
+            font-size: 14px; /* Уменьшите размер шрифта */
+        }
+
+        .form-group input[type="file"] {
+            width: 70%; /* Установите ширину на 70% от родительского элемента */
+            padding: 5px; /* Уменьшите внутренние отступы для удобства ввода */
+            font-size: 14px; /* Уменьшите размер шрифта */
+            border: none; /* Уберите границу */
+            background-color: #007bff; /* Установите цвет фона, например, синий */
+            color: white; /* Установите цвет текста */
+            cursor: pointer; /* Установите курсор в виде указателя */
+            border-radius: 4px; /* Закруглите углы */
+        }
+
+        .form-group input[type="file"]::-webkit-file-upload-button {
+            background-color: #007bff; /* Цвет кнопки "Обзор" */
+            color: white; /* Цвет текста кнопки "Обзор" */
+            border: none; /* Уберите границу */
+            padding: 5px; /* Установите внутренние отступы */
+            border-radius: 4px; /* Закруглите углы */
+            cursor: pointer; /* Установите курсор в виде указателя */
+        }
+
+        .form-group textarea {
+            height: 50px; /* Установите высоту текстовой области */
+        }
+         button.large-button {
+            padding: 10px 15px; /* Увеличьте отступы для кнопки */
+            font-size: 16px; /* Увеличьте размер шрифта для кнопки */
+            background-color: #007bff; /* Установите цвет фона для кнопки */
+            color: white; /* Установите цвет текста для кнопки */
+            border: none; /* Уберите границу */
+            border-radius: 4px; /* Закруглите углы */
+            cursor: pointer; /* Установите курсор в виде указателя */
+        }
+
+        button.large-button:hover {
+            background-color: #0056b3; /* Цвет фона при наведении */
+        }
+    </style>
 </head>
 <body>
 <div class="container">
     <header>
         <h1>Профиль пользователя</h1>
-        <div class="header-buttons">
-            <button class="edit-profile" id="editProfileButton">Редактировать профиль</button>
-        </div>
     </header>
 
     <section class="user-info">
         <h2>Информация о пользователе</h2>
         <div class="user-details">
             <div class="avatar-container">
-                <img src="{% static 'images/default-avatar.png' %}" alt="Аватар пользователя" id="userAvatar" class="user-avatar">
-                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
-                <button id="uploadAvatarButton" class="small-button">Загрузить</button>
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="Аватар пользователя" id="userAvatar"
+                         class="user-avatar">
+                {% else %}
+                    <img src="{% static 'images/default-avatar.png' %}" alt="Аватар пользователя" id="userAvatar"
+                         class="user-avatar">
+                {% endif %}
             </div>
-            <p><strong>Имя:</strong> <span id="userName">Иван Иванов</span></p>
-            <p><strong>Email:</strong> <span id="userEmail">ivan@example.com</span></p>
-            <p><strong>Дата регистрации:</strong> <span id="registrationDate">01 января 2023</span></p>
+            <div class="info-container">
+                <p><strong>Имя:</strong> <span id="userName">{{ user.first_name }}</span></p>
+                <p><strong>Фамилия:</strong> <span id="userName">{{ user.last_name }}</span></p>
+                <p><strong>Email:</strong> <span id="userEmail">{{ user.email }}</span></p>
+                <p><strong>Дата регистрации:</strong> <span
+                        id="registrationDate">{{ user.date_joined|date:"d F Y" }}</span></p>
+                <p><strong>О себе:</strong> <span id="userBio">{{ user.profile.bio }}</span></p>
+            </div>
+        </div>
+
+        <button id="editProfileButton" class="large-button">Изменить профиль</button>
+
+        <!-- Модальное окно -->
+        <div id="profileModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Изменить профиль</h2>
+                <form method="POST" enctype="multipart/form-data" id="profileForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="avatar">Аватар:</label>
+                        <input type="file" id="avatar" name="avatar" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label for="first_name">Имя:</label>
+                        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Фамилия:</label>
+                        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bio">О себе:</label>
+                        <textarea id="bio" name="bio" rows="4">{{ user.profile.bio }}</textarea>
+                    </div>
+                    <button type="submit" class="large-button">Сохранить изменения</button>
+                </form>
+            </div>
         </div>
     </section>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="{% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 </div>
 
-<div class="cookie-banner" id="cookieBanner">
-    <p>Этот сайт использует cookies для улучшения пользовательского опыта.
-        <button id="acceptCookies">Принять</button>
-    </p>
-</div>
-
-<script src="{% static 'js/scripts.js' %}"></script>
-<script>
-    document.getElementById('uploadAvatarButton').addEventListener('click', function() {
-        document.getElementById('avatarUpload').click();
-    });
-
-    document.getElementById('avatarUpload').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('userAvatar').src = e.target.result; // Обновляем аватарку
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-</script>
 </body>
 </html>
+

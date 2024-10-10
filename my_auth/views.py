@@ -1,9 +1,13 @@
+from django.shortcuts import redirect, get_object_or_404
 from .models import Profile
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import CreateView
+from django.views.generic import CreateView, DetailView
+from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.contrib import messages
-from .forms import UserRegistrationForm
+from .forms import UserRegistrationForm, ProfileForm
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 
 class CustomLoginView(LoginView):
@@ -36,3 +40,29 @@ class RegisterView(CreateView):
     def form_invalid(self, form):
         messages.error(self.request, 'Пожалуйста, исправьте ошибки в форме.')
         return super().form_invalid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class ProfileView(DetailView):
+    model = User
+    template_name = 'profile.html'
+    context_object_name = "user"
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(User, pk=self.request.user.pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = ProfileForm(instance=self.object.profile)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = ProfileForm(request.POST, request.FILES, instance=self.object.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Информация о профиле успешно обновлена!')
+            return redirect('my_auth:profile', pk=self.object.pk)
+        else:
+            messages.error(request, 'Ошибка при обновлении профиля. Пожалуйста, проверьте введенные данные.')
+        return self.get(request, *args, **kwargs)
