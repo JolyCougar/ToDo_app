@@ -165,6 +165,7 @@ input:focus, textarea:focus {
     padding: 20px; /* Отступы */
     border: 1px solid #888; /* Граница */
     width: 500px; /* Ширина */
+    height: 300px;
     border-radius: 8px; /* Закругленные углы */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень */
 }
@@ -344,4 +345,24 @@ input:focus, textarea:focus {
     border-color: var(--primary-color);
     outline: none;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.user-details {
+    display: flex; /* Используем Flexbox для размещения элементов */
+    align-items: flex-start; /* Выравниваем элементы по верхнему краю */
+}
+
+.avatar-container {
+    margin-right: 20px; /* Отступ между аватаром и информацией */
+}
+
+.user-avatar {
+    width: 200px; /* Ширина аватарки */
+    height: 200px; /* Высота аватарки */
+    border-radius: 50%; /* Круглая форма */
+    margin-bottom: 10px; /* Отступ снизу для кнопки */
+}
+
+.info-container {
+    flex: 1; /* Занимает оставшееся пространство */
 }

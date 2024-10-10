@@ -20,6 +20,29 @@ const settingsForm = document.getElementById('settingsForm');
 const fontSelect = document.getElementById('fontSelect');
 const fontSizeSelect = document.getElementById('fontSizeSelect');
 const showCompletedTasksCheckbox = document.getElementById('showCompletedTasks');
+const profileModal = document.getElementById('profileModal');
+const editProfileBtn = document.getElementById('editProfileButton');
+const closeProfileModalBtn = document.getElementsByClassName('close')[0];
+
+if (editProfileBtn) {
+    editProfileBtn.onclick = function() {
+        profileModal.style.display = 'flex';
+    }
+}
+
+// Закрытие модального окна при нажатии на "x"
+if (closeProfileModalBtn) {
+    closeProfileModalBtn.onclick = function() {
+        profileModal.style.display = 'none';
+    }
+}
+
+// Закрытие модального окна при клике вне его
+window.onclick = function(event) {
+    if (event.target == profileModal) {
+        profileModal.style.display = 'none';
+    }
+}
 
 // Устанавливаем текущую дату
 const currentDate = new Date();
@@ -97,6 +120,11 @@ function addTask(event) {
         return;
     }
 
+    // Показать индикатор загрузки
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.textContent = 'Загрузка...';
+    document.body.appendChild(loadingIndicator);
+
     fetch('/add-task/', {
         method: 'POST',
         headers: {
@@ -107,6 +135,9 @@ function addTask(event) {
     })
         .then(handleResponse)
         .then(data => {
+            // Удалить индикатор загрузки
+            loadingIndicator.remove();
+
             if (data.success) {
                 addTaskToDOM(data.task_id, taskName, taskDescriptionText);
                 taskInput.value = '';
@@ -117,12 +148,15 @@ function addTask(event) {
                 alert('Ошибка добавления задачи: ' + data.error);
             }
         })
-        .catch(handleError);
+        .catch(error => {
+            loadingIndicator.remove();
+            handleError(error);
+        });
 }
 
 function handleResponse(response) {
     if (!response.ok) {
-        throw new Error('Network response was not ok');
+                throw new Error('Network response was not ok');
     }
     return response.json();
 }
