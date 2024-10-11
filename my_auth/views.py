@@ -28,7 +28,6 @@ class CustomLogoutView(LogoutView):
         return response
 
 
-
 class RegisterView(CreateView):
     template_name = 'registration.html'
     form_class = UserRegistrationForm
@@ -129,6 +128,7 @@ class ResendVerificationTokenView(View):
 
         return redirect('task:task_view')
 
+
 class ChangeEmailView(View):
     def post(self, request):
         new_email = request.POST.get('new_email')
@@ -141,5 +141,6 @@ class ChangeEmailView(View):
         # Отправляем новый код подтверждения
         EmailService.send_verification_email(request, profile)
 
-        messages.success(request, 'Новый адрес электронной почты был установлен. Проверьте ваш почтовый ящик для подтверждения.')
+        messages.success(request,
+                         'Новый адрес электронной почты был установлен. Проверьте ваш почтовый ящик для подтверждения.')
         return redirect('task:task_view')  # Перенаправляем на страницу с сообщением

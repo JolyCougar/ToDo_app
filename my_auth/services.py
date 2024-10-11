@@ -21,7 +21,7 @@ class EmailService:
         send_mail(
             'Подтверждение электронной почты',
             f'Пожалуйста, подтвердите вашу электронную почту, перейдя по следующей ссылке: {verification_link}',
-            'danero95@yandex.ru',
+            'paste@your.ru',
             [user.email],
             fail_silently=False,
         )
