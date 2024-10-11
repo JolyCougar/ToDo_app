@@ -1,6 +1,9 @@
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import render, redirect
 from .models import Profile
+from django.contrib.auth import login
+from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views import View
 from django.contrib.auth.views import LoginView, LogoutView
@@ -12,6 +15,8 @@ from .forms import UserRegistrationForm, ProfileForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
+from .models import EmailVerification
+from .services import EmailService
 
 
 class CustomLoginView(LoginView):
@@ -24,6 +29,7 @@ class CustomLogoutView(LogoutView):
         return response
 
 
+
 class RegisterView(CreateView):
     template_name = 'registration.html'
     form_class = UserRegistrationForm
@@ -34,16 +40,14 @@ class RegisterView(CreateView):
         user.set_password(form.cleaned_data['password'])
         user.save()
 
-        # Проверка существования профиля
-        if not hasattr(user, 'profile'):
-            Profile.objects.create(user=user)
+        # Создание или получение профиля
+        profile, created = Profile.objects.get_or_create(user=user)
 
-        messages.success(self.request, 'Регистрация успешна! Вы можете войти в систему.')
+        # Отправка письма с подтверждением
+        EmailService.send_verification_email(self.request, profile)
+
+        messages.success(self.request, 'Регистрация успешна! Проверьте вашу почту для подтверждения.')
         return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Пожалуйста, исправьте ошибки в форме.')
-        return super().form_invalid(form)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -92,3 +96,32 @@ class ResetAvatarView(View):
         profile.save()
 
         return JsonResponse({'success': True})
+
+
+class VerifyEmailView(View):
+    def get(self, request, token):
+        try:
+            verification = EmailVerification.objects.get(token=token)
+            profile = verification.profile
+            profile.email_verified = True  # Устанавливаем статус подтверждения
+            profile.user.is_active = True  # Активируем пользователя
+            profile.user.save()
+            profile.save()
+            verification.delete()  # Удаляем токен после подтверждения
+            login(request, profile.user)  # Вход пользователя
+            return redirect('/')  # Перенаправление на главную страницу
+        except EmailVerification.DoesNotExist:
+            return render(request, 'verification_failed.html')
+
+
+class ResendVerificationTokenView(View):
+    def post(self, request):
+        email = request.POST.get('email')
+        try:
+            profile = Profile.objects.get(user__email=email)
+            EmailService.send_verification_email(request, profile)
+            messages.success(request, 'Токен подтверждения был отправлен на ваш email.')
+        except Profile.DoesNotExist:
+            messages.error(request, 'Пользователь с таким email не найден.')
+
+        return redirect('verification_failed')

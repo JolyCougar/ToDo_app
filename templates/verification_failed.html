@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка подтверждения</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css" media="all">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Ошибка подтверждения</h1>
+    </header>
+
+    <main>
+        <section>
+            <h2>Не удалось подтвердить ваш адрес электронной почты</h2>
+            <p>К сожалению, токен подтверждения недействителен или истек. Пожалуйста, проверьте ссылку в вашем электронном письме и попробуйте снова.</p>
+            <p>Если у вас возникли проблемы, вы можете запросить новое письмо для подтверждения.</p>
+        </section>
+
+        <div class="error-message">
+            <p>Пожалуйста, свяжитесь с поддержкой, если проблема не решается.</p>
+        </div>
+
+        <div class="button-container">
+            <a href="/" class="large-button">Вернуться на главную страницу</a>
+        </div>
+
+        <div class="resend-token">
+            <h3>Повторная отправка токена</h3>
+            <form method="post" action="{% url 'my_auth:resend_verification_token' %}">
+                {% csrf_token %}
+                <input type="email" name="email" placeholder="Введите ваш email" required>
+                <button type="submit" class="large-button">Отправить токен повторно</button>
+            </form>
+        </div>
+    </main>
+</div>
+
+<script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>

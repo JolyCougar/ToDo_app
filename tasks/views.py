@@ -4,9 +4,10 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, View
 from .models import Task
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .tasks_mixins import EmailVerifiedMixin
 
 
-class TaskView(LoginRequiredMixin, ListView):
+class TaskView(EmailVerifiedMixin, ListView):
     model = Task
     template_name = 'index.html'
     context_object_name = 'task_list'

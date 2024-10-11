@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+import uuid
 
 
 def profile_preview_directory_path(instance: "Profile", filename: str) -> str:
@@ -18,3 +20,12 @@ class Profile(models.Model):
     bio = models.TextField(max_length=500, blank=True)
     agreement_accepted = models.BooleanField(default=False)
     avatar = models.ImageField(null=True, blank=True, upload_to=profile_preview_directory_path)
+    email_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username
+
+
+class EmailVerification(models.Model):
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, editable=False)

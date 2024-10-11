@@ -149,3 +149,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = reverse_lazy('my_auth:login')
 LOGIN_REDIRECT_URL = reverse_lazy("task:task_view")
 LOGOUT_REDIRECT_URL = reverse_lazy('my_auth:login')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'Danero95@yandex.ru'
+EMAIL_HOST_PASSWORD = 'urchhhkdoqbuvpao'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+

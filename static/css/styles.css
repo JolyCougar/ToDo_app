@@ -155,8 +155,8 @@ input:focus, textarea:focus {
     width: 100%; /* Полная ширина */
     height: 100%; /* Полная высота */
     overflow: auto; /* Прокрутка, если необходимо */
-    background-color: rgb(0,0,0); /* Черный фон */
-    background-color: rgba(0,0,0,0.4); /* Полупрозрачный фон */
+    background-color: rgb(0, 0, 0); /* Черный фон */
+    background-color: rgba(0, 0, 0, 0.4); /* Полупрозрачный фон */
 }
 
 .modal-content {
@@ -365,4 +365,24 @@ input:focus, textarea:focus {
 
 .info-container {
     flex: 1; /* Занимает оставшееся пространство */
+}
+
+.messages {
+    margin-top: 20px;
+}
+
+.message {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.success {
+    background-color: #d4edda; /* Зеленый фон для успешных сообщений */
+    color: #155724; /* Темно-зеленый текст */
+}
+
+.error {
+    background-color: #f8d7da; /* Красный фон для ошибок */
+    color: #721c24; /* Темно-красный текст */
 }
