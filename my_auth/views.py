@@ -57,12 +57,12 @@ class ProfileView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = ProfileForm(instance=self.object.profile)
+        context['form'] = ProfileForm(instance=self.object.profile, user=self.object)
         return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        form = ProfileForm(request.POST, request.FILES, instance=self.object.profile)
+        form = ProfileForm(request.POST, request.FILES, instance=self.object.profile, user=self.object)
         if form.is_valid():
             form.save()
             messages.success(request, 'Информация о профиле успешно обновлена!')

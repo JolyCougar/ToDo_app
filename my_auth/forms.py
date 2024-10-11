@@ -40,11 +40,12 @@ class ProfileForm(forms.ModelForm):
             self.fields['email'].initial = user.email
 
     def save(self, commit=True):
-        # Сохраняем данные пользователя
-        user = super().save(commit=False)
+        user = self.instance.user  # Получаем объект User
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.email = self.cleaned_data['email']
+
         if commit:
-            user.save()
+            user.save()  # Сохраняем объект User
+            self.instance.save()  # Сохраняем объект Profile
         return user
