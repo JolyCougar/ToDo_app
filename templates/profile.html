@@ -73,18 +73,18 @@
         }
 
         .custom-file-upload {
-    display: flex; /* Используйте flex для выравнивания текста */
-    align-items: center; /* Центрируйте текст по вертикали */
-    padding: 8px 16px; /* Увеличьте отступы для кнопки */
-    cursor: pointer;
-    background-color: #007bff; /* Цвет кнопки */
-    color: white; /* Цвет текста */
-    border-radius: 4px; /* Закруглите углы */
-    margin-left: 10px; /* Отступ слева для кнопки */
-    white-space: nowrap; /* Запретить перенос текста */
-    min-width: 120px; /* Установите минимальную ширину для кнопки */
-    text-align: center; /* Центрируйте текст */
-}
+            display: flex; /* Используйте flex для выравнивания текста */
+            align-items: center; /* Центрируйте текст по вертикали */
+            padding: 8px 16px; /* Увеличьте отступы для кнопки */
+            cursor: pointer;
+            background-color: #007bff; /* Цвет кнопки */
+            color: white; /* Цвет текста */
+            border-radius: 4px; /* Закруглите углы */
+            margin-left: 10px; /* Отступ слева для кнопки */
+            white-space: nowrap; /* Запретить перенос текста */
+            min-width: 120px; /* Установите минимальную ширину для кнопки */
+            text-align: center; /* Центрируйте текст */
+        }
 
 
         .form-group textarea {
@@ -119,13 +119,35 @@
             align-items: center; /* Центрируйте элементы по вертикали */
         }
 
+        .header {
+            display: flex; /* Используем Flexbox для выравнивания элементов */
+            align-items: center; /* Центрируем элементы по вертикали */
+            justify-content: space-between; /* Распределяем пространство между элементами */
+            padding: 10px; /* Добавляем отступы */
+        }
+
+        .back-button {
+            padding: 10px 15px; /* Отступы внутри кнопки */
+            background-color: #007bff; /* Цвет кнопки */
+            color: white; /* Цвет текста */
+            border-radius: 4px; /* Закругление углов */
+            text-decoration: none; /* Убираем подчеркивание */
+            transition: background-color 0.3s; /* Плавный переход цвета фона */
+        }
+
+        .back-button:hover {
+            background-color: #0056b3; /* Цвет фона при наведении */
+        }
+
 
     </style>
 </head>
 <body>
 <div class="container">
-    <header>
+    <header class="header">
+
         <h1>Профиль пользователя</h1>
+        <a href="{% url 'task:task_view' %}" class="back-button">Назад к задачам</a>
     </header>
 
     <section class="user-info">
@@ -136,7 +158,7 @@
                     <img src="{{ user.profile.avatar.url }}" alt="Аватар пользователя" id="userAvatar"
                          class="user-avatar">
                 {% else %}
-                    <img src="{% static 'images/default-avatar.png' %}" alt="Аватар пользователя" id="userAvatar"
+                    <img src="{% static 'images/default_avatar.png' %}" alt="Аватар пользователя" id="userAvatar"
                          class="user-avatar">
                 {% endif %}
             </div>
@@ -152,32 +174,33 @@
 
         <button id="editProfileButton" class="large-button">Изменить профиль</button>
         <!-- Кнопка для открытия модального окна -->
-<button id="changePasswordButton" class="large-button">Сменить пароль</button>
+        <button id="changePasswordButton" class="large-button">Сменить пароль</button>
 
-<!-- Модальное окно для смены пароля -->
-<div id="changePasswordModal" class="modal">
-    <div class="modal-content">
-        <span class="close" id="closeChangePasswordModal">&times;</span>
-        <h2>Сменить пароль</h2>
-        <form id="changePasswordForm">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="old_password">Старый пароль:</label>
-                <input type="password" id="old_password" name="old_password" required>
+        <!-- Модальное окно для смены пароля -->
+        <div id="changePasswordModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeChangePasswordModal">&times;</span>
+                <h2>Сменить пароль</h2>
+                <form id="changePasswordForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="old_password">Старый пароль:</label>
+                        <input type="password" id="old_password" name="old_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_password">Новый пароль:</label>
+                        <input type="password" id="new_password" name="new_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Подтвердите новый пароль:</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="large-button" style="width: auto; float: right;">Сменить пароль
+                    </button>
+                </form>
+                <div id="passwordChangeMessage"></div>
             </div>
-            <div class="form-group">
-                <label for="new_password">Новый пароль:</label>
-                <input type="password" id="new_password" name="new_password" required>
-            </div>
-            <div class="form-group">
-                <label for="confirm_password">Подтвердите новый пароль:</label>
-                <input type="password" id="confirm_password" name="confirm_password" required>
-            </div>
-            <button type="submit" class="large-button" style="width: auto; float: right;">Сменить пароль</button>
-        </form>
-        <div id="passwordChangeMessage"></div>
-    </div>
-</div>
+        </div>
 
         <!-- Модальное окно -->
         <div id="profileModal" class="modal">
@@ -190,13 +213,21 @@
                         <label for="avatar">Аватар:</label>
                         <div class="preview-container">
                             <img id="avatarPreview" class="avatar-preview" src="
-                                    {% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
+                            
+                                    
+                                    
+                                    
+                                    
+                                    {% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default_avatar.png' %}{% endif %}"
                                  alt="Превью аватара">
                             <label class="custom-file-upload">
                                 <input type="file" id="avatar" name="avatar" accept="image/*"
                                        onchange="previewAvatar(event)">
                                 Загрузить
                             </label>
+                            <button type="button" id="resetAvatarButton" class="large-button"
+                                    style="margin-left: 10px;">Сбросить аватар
+                            </button>
                         </div>
                     </div>
                     <div class="form-group">
@@ -220,6 +251,7 @@
                 </form>
             </div>
         </div>
+
     </section>
 
     {% if messages %}
@@ -232,5 +264,54 @@
         </div>
     {% endif %}
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const resetAvatarButton = document.getElementById('resetAvatarButton');
+
+        if (resetAvatarButton) {
+            resetAvatarButton.addEventListener('click', function () {
+                const avatarPreview = document.getElementById('avatarPreview');
+                const defaultAvatar = "{% static 'images/default_avatar.png' %}"; // Путь к изображению по умолчанию
+
+                // Отправка запроса на сброс аватара
+                fetch('/reset-avatar/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            avatarPreview.src = "{% static 'images/default_avatar.png' %}"; // Используйте тег static
+                        } else {
+                            alert('Ошибка сброса аватара: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                        alert('Произошла ошибка при сбросе аватара.');
+                    });
+            });
+        }
+    });
+
+    // Функция для получения CSRF-токена
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
 </body>
 </html>

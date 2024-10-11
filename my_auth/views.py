@@ -82,3 +82,13 @@ class ChangePasswordView(View):
             return JsonResponse({'success': True, 'message': 'Пароль успешно изменен!'})
         else:
             return JsonResponse({'success': False, 'errors': form.errors})
+
+
+@method_decorator(login_required, name='dispatch')
+class ResetAvatarView(View):
+    def post(self, request, *args, **kwargs):
+        profile = request.user.profile  # Получаем профиль текущего пользователя
+        profile.avatar = ''
+        profile.save()
+
+        return JsonResponse({'success': True})
