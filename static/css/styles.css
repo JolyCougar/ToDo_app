@@ -126,7 +126,7 @@ input:focus, textarea:focus {
     border-radius: var(--border-radius);
     background-color: var(--gray-light);
     box-shadow: var(--box-shadow);
-        transition: background-color 0.3s;
+    transition: background-color 0.3s;
 }
 
 .task-item:hover {
@@ -259,139 +259,115 @@ label {
 
 .modal.hide {
     opacity: 0; /* Полупрозрачность для скрытия */
-    transition: opacity 0.3s ease; /* Плавный переход */
-}
+    transition: opacity 0.3s ease;
+   }
 
-/* Стили для чекбоксов */
-input[type="checkbox"] {
-    cursor: pointer;
-}
+   /* Стили для профиля */
+    .avatar-container {
+        display: flex;
+        flex-direction: column; /* Изменяем направление на колонку */
+        align-items: center; /* Центрируем элементы по горизонтали */
+        margin-bottom: 20px;
+    }
 
-/* Стили для кнопки "Свернуть" в списке выполненных задач */
-#toggleCompletedList {
-    margin-top: 10px;
-    background-color: var(--primary-color);
-    color: var(--white);
+    .user-avatar {
+        width: 100px; /* Ширина аватарки */
+        height: 100px; /* Высота аватарки */
+        border-radius: 50%; /* Круглая форма */
+        margin-bottom: 10px; /* Отступ снизу для кнопки */
+    }
+
+    /* Стили для маленьких кнопок */
+    .small-button {
+        background-color: var(--primary-color);
+        color: var(--white);
         border: none;
-    border-radius: var(--border-radius);
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-}
+        border-radius: var(--border-radius);
+        padding: 5px 10px; /* Уменьшаем отступы для кнопки */
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 14px; /* Уменьшаем размер шрифта */
+    }
 
-#toggleCompletedList:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-2px);
-}
+    .small-button:hover {
+        background-color: var(--primary-hover);
+    }
 
-/* Стили для профиля */
-.avatar-container {
-    display: flex;
-    flex-direction: column; /* Изменяем направление на колонку */
-    align-items: center; /* Центрируем элементы по горизонтали */
-    margin-bottom: 20px;
-}
+    /* Дополнительные стили для формы регистрации */
+    #registrationForm {
+        margin-top: 20px; /* Отступ сверху для формы */
+    }
 
-.user-avatar {
-    width: 100px; /* Ширина аватарки */
-    height: 100px; /* Высота аватарки */
-    border-radius: 50%; /* Круглая форма */
-    margin-bottom: 10px; /* Отступ снизу для кнопки */
-}
+    /* Поля ввода */
+    input[type="text"], input[type="password"], input[type="email"], textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid var(--gray-dark);
+        border-radius: var(--border-radius);
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+    }
 
-/* Стили для маленьких кнопок */
-.small-button {
-    background-color: var(--primary-color);
-    color: var(--white);
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 5px 10px; /* Уменьшаем отступы для кнопки */
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-size: 14px; /* Уменьшаем размер шрифта */
-}
+    input:focus, textarea:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
 
-.small-button:hover {
-    background-color: var(--primary-hover);
-}
+    .user-details {
+        display: flex; /* Используем Flexbox для размещения элементов */
+        align-items: flex-start; /* Выравниваем элементы по верхнему краю */
+    }
 
-/* Дополнительные стили для формы регистрации */
-#registrationForm {
-    margin-top: 20px; /* Отступ сверху для формы */
-}
+    .avatar-container {
+        margin-right: 20px; /* Отступ между аватаром и информацией */
+    }
 
-/* Поля ввода */
-input[type="text"], input[type="password"], input[type="email"], textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid var(--gray-dark);
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-}
+    .user-avatar {
+        width: 200px; /* Ширина аватарки */
+        height: 200px; /* Высота аватарки */
+        border-radius: 50%; /* Круглая форма */
+        margin-bottom: 10px; /* Отступ снизу для кнопки */
+    }
 
-input:focus, textarea:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
+    body.default {
+        background-color: #f3f3f3;
+    }
 
-.user-details {
-    display: flex; /* Используем Flexbox для размещения элементов */
-    align-items: flex-start; /* Выравниваем элементы по верхнему краю */
-}
+    body.background1 {
+        background-color: #6c757d;
+    }
 
-.avatar-container {
-    margin-right: 20px; /* Отступ между аватаром и информацией */
-}
+    body.background2 {
+        background-color: #e4e4e4;
+    }
 
-.user-avatar {
-    width: 200px; /* Ширина аватарки */
-    height: 200px; /* Высота аватарки */
-    border-radius: 50%; /* Круглая форма */
-    margin-bottom: 10px; /* Отступ снизу для кнопки */
-}
+    body.background3 {
+        background-color: #e37ad9;
+    }
 
-body.default {
-    background-color: #f3f3f3;
-}
+    body.custom {
+        background-image: url(""); /* Пустое значение, будет установлено через JavaScript */
+    }
 
-body.background1 {
-    background-color: #6c757d;
-}
+    .messages {
+        margin-top: 20px;
+    }
 
-body.background2 {
-    background-color: #e4e4e4;
-}
+    .message {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
 
-body.background3 {
-    background-color: #e37ad9;
-}
+    .success {
+        background-color: #d4edda; /* Зеленый фон для успешных сообщений */
+        color: #155724; /* Темно-зеленый текст */
+    }
 
-body.custom {
-    background-image: url(""); /* Пустое значение, будет установлено через JavaScript */
-}
-
-
-
-.messages {
-    margin-top: 20px;
-}
-
-.message {
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-.success {
-    background-color: #d4edda; /* Зеленый фон для успешных сообщений */
-    color: #155724; /* Темно-зеленый текст */
-}
-
-.error {
-    background-color: #f8d7da; /* Красный фон для ошибок */
-    color: #721c24; /* Темно-красный текст */
-}
+    .error {
+        background-color: #f8d7da; /* Красный фон для ошибок */
+        color: #721c24; /* Темно-красный текст */
+    }

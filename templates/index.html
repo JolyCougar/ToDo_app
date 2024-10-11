@@ -7,23 +7,79 @@
     <title>To Do App</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css" media="all">
 </head>
+<style>
+    .header-info {
+    display: flex;
+    align-items: center; /* Центрируем по вертикали */
+}
+
+.user-profile {
+    display: flex;
+    align-items: center; /* Центрируем аватар и имя по вертикали */
+    text-decoration: none; /* Убираем подчеркивание */
+    color: var(--gray-dark); /* Цвет текста */
+    margin-right: 20px; /* Отступ справа для разделения с датой */
+}
+
+.user-avatar {
+    width: 70px; /* Ширина аватарки */
+    height: 70px; /* Высота аватарки */
+    border-radius: 50%; /* Круглая форма */
+    margin-right: 5px; /* Уменьшенный отступ между аватаром и именем */
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius);
+    background-color: var(--gray-light);
+    box-shadow: var(--box-shadow);
+    transition: background-color 0.3s;
+}
+
+.task-item input[type="checkbox"] {
+    margin-right: 5px; /* Уменьшенный отступ между чекбоксом и названием задачи */
+    cursor: pointer; /* Указатель при наведении */
+}
+
+</style>
 <body>
 <div class="container">
     <header>
-        <div class="header-info">
-            <span id="dateDisplay"></span> <!-- Элемент для отображения даты -->
-            <span id="taskCount">Невыполненные задачи: <span id="incompleteCount">0</span></span>
-            <form method="post" action="{% url 'my_auth:logout' %}" class="logout-form">
-                {% csrf_token %}
-                <button type="submit" class="small-button">Выйти</button>
-            </form>
-        </div>
+    <div class="header-info">
+        <a href="{% url 'my_auth:profile' pk=user.pk %}" class="user-profile">
+            <div class="avatar-container">
+                
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="Аватар" id="userAvatar"
+                         class="user-avatar">
+                {% else %}
+                    <img src="{% static 'images/default_avatar.png' %}" alt="Аватар" id="userAvatar"
+                         class="user-avatar">
+                {% endif %}
+                
+                
+                <!-- Замените на путь к аватару -->
+            </div>
+            <span id="username">{{ user.username }}</span> <!-- Замените на имя пользователя -->
+        </a>
+        <span id="dateDisplay"></span> <!-- Элемент для отображения даты -->
+        <span id="taskCount" style="margin-left: 20px;">Невыполненные задачи: <span id="incompleteCount">0</span></span>
+        <form method="post" action="{% url 'my_auth:logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="small-button">Выйти</button>
+        </form>
+    </div>
 
-        <div class="header-buttons">
-            <button class="settings" id="settingsBtn">Настройки</button>
-            <button class="large-button" id="addTaskButton">Добавить задачу</button>
-        </div>
-    </header>
+    <div class="header-buttons">
+        <button class="settings" id="settingsBtn">Настройки</button>
+        <button class="large-button" id="addTaskButton">Добавить задачу</button>
+    </div>
+</header>
+
 
     <!-- Модальное окно для добавления задачи -->
     <div id="modal" class="modal" style="display: none;">
