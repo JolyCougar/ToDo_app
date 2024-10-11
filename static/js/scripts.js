@@ -349,11 +349,26 @@ function saveSettings(event) {
     const selectedFont = fontSelect.value;
     const selectedFontSize = fontSizeSelect.value;
     const showCompletedTasks = showCompletedTasksCheckbox.checked;
+    const selectedBackground = backgroundSelect.value;
 
     // Сохранение в localStorage
     localStorage.setItem('font', selectedFont);
     localStorage.setItem('fontSize', selectedFontSize);
     localStorage.setItem('showCompletedTasks', showCompletedTasks);
+    localStorage.setItem('background', selectedBackground);
+
+     if (selectedBackground === 'custom') {
+        const customBackground = customBackgroundInput.files[0];
+        if (customBackground) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem('customBackground', e.target.result); // Сохраняем URL пользовательского фона
+            }
+            reader.readAsDataURL(customBackground);
+        }
+    } else {
+        localStorage.removeItem('customBackground'); // Удаляем пользовательский фон, если выбран предустановленный
+    }
 
     // Применение настроек
     applySettings();
@@ -364,6 +379,33 @@ function saveSettings(event) {
 
 // Обработчик для чекбокса "Отображать выполненные задачи"
 showCompletedTasksCheckbox.addEventListener('change', toggleCompletedTasksVisibility);
+
+backgroundSelect.addEventListener('change', function() {
+    if (backgroundSelect.value === 'custom') {
+        customBackgroundGroup.style.display = 'block';
+    } else {
+        customBackgroundGroup.style.display = 'none';
+        document.body.className = backgroundSelect.value; // Устанавливаем класс для body
+        if (backgroundSelect.value === 'default') {
+            document.body.style.backgroundImage = ''; // Убираем фон
+        }
+    }
+});
+
+
+// Обработчик загрузки пользовательского фона
+customBackgroundInput.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.body.style.backgroundImage = `url(${e.target.result})`;
+            document.body.className = 'custom'; // Устанавливаем класс для body
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
 
 function toggleCompletedTasksVisibility() {
     const completedSection = document.querySelector('section:nth-of-type(2)'); // Получаем секцию с выполненными задачами
@@ -385,6 +427,7 @@ function applySettings() {
     const font = localStorage.getItem('font');
     const fontSize = localStorage.getItem('fontSize');
     const showCompletedTasks = localStorage.getItem('showCompletedTasks') === 'true';
+     const background = localStorage.getItem('background') || 'default'; // Получаем фон из localStorage
 
     if (font) {
         document.body.style.fontFamily = font;
@@ -395,6 +438,16 @@ function applySettings() {
         fontSizeSelect.value = fontSize; // Устанавливаем выбранный размер шрифта в селекторе
     }
     showCompletedTasksCheckbox.checked = showCompletedTasks;
+
+    if (background === 'custom') {
+        // Если выбран пользовательский фон, не устанавливаем класс
+        const customBackground = localStorage.getItem('customBackground');
+        if (customBackground) {
+            document.body.style.backgroundImage = `url(${customBackground})`;
+        }
+    } else {
+        document.body.className = background; // Устанавливаем класс для body
+    }
 
     // Применяем видимость выполненных задач
     toggleCompletedTasksVisibility();

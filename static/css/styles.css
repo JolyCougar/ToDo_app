@@ -59,17 +59,37 @@ button {
     color: var(--white);
     border: none;
     border-radius: var(--border-radius);
-    padding: 5px 10px; /* Уменьшенные отступы для кнопок */
+    padding: 10px 10px; /* Уменьшенные отступы для кнопок */
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
     width: auto; /* Убираем фиксированную ширину */
-    font-size: 14px; /* Уменьшаем размер шрифта */
+    font-size: 15px; /* Уменьшаем размер шрифта */
 }
 
 .large-button {
     padding: 10px 20px; /* Увеличенные отступы для больших кнопок */
     font-size: 16px; /* Увеличенный размер шрифта */
     width: 100%; /* Кнопки на всю ширину */
+}
+
+/* Стили для поля выбора файла */
+.file-input {
+    display: none; /* Скрываем стандартный input */
+}
+
+.file-input-label {
+    display: inline-block;
+    background-color: var(--primary-color); /* Синий цвет */
+    color: var(--white); /* Цвет текста */
+    border: none; /* Убираем границу */
+    padding: 10px 15px; /* Отступы */
+    border-radius: var(--border-radius); /* Скругление углов */
+    cursor: pointer; /* Указатель при наведении */
+    transition: background-color 0.3s; /* Плавный переход */
+}
+
+.file-input-label:hover {
+    background-color: var(--primary-hover); /* Темнее при наведении */
 }
 
 /* Поля ввода */
@@ -106,7 +126,7 @@ input:focus, textarea:focus {
     border-radius: var(--border-radius);
     background-color: var(--gray-light);
     box-shadow: var(--box-shadow);
-    transition: background-color 0.3s;
+        transition: background-color 0.3s;
 }
 
 .task-item:hover {
@@ -134,9 +154,7 @@ input:focus, textarea:focus {
     transition: color 0.3s;
     display: flex; /* Используем flex для центрирования содержимого */
     align-items: center; /* Центрируем по вертикали */
-    justify-content: center;
-    /* Центрируем по горизонтали
-       justify-content: center; /* Центрируем по горизонтали */
+    justify-content: center; /* Центрируем по горизонтали */
     border-radius: var(--border-radius); /* Закругленные углы */
 }
 
@@ -165,7 +183,7 @@ input:focus, textarea:focus {
     padding: 20px; /* Отступы */
     border: 1px solid #888; /* Граница */
     width: 500px; /* Ширина */
-    height: 300px;
+    height: 400px;
     border-radius: 8px; /* Закругленные углы */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень */
 }
@@ -178,20 +196,6 @@ label {
     display: block; /* Каждый элемент метки на новой строке */
     margin-bottom: 5px; /* Отступ между меткой и элементом управления */
 }
-
-button {
-    background-color: var(--primary-color); /* Зеленый фон */
-    color: white; /* Белый текст */
-    padding: 10px 15px; /* Отступы */
-    border: none; /* Без границы */
-    border-radius: 5px; /* Закругленные углы */
-    cursor: pointer; /* Указатель при наведении */
-}
-
-button:hover {
-    background-color: #0056b3; /* Темнее при наведении */
-}
-
 
 /* Стили для уведомлений об ошибках и успешных сообщений */
 .error-message, .success-message {
@@ -268,7 +272,7 @@ input[type="checkbox"] {
     margin-top: 10px;
     background-color: var(--primary-color);
     color: var(--white);
-    border: none;
+        border: none;
     border-radius: var(--border-radius);
     padding: 5px 10px;
     cursor: pointer;
@@ -316,19 +320,6 @@ input[type="checkbox"] {
     margin-top: 20px; /* Отступ сверху для формы */
 }
 
-.error-message, .success-message {
-    font-size: 14px;
-    margin-top: 10px;
-}
-
-.error-message {
-    color: red;
-}
-
-.success-message {
-    color: green;
-}
-
 /* Поля ввода */
 input[type="text"], input[type="password"], input[type="email"], textarea {
     width: 100%;
@@ -363,9 +354,27 @@ input:focus, textarea:focus {
     margin-bottom: 10px; /* Отступ снизу для кнопки */
 }
 
-.info-container {
-    flex: 1; /* Занимает оставшееся пространство */
+body.default {
+    background-color: #f3f3f3;
 }
+
+body.background1 {
+    background-color: #6c757d;
+}
+
+body.background2 {
+    background-color: #e4e4e4;
+}
+
+body.background3 {
+    background-color: #e37ad9;
+}
+
+body.custom {
+    background-image: url(""); /* Пустое значение, будет установлено через JavaScript */
+}
+
+
 
 .messages {
     margin-top: 20px;
