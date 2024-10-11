@@ -3,7 +3,6 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 from .models import Profile
 from django.contrib.auth import login
-from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views import View
 from django.contrib.auth.views import LoginView, LogoutView
@@ -44,7 +43,7 @@ class RegisterView(CreateView):
         profile, created = Profile.objects.get_or_create(user=user)
 
         # Отправка письма с подтверждением
-        EmailService.send_verification_email(self.request, profile)
+        EmailService.send_verification_email(self.request, user)  # Передаем user, а не profile
 
         messages.success(self.request, 'Регистрация успешна! Проверьте вашу почту для подтверждения.')
         return super().form_valid(form)
@@ -116,12 +115,31 @@ class VerifyEmailView(View):
 
 class ResendVerificationTokenView(View):
     def post(self, request):
-        email = request.POST.get('email')
-        try:
-            profile = Profile.objects.get(user__email=email)
-            EmailService.send_verification_email(request, profile)
-            messages.success(request, 'Токен подтверждения был отправлен на ваш email.')
-        except Profile.DoesNotExist:
-            messages.error(request, 'Пользователь с таким email не найден.')
+        if not request.user.is_authenticated:
+            messages.error(request, 'Вы должны быть авторизованы для отправки токена.')
+            return redirect('my_auth:login')
 
-        return redirect('verification_failed')
+        try:
+            user = request.user
+            EmailService.send_verification_email(request, user)
+            messages.success(request, 'Токен подтверждения был отправлен на ваш email.')
+        except Exception as e:
+            logger.error(f'Ошибка при отправке токена: {e}')  # Логируем ошибку
+            messages.error(request, 'Произошла ошибка при отправке токена. Пожалуйста, попробуйте еще раз.')
+
+        return redirect('task:task_view')
+
+class ChangeEmailView(View):
+    def post(self, request):
+        new_email = request.POST.get('new_email')
+        profile = request.user.profile  # Предполагается, что у пользователя есть профиль
+
+        # Обновляем адрес электронной почты в профиле
+        profile.user.email = new_email
+        profile.user.save()
+
+        # Отправляем новый код подтверждения
+        EmailService.send_verification_email(request, profile)
+
+        messages.success(request, 'Новый адрес электронной почты был установлен. Проверьте ваш почтовый ящик для подтверждения.')
+        return redirect('task:task_view')  # Перенаправляем на страницу с сообщением

@@ -2,7 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from .views import (CustomLoginView, CustomLogoutView, RegisterView,
                     ProfileView, ChangePasswordView, ResetAvatarView,
-                    VerifyEmailView, ResendVerificationTokenView)
+                    VerifyEmailView, ResendVerificationTokenView, ChangeEmailView)
 
 app_name = 'my_auth'
 
@@ -15,5 +15,6 @@ urlpatterns = [
     path('profile/<int:pk>/', ProfileView.as_view(), name='profile'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
     path('reset-avatar/', ResetAvatarView.as_view(), name='reset_avatar'),
+    path('change-email/', ChangeEmailView.as_view(), name='change_email'),
 
 ]
