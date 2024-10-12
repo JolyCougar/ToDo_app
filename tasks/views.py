@@ -1,9 +1,8 @@
 from django.http import JsonResponse
 import json
 from django.urls import reverse_lazy
-from django.views.generic import ListView, View
+from django.views.generic import ListView, View, TemplateView
 from .models import Task
-from django.contrib.auth.mixins import LoginRequiredMixin
 from .tasks_mixins import EmailVerifiedMixin
 
 
@@ -52,3 +51,7 @@ class AddTaskView(View):
 
         task = Task.objects.create(user=user, name=name, description=description, complete=False)
         return JsonResponse({'success': True, 'task_id': task.id})
+
+
+class MainPageTask(TemplateView):
+    template_name = 'main.html'
