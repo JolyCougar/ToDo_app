@@ -74,7 +74,7 @@ dateDisplay.textContent = currentDate.toLocaleDateString('ru-RU', {
 updateIncompleteCount();
 
 // Обработчики событий
-acceptCookiesButton.addEventListener('click', hideCookieBanner);
+
 toggleCompletedListButton.addEventListener('click', toggleCompletedList);
 addTaskButton.addEventListener('click', showModal);
 closeModal.addEventListener('click', hideModal);
@@ -90,9 +90,32 @@ closeSettingsModal.addEventListener('click', hideSettingsModal);
 settingsForm.addEventListener('submit', saveSettings);
 
 // Функции
-function hideCookieBanner() {
-    cookieBanner.style.display = 'none';
-}
+ // Проверка согласия на использование cookies
+    if (cookieBanner) {
+        const acceptCookiesButton = document.getElementById('acceptCookiesButton');
+        if (acceptCookiesButton) {
+            acceptCookiesButton.addEventListener('click', function () {
+                fetch("/accept-cookies/", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({accept_cookies: true})
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            cookieBanner.style.display = 'none';  // Скрываем баннер
+                        } else {
+                            console.error('Ошибка при обновлении согласия на использование cookies');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                    });
+            });
+        }
+    }
 
 function toggleCompletedList() {
     const isHidden = completedList.classList.contains('show');
@@ -476,4 +499,3 @@ window.onload = function () {
     applySettings(); // Применяем настройки при загрузке
     toggleCompletedTasksVisibility(); // Применяем видимость выполненных задач при загрузке
 };
-

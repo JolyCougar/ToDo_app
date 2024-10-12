@@ -21,6 +21,7 @@ class Profile(models.Model):
     agreement_accepted = models.BooleanField(default=False)
     avatar = models.ImageField(null=True, blank=True, upload_to=profile_preview_directory_path)
     email_verified = models.BooleanField(default=False)
+    cookies_accepted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username

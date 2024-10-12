@@ -5,6 +5,7 @@ from .models import Profile
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import CreateView, DetailView
 from django.contrib.auth.models import User
@@ -142,3 +143,11 @@ class ChangeEmailView(View):
                          'Новый адрес электронной почты был установлен. '
                          'Проверьте ваш почтовый ящик для подтверждения.')
         return redirect('task:task_view')  # Перенаправляем на страницу с сообщением
+
+
+class AcceptCookiesView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        profile = Profile.objects.get(user=request.user)
+        profile.cookies_accepted = True
+        profile.save()
+        return JsonResponse({'status': 'success'})
