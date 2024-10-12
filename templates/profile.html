@@ -138,6 +138,11 @@
         .back-button:hover {
             background-color: #0056b3; /* Цвет фона при наведении */
         }
+        
+        .h1_profile {
+            font-size: 30px;
+            color: #007bff;
+        }
 
 
     </style>
@@ -146,12 +151,12 @@
 <div class="container">
     <header class="header">
 
-        <h1>Профиль пользователя</h1>
+        <h1 class="h1_profile">Профиль пользователя</h1>
         <a href="{% url 'task:task_view' %}" class="back-button">Назад к задачам</a>
     </header>
 
     <section class="user-info">
-        <h2>Информация о пользователе</h2>
+        
         <div class="user-details">
             <div class="avatar-container">
                 {% if user.profile.avatar %}
