@@ -8,7 +8,7 @@ from .tasks_mixins import EmailVerifiedMixin
 
 class TaskView(EmailVerifiedMixin, ListView):
     model = Task
-    template_name = 'messages_to_verification.html'
+    template_name = 'index.html'
     context_object_name = 'task_list'
     login_url = reverse_lazy('my_auth:login')
 
