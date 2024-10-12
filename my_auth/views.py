@@ -130,14 +130,13 @@ class ResendVerificationTokenView(View):
 class ChangeEmailView(View):
     def post(self, request):
         new_email = request.POST.get('new_email')
-        profile = request.user.profile
-
-        # Обновляем адрес электронной почты в профиле
-        profile.user.email = new_email
-        profile.user.save()
-
+        # Получаем объект User
+        user = request.user
+        # Обновляем адрес электронной почты у объекта User
+        user.email = new_email
+        user.save()  # Сохраняем изменения
         # Отправляем новый код подтверждения
-        EmailService.send_verification_email(request, profile)
+        EmailService.send_verification_email(request, user)
 
         messages.success(request,
                          'Новый адрес электронной почты был установлен. '
