@@ -42,7 +42,7 @@ class RegisterView(CreateView):
         profile, created = Profile.objects.get_or_create(user=user)
 
         # Отправка письма с подтверждением
-        EmailService.send_verification_email(self.request, user)  # Передаем user, а не profile
+        EmailService.send_verification_email(self.request, user)
 
         messages.success(self.request, 'Регистрация успешна! Проверьте вашу почту для подтверждения.')
         return super().form_valid(form)
@@ -89,10 +89,9 @@ class ChangePasswordView(View):
 @method_decorator(login_required, name='dispatch')
 class ResetAvatarView(View):
     def post(self, request, *args, **kwargs):
-        profile = request.user.profile  # Получаем профиль текущего пользователя
+        profile = request.user.profile
         profile.avatar = ''
         profile.save()
-
         return JsonResponse({'success': True})
 
 
@@ -107,7 +106,7 @@ class VerifyEmailView(View):
             profile.save()
             verification.delete()  # Удаляем токен после подтверждения
             login(request, profile.user)  # Вход пользователя
-            return redirect('/')  # Перенаправление на главную страницу
+            return redirect('task:task_view')  # Перенаправление на главную страницу
         except EmailVerification.DoesNotExist:
             return render(request, 'verification_failed.html')
 
@@ -117,13 +116,11 @@ class ResendVerificationTokenView(View):
         if not request.user.is_authenticated:
             messages.error(request, 'Вы должны быть авторизованы для отправки токена.')
             return redirect('my_auth:login')
-
         try:
             user = request.user
             EmailService.send_verification_email(request, user)
             messages.success(request, 'Токен подтверждения был отправлен на ваш email.')
         except Exception as e:
-            logger.error(f'Ошибка при отправке токена: {e}')  # Логируем ошибку
             messages.error(request, 'Произошла ошибка при отправке токена. Пожалуйста, попробуйте еще раз.')
 
         return redirect('task:task_view')
@@ -132,7 +129,7 @@ class ResendVerificationTokenView(View):
 class ChangeEmailView(View):
     def post(self, request):
         new_email = request.POST.get('new_email')
-        profile = request.user.profile  # Предполагается, что у пользователя есть профиль
+        profile = request.user.profile
 
         # Обновляем адрес электронной почты в профиле
         profile.user.email = new_email
@@ -142,5 +139,6 @@ class ChangeEmailView(View):
         EmailService.send_verification_email(request, profile)
 
         messages.success(request,
-                         'Новый адрес электронной почты был установлен. Проверьте ваш почтовый ящик для подтверждения.')
+                         'Новый адрес электронной почты был установлен. '
+                         'Проверьте ваш почтовый ящик для подтверждения.')
         return redirect('task:task_view')  # Перенаправляем на страницу с сообщением
