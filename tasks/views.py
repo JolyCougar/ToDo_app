@@ -61,4 +61,3 @@ class MainPageTask(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect(reverse('task:task_view'))
-

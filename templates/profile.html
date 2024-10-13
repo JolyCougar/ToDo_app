@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль пользователя</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css" media="all">
-    <script src="{% static 'js/scripts.js' %}" defer></script>
     <style>
         * {
             box-sizing: border-box; /* Убедитесь, что отступы учитываются в ширине */
@@ -138,7 +137,7 @@
         .back-button:hover {
             background-color: #0056b3; /* Цвет фона при наведении */
         }
-        
+
         .h1_profile {
             font-size: 30px;
             color: #007bff;
@@ -156,7 +155,7 @@
     </header>
 
     <section class="user-info">
-        
+
         <div class="user-details">
             <div class="avatar-container">
                 {% if user.profile.avatar %}
@@ -218,12 +217,11 @@
                         <label for="avatar">Аватар:</label>
                         <div class="preview-container">
                             <img id="avatarPreview" class="avatar-preview" src="
-                            
-                                    
-                                    
-                                    
-                                    
-                                    {% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default_avatar.png' %}{% endif %}"
+                                    {% if user.profile.avatar %}
+                                        {{ user.profile.avatar.url }}
+                                    {% else %}
+                                        {% static 'images/default_avatar.png' %}
+                                    {% endif %}"
                                  alt="Превью аватара">
                             <label class="custom-file-upload">
                                 <input type="file" id="avatar" name="avatar" accept="image/*"
@@ -317,6 +315,38 @@
         }
         return cookieValue;
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Загружаем настройки из localStorage
+        const savedFont = localStorage.getItem('font');
+        const savedFontSize = localStorage.getItem('fontSize');
+        const savedShowCompletedTasks = localStorage.getItem('showCompletedTasks');
+        const savedCustomBackground = localStorage.getItem('customBackground');
+        const savedBackgroundColor = localStorage.getItem('backgroundColor');
+        
+        if (savedFont) {
+            document.body.style.fontFamily = savedFont; // Применяем шрифт
+        }
+
+        if (savedFontSize) {
+            document.body.style.fontSize = savedFontSize + 'px'; // Применяем размер шрифта
+        }
+
+        if (savedShowCompletedTasks === 'true') {
+        }
+
+        if (savedCustomBackground) {
+            document.body.style.backgroundImage = `url(${savedCustomBackground})`;
+        } else {
+            if (savedBackgroundColor) {
+                document.body.className = savedBackgroundColor; // Устанавливаем класс для body
+            } else {
+                document.body.style.backgroundColor = '#ffffff'; // Устанавливаем цвет по умолчанию
+            }
+        }
+    });
+
+
 </script>
 </body>
 </html>

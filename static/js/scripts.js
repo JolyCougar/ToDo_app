@@ -379,6 +379,7 @@ function saveSettings(event) {
     localStorage.setItem('fontSize', selectedFontSize);
     localStorage.setItem('showCompletedTasks', showCompletedTasks);
     localStorage.setItem('background', selectedBackground);
+    localStorage.setItem('backgroundColor', selectedBackground);
 
      if (selectedBackground === 'custom') {
         const customBackground = customBackgroundInput.files[0];
@@ -390,8 +391,10 @@ function saveSettings(event) {
             reader.readAsDataURL(customBackground);
         }
     } else {
-        localStorage.removeItem('customBackground'); // Удаляем пользовательский фон, если выбран предустановленный
+        localStorage.removeItem('customBackground');
+        localStorage.setItem('backgroundColor', selectedBackground);// Удаляем пользовательский фон, если выбран предустановленный
     }
+
 
     // Применение настроек
     applySettings();
@@ -424,6 +427,7 @@ customBackgroundInput.addEventListener('change', function(event) {
         reader.onload = function(e) {
             document.body.style.backgroundImage = `url(${e.target.result})`;
             document.body.className = 'custom'; // Устанавливаем класс для body
+            localStorage.setItem('customBackground', e.target.result); // Сохраняем URL пользовательского фона
         }
         reader.readAsDataURL(file);
     }
@@ -467,6 +471,7 @@ function applySettings() {
         const customBackground = localStorage.getItem('customBackground');
         if (customBackground) {
             document.body.style.backgroundImage = `url(${customBackground})`;
+            document.body.style.backgroundSize = 'cover';
         }
     } else {
         document.body.className = background; // Устанавливаем класс для body
