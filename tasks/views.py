@@ -1,4 +1,6 @@
 from django.http import JsonResponse
+from django.urls import reverse
+from django.shortcuts import redirect
 import json
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View, TemplateView
@@ -55,3 +57,8 @@ class AddTaskView(View):
 
 class MainPageTask(TemplateView):
     template_name = 'main.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse('task:task_view'))
+

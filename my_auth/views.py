@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 from .models import Profile
+from django.urls import reverse
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views import View
@@ -22,6 +23,10 @@ from .services import EmailService
 class CustomLoginView(LoginView):
     template_name = 'login.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse('task:task_view'))
+
 
 class CustomLogoutView(LogoutView):
     def get(self, request, *args, **kwargs):
@@ -33,6 +38,10 @@ class RegisterView(CreateView):
     template_name = 'registration.html'
     form_class = UserRegistrationForm
     success_url = reverse_lazy('my_auth:login')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse('task:task_view'))
 
     def form_valid(self, form):
         user = form.save(commit=False)
