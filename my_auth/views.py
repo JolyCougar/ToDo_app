@@ -25,7 +25,8 @@ class CustomLoginView(LoginView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect(reverse('task:task_view'))
+            return redirect(reverse_lazy('task:task_view'))  # Перенаправление на главную страницу
+        return super().dispatch(request, *args, **kwargs)
 
 
 class CustomLogoutView(LogoutView):
@@ -41,7 +42,8 @@ class RegisterView(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect(reverse('task:task_view'))
+            return redirect(reverse_lazy('task:task_view'))
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         user = form.save(commit=False)

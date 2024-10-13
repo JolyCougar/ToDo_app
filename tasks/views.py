@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.urls import reverse
 from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View, TemplateView
@@ -60,4 +61,5 @@ class MainPageTask(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect(reverse('task:task_view'))
+            return redirect(reverse_lazy('task:task_view'))
+        return super().dispatch(request, *args, **kwargs)
