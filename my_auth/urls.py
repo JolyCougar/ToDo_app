@@ -3,7 +3,7 @@ from django.urls import path
 from .views import (CustomLoginView, CustomLogoutView, RegisterView,
                     ProfileView, ChangePasswordView, ResetAvatarView,
                     VerifyEmailView, ResendVerificationTokenView, ChangeEmailView,
-                    AcceptCookiesView)
+                    AcceptCookiesView, CheckUsernameView, CheckEmailView)
 
 app_name = 'my_auth'
 
@@ -18,5 +18,7 @@ urlpatterns = [
     path('reset-avatar/', ResetAvatarView.as_view(), name='reset_avatar'),
     path('change-email/', ChangeEmailView.as_view(), name='change_email'),
     path('accept-cookies/', AcceptCookiesView.as_view(), name='accept_cookies'),
+    path('check-username/', CheckUsernameView.as_view(), name='check_username'),
+    path('check-email/', CheckEmailView.as_view(), name='check_email'),
 
 ]

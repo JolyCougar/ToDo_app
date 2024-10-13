@@ -1,7 +1,5 @@
 from django.http import JsonResponse
-from django.urls import reverse
 from django.shortcuts import redirect
-from django.contrib.auth.mixins import LoginRequiredMixin
 import json
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View, TemplateView

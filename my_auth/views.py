@@ -52,11 +52,18 @@ class RegisterView(CreateView):
 
         # Создание или получение профиля
         profile, created = Profile.objects.get_or_create(user=user)
+        profile.agreement_accepted = form.cleaned_data['agreement_accepted']
+        profile.save()
 
         # Отправка письма с подтверждением
-        EmailService.send_verification_email(self.request, user)
+        try:
+            EmailService.send_verification_email(self.request, user)
+            messages.success(self.request, 'Регистрация успешна! Проверьте вашу почту для подтверждения.')
+        except Exception as e:
+            messages.warning(self.request,
+                             'Регистрация успешна, но не удалось отправить письмо с подтверждением. '
+                             'Пожалуйста, проверьте вашу почту позже.')
 
-        messages.success(self.request, 'Регистрация успешна! Проверьте вашу почту для подтверждения.')
         return super().form_valid(form)
 
 
@@ -161,3 +168,21 @@ class AcceptCookiesView(LoginRequiredMixin, View):
         profile.cookies_accepted = True
         profile.save()
         return JsonResponse({'status': 'success'})
+
+
+class CheckUsernameView(View):
+    def get(self, request):
+        username = request.GET.get('username', None)
+        if username:
+            exists = User.objects.filter(username=username).exists()
+            return JsonResponse({'exists': exists})
+        return JsonResponse({'exists': False})
+
+
+class CheckEmailView(View):
+    def get(self, request):
+        email = request.GET.get('email', None)
+        if email:
+            exists = User.objects.filter(email=email).exists()
+            return JsonResponse({'exists': exists})
+        return JsonResponse({'exists': False})
