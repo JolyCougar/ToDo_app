@@ -268,52 +268,101 @@
     {% endif %}
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Получаем элементы модальных окон и кнопок
-        const changePasswordButton = document.getElementById('changePasswordButton');
-        const changePasswordModal = document.getElementById('changePasswordModal');
-        const closeChangePasswordModal = document.getElementById('closeChangePasswordModal');
 
-        // Открытие модального окна смены пароля
-        changePasswordButton.addEventListener('click', function () {
-            changePasswordModal.style.display = 'block';
-        });
+   document.addEventListener('DOMContentLoaded', function () {
+    const changePasswordButton = document.getElementById('changePasswordButton');
+    const changePasswordModal = document.getElementById('changePasswordModal');
+    const closeChangePasswordModal = document.getElementById('closeChangePasswordModal');
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    const passwordChangeMessage = document.getElementById('passwordChangeMessage');
 
-        // Закрытие модального окна смены пароля
-        closeChangePasswordModal.addEventListener('click', function () {
+    // Открытие модального окна
+    changePasswordButton.addEventListener('click', function () {
+        changePasswordModal.style.display = 'block';
+    });
+
+    // Закрытие модального окна
+    closeChangePasswordModal.addEventListener('click', function () {
+        changePasswordModal.style.display = 'none';
+        passwordChangeMessage.innerHTML = ''; // Очистить сообщение
+    });
+
+    // Закрытие модального окна при клике вне его
+    window.addEventListener('click', function (event) {
+        if (event.target === changePasswordModal) {
             changePasswordModal.style.display = 'none';
-        });
+            passwordChangeMessage.innerHTML = ''; // Очистить сообщение
+        }
+    });
 
-        // Закрытие модального окна при клике вне его
-        window.addEventListener('click', function (event) {
-            if (event.target === changePasswordModal) {
-                changePasswordModal.style.display = 'none';
+    // Обработка отправки формы смены пароля
+    changePasswordForm.addEventListener('submit', function (event) {
+        event.preventDefault(); // Предотвратить стандартное поведение формы
+
+        const oldPassword = document.getElementById('old_password').value;
+        const newPassword = document.getElementById('new_password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+
+        // Проверка совпадения нового пароля и подтверждения
+        if (newPassword !== confirmPassword) {
+            passwordChangeMessage.innerHTML = '<span style="color: red;">Пароли не совпадают!</span>';
+            return;
+        }
+
+        // Отправка данных на сервер
+        fetch('/change-password/', { // Замените на правильный URL
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'), // Получите CSRF-токен
+            },
+            body: JSON.stringify({
+                old_password: oldPassword,
+                new_password1: newPassword, // Изменено на new_password1
+                new_password2: confirmPassword // Изменено на new_password2
+            }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Сетевая ошибка');
             }
-        });
-
-        // Обработка кнопки "Изменить профиль"
-        const editProfileButton = document.getElementById('editProfileButton');
-        const profileModal = document.getElementById('profileModal');
-        const closeProfileModal = profileModal.querySelector('.close');
-
-        // Открытие модального окна изменения профиля
-        editProfileButton.addEventListener('click', function () {
-            profileModal.style.display = 'block';
-        });
-
-        // Закрытие модального окна изменения профиля
-        closeProfileModal.addEventListener('click', function () {
-            profileModal.style.display = 'none';
-        });
-
-        // Закрытие модального окна при клике вне его
-        window.addEventListener('click', function (event) {
-            if (event.target === profileModal) {
-                profileModal.style.display = 'none';
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                passwordChangeMessage.innerHTML = '<span style="color: green;">' + data.message + '</span>';
+                changePasswordForm.reset(); // Сбросить форму
+            } else {
+                // Преобразуем ошибки в строку для отображения
+                passwordChangeMessage.innerHTML = '<span style="color: red;">' + JSON.stringify(data.errors) + '</span>';
             }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            passwordChangeMessage.innerHTML = '<span style="color: red;">Произошла ошибка. Попробуйте еще раз.</span>';
         });
     });
-    
+
+    // Функция для получения CSRF-токена
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+
+
+
+        
      document.addEventListener('DOMContentLoaded', function () {
         // Загружаем настройки из localStorage
         const savedFont = localStorage.getItem('font');

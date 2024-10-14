@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from .models import Profile
 import random
 import string
-from django.urls import reverse
+import json
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views import View
@@ -121,7 +121,8 @@ class ProfileView(DetailView):
 @method_decorator(login_required, name='dispatch')
 class ChangePasswordView(View):
     def post(self, request, *args, **kwargs):
-        form = PasswordChangeForm(request.user, request.POST)
+        data = json.loads(request.body)  # Разбираем JSON из тела запроса
+        form = PasswordChangeForm(request.user, data)  # Передаем данные в форму
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  # Обновляем сессию, чтобы пользователь не вышел
