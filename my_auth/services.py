@@ -1,6 +1,6 @@
 from django.urls import reverse
 from .models import EmailVerification
-from .tasks import send_verification_email_task
+from .tasks import send_verification_email_task, send_new_password_email_task
 
 
 class EmailService:
@@ -16,3 +16,8 @@ class EmailService:
         )
         # Отправляем электронное письмо асинхронно
         send_verification_email_task.delay(verification_link, user.email)
+
+    @staticmethod
+    def send_new_password_email(user, new_password):
+        # Отправка нового пароля асинхронно
+        send_new_password_email_task.delay(user.email, new_password)
