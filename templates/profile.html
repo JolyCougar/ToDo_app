@@ -235,11 +235,11 @@
                     </div>
                     <div class="form-group">
                         <label for="first_name">Имя:</label>
-                        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+                        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" >
                     </div>
                     <div class="form-group">
                         <label for="last_name">Фамилия:</label>
-                        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
+                        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" >
                     </div>
                     <div class="form-group">
                         <label for="email">Email:</label>
@@ -269,54 +269,52 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const resetAvatarButton = document.getElementById('resetAvatarButton');
+        // Получаем элементы модальных окон и кнопок
+        const changePasswordButton = document.getElementById('changePasswordButton');
+        const changePasswordModal = document.getElementById('changePasswordModal');
+        const closeChangePasswordModal = document.getElementById('closeChangePasswordModal');
 
-        if (resetAvatarButton) {
-            resetAvatarButton.addEventListener('click', function () {
-                const avatarPreview = document.getElementById('avatarPreview');
-                const defaultAvatar = "{% static 'images/default_avatar.png' %}"; // Путь к изображению по умолчанию
+        // Открытие модального окна смены пароля
+        changePasswordButton.addEventListener('click', function () {
+            changePasswordModal.style.display = 'block';
+        });
 
-                // Отправка запроса на сброс аватара
-                fetch('/reset-avatar/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            avatarPreview.src = "{% static 'images/default_avatar.png' %}"; // Используйте тег static
-                        } else {
-                            alert('Ошибка сброса аватара: ' + data.error);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Ошибка:', error);
-                        alert('Произошла ошибка при сбросе аватара.');
-                    });
-            });
-        }
-    });
+        // Закрытие модального окна смены пароля
+        closeChangePasswordModal.addEventListener('click', function () {
+            changePasswordModal.style.display = 'none';
+        });
 
-    // Функция для получения CSRF-токена
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
+        // Закрытие модального окна при клике вне его
+        window.addEventListener('click', function (event) {
+            if (event.target === changePasswordModal) {
+                changePasswordModal.style.display = 'none';
             }
-        }
-        return cookieValue;
-    }
+        });
 
-    document.addEventListener('DOMContentLoaded', function () {
+        // Обработка кнопки "Изменить профиль"
+        const editProfileButton = document.getElementById('editProfileButton');
+        const profileModal = document.getElementById('profileModal');
+        const closeProfileModal = profileModal.querySelector('.close');
+
+        // Открытие модального окна изменения профиля
+        editProfileButton.addEventListener('click', function () {
+            profileModal.style.display = 'block';
+        });
+
+        // Закрытие модального окна изменения профиля
+        closeProfileModal.addEventListener('click', function () {
+            profileModal.style.display = 'none';
+        });
+
+        // Закрытие модального окна при клике вне его
+        window.addEventListener('click', function (event) {
+            if (event.target === profileModal) {
+                profileModal.style.display = 'none';
+            }
+        });
+    });
+    
+     document.addEventListener('DOMContentLoaded', function () {
         // Загружаем настройки из localStorage
         const savedFont = localStorage.getItem('font');
         const savedFontSize = localStorage.getItem('fontSize');
@@ -345,8 +343,7 @@
             }
         }
     });
-
-
 </script>
+
 </body>
 </html>
