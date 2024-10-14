@@ -83,7 +83,8 @@ class RegisterView(CreateView):
         # Отправка письма с подтверждением
         try:
             EmailService.send_verification_email(self.request, user)
-            messages.success(self.request, 'Регистрация успешна! Проверьте вашу почту для подтверждения.')
+            messages.success(self.request, 'Регистрация прошла успешна! '
+                                           'Проверьте вашу почту для подтверждения.')
         except Exception as e:
             messages.warning(self.request,
                              'Регистрация успешна, но не удалось отправить письмо с подтверждением. '
@@ -109,12 +110,25 @@ class ProfileView(DetailView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = ProfileForm(request.POST, request.FILES, instance=self.object.profile, user=self.object)
+
         if form.is_valid():
+            # Сохраняем старый email для сравнения
+            old_email = self.object.email
             form.save()
+
+            # Проверяем, изменился ли email
+            if old_email != form.instance.user.email:
+                # Устанавливаем email_verified в False
+                self.object.profile.email_verified = False
+                self.object.profile.save()
+                # Отправляем новое письмо для подтверждения email
+                EmailService.send_verification_email(request,self.object)
+
             messages.success(request, 'Информация о профиле успешно обновлена!')
             return redirect('my_auth:profile', pk=self.object.pk)
         else:
             messages.error(request, 'Ошибка при обновлении профиля. Пожалуйста, проверьте введенные данные.')
+
         return self.get(request, *args, **kwargs)
 
 
