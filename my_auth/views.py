@@ -26,7 +26,30 @@ class CustomLoginView(LoginView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect(reverse_lazy('task:task_view'))  # Перенаправление на главную страницу
+
+        # Проверка параметров запроса для передачи сообщений
+        registration_success = request.GET.get('registration_success', False)
+        login_error = request.GET.get('login_error', False)
+
+        # Добавление сообщений в контекст
+        self.extra_context = {
+            'registration_success': registration_success,
+            'login_error': login_error,
+        }
+
         return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        # Получаем контекст из родительского класса
+        context = super().get_context_data(**kwargs)
+        # Объединяем контекст с дополнительными данными
+        context.update(self.extra_context)
+        return context
+
+    def form_invalid(self, form):
+        # Если форма недействительна, добавляем сообщение об ошибке
+        self.extra_context['login_error'] = "Неправильное имя пользователя или пароль."
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class CustomLogoutView(LogoutView):

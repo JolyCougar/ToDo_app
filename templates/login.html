@@ -10,6 +10,14 @@
 <body>
     <div class="container">
         <h2>Авторизация</h2>
+    
+        {% if registration_success %}
+    <div class="success-message">Регистрация прошла успешно!</div>
+{% endif %}
+{% if login_error %}
+    <div class="error-message">{{ login_error }}</div>
+{% endif %}
+    
         <form id="loginForm" method="post" action="{% url 'my_auth:login' %}">
             {% csrf_token %}
             <div class="form-group">
@@ -67,6 +75,10 @@
         button:hover {
             background-color: #0056b3;
         }
+        .error-message {
+    color: red;
+    margin-top: 10px;
+}
     </style>
 </body>
 </html>
