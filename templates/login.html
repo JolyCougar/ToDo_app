@@ -10,13 +10,23 @@
 <body>
     <div class="container">
         <h2>Авторизация</h2>
+        
+    {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     
         {% if registration_success %}
-    <div class="success-message">Регистрация прошла успешно!</div>
-{% endif %}
-{% if login_error %}
-    <div class="error-message">{{ login_error }}</div>
-{% endif %}
+            <div class="success-message">Регистрация прошла успешно!</div>
+        {% endif %}
+        {% if login_error %}
+            <div class="error-message">{{ login_error }}</div>
+        {% endif %}
     
         <form id="loginForm" method="post" action="{% url 'my_auth:login' %}">
             {% csrf_token %}
@@ -33,7 +43,11 @@
             {% endif %}
             <button type="submit">Войти</button>
         </form>
+        
         <p>Нет аккаунта? <a href="{% url 'my_auth:register' %}">Зарегистрироваться</a></p>
+        
+        <!-- Кнопка восстановления пароля -->
+        <p><a href="{% url 'my_auth:password_reset' %}" class="password-reset-button">Забыли пароль?</a></p>
     </div>
 
     <style>
@@ -76,9 +90,18 @@
             background-color: #0056b3;
         }
         .error-message {
-    color: red;
-    margin-top: 10px;
-}
+            color: red;
+            margin-top: 10px;
+        }
+        .password-reset-button {
+            display: inline-block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .password-reset-button:hover {
+            text-decoration: underline;
+        }
     </style>
 </body>
 </html>

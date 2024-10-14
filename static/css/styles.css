@@ -179,15 +179,27 @@ input:focus, textarea:focus {
 }
 
 .modal-content {
-    background-color: #fefefe; /* Белый фон */
-    margin: 15% auto; /* 15% сверху и центрирование */
-    padding: 20px; /* Отступы */
-    border: 1px solid #888; /* Граница */
-    width: 500px; /* Ширина */
-    height: 400px;
-    border-radius: 8px; /* Закругленные углы */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень */
+    background-color: #fefefe;
+    margin: 5% auto; /* Уменьшите отступ сверху */
+    padding: 20px; /* Увеличьте внутренние отступы */
+    border: 1px solid #888;
+    width: 80%; /* Увеличьте ширину модального окна (например, до 80%) */
+    max-width: 400px; /* Установите максимальную ширину (например, 800px) */
+    max-height: 60%; /* Увеличьте максимальную высоту (например, до 95%) */
+    overflow-y: auto; /* Позволяет прокручивать содержимое по вертикали */
 }
+
+.modal-content_task {
+    background-color: #fefefe;
+    margin: 5% auto; /* Уменьшите отступ сверху */
+    padding: 20px; /* Увеличьте внутренние отступы */
+    border: 1px solid #888;
+    width: 80%; /* Увеличьте ширину модального окна (например, до 80%) */
+    max-width: 600px; /* Установите максимальную ширину (например, 800px) */
+    max-height: 37%; /* Увеличьте максимальную высоту (например, до 95%) */
+    overflow-y: auto; /* Позволяет прокручивать содержимое по вертикали */
+}
+
 
 .form-group {
     margin-bottom: 15px; /* Отступ между элементами формы */

@@ -90,32 +90,32 @@ closeSettingsModal.addEventListener('click', hideSettingsModal);
 settingsForm.addEventListener('submit', saveSettings);
 
 // Функции
- // Проверка согласия на использование cookies
-    if (cookieBanner) {
-        const acceptCookiesButton = document.getElementById('acceptCookiesButton');
-        if (acceptCookiesButton) {
-            acceptCookiesButton.addEventListener('click', function () {
-                fetch("/accept-cookies/", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({accept_cookies: true})
+// Проверка согласия на использование cookies
+if (cookieBanner) {
+    const acceptCookiesButton = document.getElementById('acceptCookiesButton');
+    if (acceptCookiesButton) {
+        acceptCookiesButton.addEventListener('click', function () {
+            fetch("/accept-cookies/", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({accept_cookies: true})
+            })
+                .then(response => {
+                    if (response.ok) {
+                        cookieBanner.style.display = 'none';  // Скрываем баннер
+                    } else {
+                        console.error('Ошибка при обновлении согласия на использование cookies');
+                    }
                 })
-                    .then(response => {
-                        if (response.ok) {
-                            cookieBanner.style.display = 'none';  // Скрываем баннер
-                        } else {
-                            console.error('Ошибка при обновлении согласия на использование cookies');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Ошибка:', error);
-                    });
-            });
-        }
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                });
+        });
     }
+}
 
 function toggleCompletedList() {
     const isHidden = completedList.classList.contains('show');
@@ -381,11 +381,11 @@ function saveSettings(event) {
     localStorage.setItem('background', selectedBackground);
     localStorage.setItem('backgroundColor', selectedBackground);
 
-     if (selectedBackground === 'custom') {
+    if (selectedBackground === 'custom') {
         const customBackground = customBackgroundInput.files[0];
         if (customBackground) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 localStorage.setItem('customBackground', e.target.result); // Сохраняем URL пользовательского фона
             }
             reader.readAsDataURL(customBackground);
@@ -406,7 +406,7 @@ function saveSettings(event) {
 // Обработчик для чекбокса "Отображать выполненные задачи"
 showCompletedTasksCheckbox.addEventListener('change', toggleCompletedTasksVisibility);
 
-backgroundSelect.addEventListener('change', function() {
+backgroundSelect.addEventListener('change', function () {
     if (backgroundSelect.value === 'custom') {
         customBackgroundGroup.style.display = 'block';
     } else {
@@ -420,11 +420,11 @@ backgroundSelect.addEventListener('change', function() {
 
 
 // Обработчик загрузки пользовательского фона
-customBackgroundInput.addEventListener('change', function(event) {
+customBackgroundInput.addEventListener('change', function (event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             document.body.style.backgroundImage = `url(${e.target.result})`;
             document.body.className = 'custom'; // Устанавливаем класс для body
             localStorage.setItem('customBackground', e.target.result); // Сохраняем URL пользовательского фона
@@ -454,7 +454,7 @@ function applySettings() {
     const font = localStorage.getItem('font');
     const fontSize = localStorage.getItem('fontSize');
     const showCompletedTasks = localStorage.getItem('showCompletedTasks') === 'true';
-     const background = localStorage.getItem('background') || 'default'; // Получаем фон из localStorage
+    const background = localStorage.getItem('background') || 'default'; // Получаем фон из localStorage
 
     if (font) {
         document.body.style.fontFamily = font;
@@ -498,6 +498,7 @@ function previewAvatar(event) {
         document.getElementById('avatarPreview').src = defaultAvatar;
     }
 }
+
 
 // Применение настроек при загрузке страницы
 window.onload = function () {

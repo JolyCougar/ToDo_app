@@ -12,27 +12,40 @@
         }
 
         .modal {
-            display: none; /* Скрыто по умолчанию */
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4); /* Черный с прозрачностью */
-        }
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Позволяет прокручивать содержимое, если оно превышает высоту */
+    background-color: rgba(0, 0, 0, 0.4); /* Черный с прозрачностью */
+}
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto; /* Уменьшите отступ сверху */
-            padding: 20px; /* Увеличьте внутренние отступы */
-            border: 1px solid #888;
-            width: 90%; /* Увеличьте ширину модального окна */
-            max-width: 900px; /* Установите максимальную ширину */
-            height: auto; /* Установите высоту на автоматическую */
-            min-height: 400px; /* Установите минимальную высоту для модального окна */
-        }
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* Уменьшите отступ сверху */
+    padding: 20px; /* Увеличьте внутренние отступы */
+    border: 1px solid #888;
+    width: 80%;
+    height: 65%;/* Увеличьте ширину модального окна (например, до 80%) */
+    max-width: 700px; /* Установите максимальную ширину (например, 800px) */
+    max-height: 95%; /* Увеличьте максимальную высоту (например, до 95%) */
+    overflow-y: auto; /* Позволяет прокручивать содержимое по вертикали */
+}
+
+.modal-content_pass {
+    background-color: #fefefe;
+    margin: 5% auto; /* Уменьшите отступ сверху */
+    padding: 20px; /* Увеличьте внутренние отступы */
+    border: 1px solid #888;
+    width: 80%; /* Увеличьте ширину модального окна (например, до 80%) */
+    max-width: 700px; /* Установите максимальную ширину (например, 800px) */
+    max-height: 95%; /* Увеличьте максимальную высоту (например, до 95%) */
+    overflow-y: auto; /* Позволяет прокручивать содержимое по вертикали */
+}
+
 
         .close {
             color: #aaa;
@@ -182,7 +195,7 @@
 
         <!-- Модальное окно для смены пароля -->
         <div id="changePasswordModal" class="modal">
-            <div class="modal-content">
+            <div class="modal-content_pass">
                 <span class="close" id="closeChangePasswordModal">&times;</span>
                 <h2>Сменить пароль</h2>
                 <form id="changePasswordForm">
@@ -268,52 +281,103 @@
     {% endif %}
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Получаем элементы модальных окон и кнопок
-        const changePasswordButton = document.getElementById('changePasswordButton');
-        const changePasswordModal = document.getElementById('changePasswordModal');
-        const closeChangePasswordModal = document.getElementById('closeChangePasswordModal');
 
-        // Открытие модального окна смены пароля
-        changePasswordButton.addEventListener('click', function () {
-            changePasswordModal.style.display = 'block';
-        });
+   document.addEventListener('DOMContentLoaded', function () {
+    const changePasswordButton = document.getElementById('changePasswordButton');
+    const changePasswordModal = document.getElementById('changePasswordModal');
+    const closeChangePasswordModal = document.getElementById('closeChangePasswordModal');
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    const passwordChangeMessage = document.getElementById('passwordChangeMessage');
 
-        // Закрытие модального окна смены пароля
-        closeChangePasswordModal.addEventListener('click', function () {
+    // Открытие модального окна
+    changePasswordButton.addEventListener('click', function () {
+        changePasswordModal.style.display = 'block';
+    });
+
+    // Закрытие модального окна
+    closeChangePasswordModal.addEventListener('click', function () {
+        changePasswordModal.style.display = 'none';
+        passwordChangeMessage.innerHTML = ''; // Очистить сообщение
+    });
+
+    // Закрытие модального окна при клике вне его
+    window.addEventListener('click', function (event) {
+        if (event.target === changePasswordModal) {
             changePasswordModal.style.display = 'none';
-        });
+            passwordChangeMessage.innerHTML = ''; // Очистить сообщение
+        }
+    });
 
-        // Закрытие модального окна при клике вне его
-        window.addEventListener('click', function (event) {
-            if (event.target === changePasswordModal) {
-                changePasswordModal.style.display = 'none';
+    // Обработка отправки формы смены пароля
+    changePasswordForm.addEventListener('submit', function (event) {
+        event.preventDefault(); // Предотвратить стандартное поведение формы
+
+        const oldPassword = document.getElementById('old_password').value;
+        const newPassword = document.getElementById('new_password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+
+        // Проверка совпадения нового пароля и подтверждения
+        if (newPassword !== confirmPassword) {
+            passwordChangeMessage.innerHTML = '<span style="color: red;">Пароли не совпадают!</span>';
+            return;
+        }
+
+        // Отправка данных на сервер
+        fetch('/change-password/', { // Замените на правильный URL
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'), // Получите CSRF-токен
+            },
+            body: JSON.stringify({
+                old_password: oldPassword,
+                new_password1: newPassword, // Изменено на new_password1
+                new_password2: confirmPassword // Изменено на new_password2
+            }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Сетевая ошибка');
             }
-        });
-
-        // Обработка кнопки "Изменить профиль"
-        const editProfileButton = document.getElementById('editProfileButton');
-        const profileModal = document.getElementById('profileModal');
-        const closeProfileModal = profileModal.querySelector('.close');
-
-        // Открытие модального окна изменения профиля
-        editProfileButton.addEventListener('click', function () {
-            profileModal.style.display = 'block';
-        });
-
-        // Закрытие модального окна изменения профиля
-        closeProfileModal.addEventListener('click', function () {
-            profileModal.style.display = 'none';
-        });
-
-        // Закрытие модального окна при клике вне его
-        window.addEventListener('click', function (event) {
-            if (event.target === profileModal) {
-                profileModal.style.display = 'none';
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                passwordChangeMessage.innerHTML = '<span style="color: green;">' + data.message + '</span>';
+                changePasswordForm.reset(); // Сбросить форму
+            } else {
+                // Преобразуем ошибки в строку для отображения
+                passwordChangeMessage.innerHTML = '<span style="color: red;">' + JSON.stringify(data.errors) + '</span>';
             }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            passwordChangeMessage.innerHTML = '<span style="color: red;">Произошла ошибка. Попробуйте еще раз.</span>';
         });
     });
     
+    
+
+    // Функция для получения CSRF-токена
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+
+
+
+        
      document.addEventListener('DOMContentLoaded', function () {
         // Загружаем настройки из localStorage
         const savedFont = localStorage.getItem('font');
@@ -343,7 +407,42 @@
             }
         }
     });
+     
+     document.addEventListener('DOMContentLoaded', function () {
+    const resetAvatarButton = document.getElementById('resetAvatarButton');
+
+    resetAvatarButton.addEventListener('click', function () {
+        fetch('/reset-avatar/', { // Замените на правильный URL
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'), // Получите CSRF-токен
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Сетевая ошибка');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Обновите изображение аватара на странице
+                document.getElementById('avatarPreview').src = '{% static "images/default_avatar.png" %}'; // Установите путь к изображению по умолчанию
+            } else {
+                alert('Ошибка: ' + JSON.stringify(data.errors));
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка. Попробуйте еще раз.');
+        });
+    });
+});
+
+     
 </script>
+<script src="{% static 'js/scripts.js' %}"></script>
 
 </body>
 </html>

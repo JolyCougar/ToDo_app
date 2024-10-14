@@ -2,7 +2,9 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 from .models import Profile
-from django.urls import reverse
+import random
+import string
+import json
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views import View
@@ -12,7 +14,7 @@ from django.views.generic import CreateView, DetailView
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.contrib import messages
-from .forms import UserRegistrationForm, ProfileForm
+from .forms import UserRegistrationForm, ProfileForm, UsernameForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -119,7 +121,8 @@ class ProfileView(DetailView):
 @method_decorator(login_required, name='dispatch')
 class ChangePasswordView(View):
     def post(self, request, *args, **kwargs):
-        form = PasswordChangeForm(request.user, request.POST)
+        data = json.loads(request.body)  # Разбираем JSON из тела запроса
+        form = PasswordChangeForm(request.user, data)  # Передаем данные в форму
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  # Обновляем сессию, чтобы пользователь не вышел
@@ -209,3 +212,41 @@ class CheckEmailView(View):
             exists = User.objects.filter(email=email).exists()
             return JsonResponse({'exists': exists})
         return JsonResponse({'exists': False})
+
+
+class PasswordResetView(View):
+    template_name = 'password_reset.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse_lazy('task:task_view'))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        form = UsernameForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = UsernameForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            try:
+                user = User.objects.get(username=username)
+                new_password = self.generate_random_password()
+                user.set_password(new_password)
+                user.save()
+
+                # Отправка нового пароля пользователю через EmailService
+                EmailService.send_new_password_email(user, new_password)
+                messages.success(request,
+                                 'Новый пароль был установлен и отправлен вам на почту.')
+
+                return redirect('my_auth:login')  # Путь к странице с сообщением об успешной отправке
+            except User.DoesNotExist:
+                form.add_error('username', 'Пользователь с таким именем не найден.')
+
+        return render(request, self.template_name, {'form': form})
+
+    def generate_random_password(self, length=8):
+        characters = string.ascii_letters + string.digits + string.punctuation
+        return ''.join(random.choice(characters) for i in range(length))

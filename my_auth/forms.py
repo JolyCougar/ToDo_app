@@ -74,3 +74,14 @@ class ProfileForm(forms.ModelForm):
             user.save()  # Сохраняем объект User
             self.instance.save()  # Сохраняем объект Profile
         return user
+
+
+class UsernameForm(forms.Form):
+    username = forms.CharField(
+        max_length=150,
+        label='Имя пользователя',
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Введите ваше имя пользователя',
+            'class': 'form-control'  # Вы можете добавить классы для стилизации
+        })
+    )
