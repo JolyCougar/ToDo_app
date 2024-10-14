@@ -10,6 +10,16 @@
 <body>
     <div class="container">
         <h2>Авторизация</h2>
+        
+    {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     
         {% if registration_success %}
             <div class="success-message">Регистрация прошла успешно!</div>

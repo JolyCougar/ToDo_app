@@ -238,8 +238,10 @@ class PasswordResetView(View):
 
                 # Отправка нового пароля пользователю через EmailService
                 EmailService.send_new_password_email(user, new_password)
+                messages.success(request,
+                                 'Новый пароль был установлен и отправлен вам на почту.')
 
-                return redirect('password_reset_done')  # Путь к странице с сообщением об успешной отправке
+                return redirect('my_auth:login')  # Путь к странице с сообщением об успешной отправке
             except User.DoesNotExist:
                 form.add_error('username', 'Пользователь с таким именем не найден.')
 

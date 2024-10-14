@@ -12,27 +12,40 @@
         }
 
         .modal {
-            display: none; /* Скрыто по умолчанию */
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4); /* Черный с прозрачностью */
-        }
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Позволяет прокручивать содержимое, если оно превышает высоту */
+    background-color: rgba(0, 0, 0, 0.4); /* Черный с прозрачностью */
+}
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto; /* Уменьшите отступ сверху */
-            padding: 20px; /* Увеличьте внутренние отступы */
-            border: 1px solid #888;
-            width: 90%; /* Увеличьте ширину модального окна */
-            max-width: 900px; /* Установите максимальную ширину */
-            height: auto; /* Установите высоту на автоматическую */
-            min-height: 400px; /* Установите минимальную высоту для модального окна */
-        }
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* Уменьшите отступ сверху */
+    padding: 20px; /* Увеличьте внутренние отступы */
+    border: 1px solid #888;
+    width: 80%;
+    height: 65%;/* Увеличьте ширину модального окна (например, до 80%) */
+    max-width: 700px; /* Установите максимальную ширину (например, 800px) */
+    max-height: 95%; /* Увеличьте максимальную высоту (например, до 95%) */
+    overflow-y: auto; /* Позволяет прокручивать содержимое по вертикали */
+}
+
+.modal-content_pass {
+    background-color: #fefefe;
+    margin: 5% auto; /* Уменьшите отступ сверху */
+    padding: 20px; /* Увеличьте внутренние отступы */
+    border: 1px solid #888;
+    width: 80%; /* Увеличьте ширину модального окна (например, до 80%) */
+    max-width: 700px; /* Установите максимальную ширину (например, 800px) */
+    max-height: 95%; /* Увеличьте максимальную высоту (например, до 95%) */
+    overflow-y: auto; /* Позволяет прокручивать содержимое по вертикали */
+}
+
 
         .close {
             color: #aaa;
@@ -182,7 +195,7 @@
 
         <!-- Модальное окно для смены пароля -->
         <div id="changePasswordModal" class="modal">
-            <div class="modal-content">
+            <div class="modal-content_pass">
                 <span class="close" id="closeChangePasswordModal">&times;</span>
                 <h2>Сменить пароль</h2>
                 <form id="changePasswordForm">
@@ -342,6 +355,8 @@
             passwordChangeMessage.innerHTML = '<span style="color: red;">Произошла ошибка. Попробуйте еще раз.</span>';
         });
     });
+    
+    
 
     // Функция для получения CSRF-токена
     function getCookie(name) {
@@ -392,7 +407,42 @@
             }
         }
     });
+     
+     document.addEventListener('DOMContentLoaded', function () {
+    const resetAvatarButton = document.getElementById('resetAvatarButton');
+
+    resetAvatarButton.addEventListener('click', function () {
+        fetch('/reset-avatar/', { // Замените на правильный URL
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'), // Получите CSRF-токен
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Сетевая ошибка');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Обновите изображение аватара на странице
+                document.getElementById('avatarPreview').src = '{% static "images/default_avatar.png" %}'; // Установите путь к изображению по умолчанию
+            } else {
+                alert('Ошибка: ' + JSON.stringify(data.errors));
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка. Попробуйте еще раз.');
+        });
+    });
+});
+
+     
 </script>
+<script src="{% static 'js/scripts.js' %}"></script>
 
 </body>
 </html>
