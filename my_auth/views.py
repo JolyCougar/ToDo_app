@@ -122,7 +122,7 @@ class ProfileView(DetailView):
                 self.object.profile.email_verified = False
                 self.object.profile.save()
                 # Отправляем новое письмо для подтверждения email
-                EmailService.send_verification_email(request,self.object)
+                EmailService.send_verification_email(request, self.object)
 
             messages.success(request, 'Информация о профиле успешно обновлена!')
             return redirect('my_auth:profile', pk=self.object.pk)
