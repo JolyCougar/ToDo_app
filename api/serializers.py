@@ -5,7 +5,7 @@ from tasks.models import Task
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = ['id', 'name', 'description']
 
 
 class CreateTaskSerializer(serializers.ModelSerializer):
@@ -13,3 +13,9 @@ class CreateTaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ['id', 'user', 'name', 'description', 'create_at']
         read_only_fields = ['user', 'create_at', 'complete']
+
+
+class TaskDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
