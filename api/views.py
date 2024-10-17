@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, RetrieveAPIView, DestroyAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 from tasks.models import Task
 from .filters import TaskFilter
@@ -34,6 +34,15 @@ class TaskUpdateView(UpdateAPIView):
 
 
 class TaskDetailView(RetrieveAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
+
+
+class TaskDeleteView(DestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskDetailSerializer
     permission_classes = [IsAuthenticated]
