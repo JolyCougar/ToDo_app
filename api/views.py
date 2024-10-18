@@ -3,6 +3,7 @@ from rest_framework.generics import (ListAPIView, CreateAPIView, UpdateAPIView,
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 from tasks.models import Task
+from rest_framework.views import APIView
 from .filters import TaskFilter
 from .serializers import (TaskSerializer, CreateTaskSerializer, TaskDetailSerializer,
                           UserRegistrationSerializer)
@@ -11,6 +12,8 @@ from my_auth.services import EmailService
 from django.contrib import messages
 from rest_framework.response import Response
 from my_auth.models import Profile
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
 
 
 class TaskListView(ListAPIView):
@@ -82,3 +85,31 @@ class RegisterView(CreateAPIView):
                                       'Пожалуйста, проверьте вашу почту позже.')
 
         return Response(user_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        request.user.auth_token.delete()
+        return Response(status=status.HTTP_200_OK)
+
+
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        # Проверка, что имя пользователя и пароль предоставлены
+        if not username or not password:
+            return Response({'error': 'Имя пользователя и пароль обязательны.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Аутентификация пользователя
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            # Если аутентификация успешна, получаем или создаем токен
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Неверные учетные данные'}, status=status.HTTP_401_UNAUTHORIZED)
