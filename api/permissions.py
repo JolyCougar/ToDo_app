@@ -12,4 +12,3 @@ class IsEmailVerified(permissions.BasePermission):
             # Проверяем, подтвержден ли email
             return request.user.profile.email_verified  # Предполагается, что у вас есть поле is_email_verified
         return False
-   
