@@ -1,5 +1,5 @@
 from rest_framework.generics import (ListAPIView, CreateAPIView, UpdateAPIView,
-                                     RetrieveAPIView, DestroyAPIView)
+                                     RetrieveAPIView, DestroyAPIView, RetrieveUpdateAPIView)
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
 from django_filters.rest_framework import DjangoFilterBackend
@@ -7,7 +7,7 @@ from tasks.models import Task
 from rest_framework.views import APIView
 from .filters import TaskFilter
 from .serializers import (TaskSerializer, CreateTaskSerializer, TaskDetailSerializer,
-                          UserRegistrationSerializer)
+                          UserRegistrationSerializer, ProfileSerializer, UserSerializer)
 from rest_framework.permissions import IsAuthenticated
 from my_auth.services import EmailService
 from django.contrib import messages
@@ -48,28 +48,18 @@ class TaskCreateView(CreateAPIView):
         return super().handle_exception(exc)
 
 
-class TaskUpdateView(UpdateAPIView):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
-    permission_classes = [IsEmailVerified]
-
-    def perform_update(self, serializer):
-        serializer.save()
-
-    def handle_exception(self, exc):
-        if isinstance(exc, PermissionDenied):
-            return Response({'detail': 'Пожалуйста, подтвердите адрес электронной почты.'},
-                            status=status.HTTP_403_FORBIDDEN)
-        return super().handle_exception(exc)
-
-
-class TaskDetailView(RetrieveAPIView):
-    queryset = Task.objects.all()
-    serializer_class = TaskDetailSerializer
+class TaskDetailUpdateView(RetrieveUpdateAPIView):
     permission_classes = [IsEmailVerified]
 
     def get_queryset(self):
+        # Возвращаем только задачи, принадлежащие текущему пользователю
         return Task.objects.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        # Используем разные сериализаторы для получения и обновления
+        if self.request.method == 'PUT':
+            return TaskSerializer
+        return TaskDetailSerializer
 
     def handle_exception(self, exc):
         if isinstance(exc, PermissionDenied):
@@ -145,3 +135,24 @@ class LoginView(APIView):
             return Response({'token': token.key}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Неверные учетные данные'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class ProfileView(RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        profile = request.user.profile
+        user_data = UserSerializer(request.user).data
+        profile_data = ProfileSerializer(profile).data
+        return Response({'user': user_data, 'profile': profile_data})
+
+    def put(self, request, *args, **kwargs):
+        user_serializer = UserSerializer(request.user, data=request.data.get('user'), partial=True)
+        profile_serializer = ProfileSerializer(request.user.profile, data=request.data.get('profile'), partial=True)
+
+        if user_serializer.is_valid() and profile_serializer.is_valid():
+            user_serializer.save()
+            profile_serializer.save()
+            return Response({'user': user_serializer.data, 'profile': profile_serializer.data})
+        return Response({'user_errors': user_serializer.errors, 'profile_errors': profile_serializer.errors},
+                        status=400)

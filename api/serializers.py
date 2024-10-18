@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from tasks.models import Task
 from django.contrib.auth.models import User
+from my_auth.models import Profile
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -33,3 +34,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])  # Хешируем пароль
         user.save()
         return user
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['bio', 'avatar', 'agreement_accepted', 'cookies_accepted']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
