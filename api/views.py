@@ -1,5 +1,5 @@
 from rest_framework.generics import (ListAPIView, CreateAPIView, GenericAPIView,
-                                     RetrieveAPIView, DestroyAPIView, RetrieveUpdateAPIView)
+                                     UpdateAPIView, DestroyAPIView, RetrieveUpdateAPIView)
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
 from django.utils.http import urlsafe_base64_encode
@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from .filters import TaskFilter
 from .serializers import (TaskSerializer, CreateTaskSerializer, TaskDetailSerializer,
                           UserRegistrationSerializer, ProfileSerializer, UserSerializer,
-                          PasswordResetSerializer, PasswordResetConfirmSerializer)
+                          PasswordResetSerializer, PasswordResetConfirmSerializer, TaskConfirmSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.tokens import default_token_generator
 from my_auth.services import EmailService
@@ -202,3 +202,23 @@ class PasswordResetConfirmView(GenericAPIView):
         user.save()
 
         return Response({"detail": "Пароль успешно сброшен."}, status=status.HTTP_200_OK)
+
+
+class TaskConfirmView(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer  # Используем тот же сериализатор
+
+    def patch(self, request, *args, **kwargs):
+        task = self.get_object()
+
+        # Проверка прав пользователя
+        if task.user != request.user:
+            return Response({"detail": "У вас нет прав на подтверждение этой задачи."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        # Обновление поля complete
+        task.complete = True
+        task.save()  # Сохраняем изменения в базе данных
+
+        return Response({"detail": "Задача успешно подтверждена."}, status=status.HTTP_200_OK)

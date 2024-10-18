@@ -9,7 +9,7 @@ from django.utils.http import urlsafe_base64_decode
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description']
+        fields = ['id', 'name', 'description', 'complete']
 
 
 class CreateTaskSerializer(serializers.ModelSerializer):
@@ -79,3 +79,9 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             return user
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError("Недействительный токен.")
+
+
+class TaskConfirmSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['complete']
