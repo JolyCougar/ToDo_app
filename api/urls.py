@@ -1,8 +1,7 @@
 from django.urls import path
 from .views import (TaskListView, TaskCreateView, TaskDetailUpdateView,
                     TaskDeleteView, RegisterView, LogoutView, LoginView,
-                    ProfileView, PasswordResetView, PasswordResetConfirmView,
-                    TaskConfirmView)
+                    ProfileView, PasswordResetView, TaskConfirmView)
 
 app_name = 'api'
 
@@ -16,7 +15,6 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('password-reset/', PasswordResetView.as_view(), name='password_reset'),
-    path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('tasks/<int:pk>/confirm/', TaskConfirmView.as_view(), name='task-confirm'),
 
 ]

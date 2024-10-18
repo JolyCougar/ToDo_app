@@ -2,9 +2,7 @@ from rest_framework.generics import (ListAPIView, CreateAPIView, GenericAPIView,
                                      UpdateAPIView, DestroyAPIView, RetrieveUpdateAPIView)
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-from django.shortcuts import reverse
+from my_auth.services import PasswordGenerator
 from django_filters.rest_framework import DjangoFilterBackend
 from tasks.models import Task
 from rest_framework.views import APIView
@@ -22,6 +20,7 @@ from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
 from .permissions import IsEmailVerified
+from django.contrib.auth.models import User
 
 
 class TaskListView(ListAPIView):
@@ -171,37 +170,23 @@ class PasswordResetView(GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.get_user()
+        user = serializer.get_user()  # Убедитесь, что это объект User
 
-        # Генерация токена и UID
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        # Проверка, что user - это объект User
+        if not isinstance(user, User):
+            return Response({"detail": "Пользователь не найден."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Создание ссылки для сброса пароля
-        verification_link = request.build_absolute_uri(
-            reverse('password_reset_confirm', args=[uid, token])
-        )
+        # Генерация нового пароля
+        new_password = PasswordGenerator.generate_random_password()
 
-        # Отправка письма с ссылкой для сброса пароля
-        EmailService.send_verification_email(verification_link, user.email)
-
-        return Response({"detail": "Ссылка для сброса пароля отправлена на ваш email."}, status=status.HTTP_200_OK)
-
-
-class PasswordResetConfirmView(GenericAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = PasswordResetConfirmSerializer
-
-    def post(self, request, uidb64, token, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        # Получение пользователя
-        user = serializer.get_user(uidb64, token)
-        user.set_password(serializer.validated_data['new_password'])
+        # Установка нового пароля для пользователя
+        user.set_password(new_password)
         user.save()
 
-        return Response({"detail": "Пароль успешно сброшен."}, status=status.HTTP_200_OK)
+        # Отправка нового пароля пользователю
+        EmailService.send_new_password_email(user, new_password)
+
+        return Response({"detail": "Новый пароль отправлен на ваш email."}, status=status.HTTP_200_OK)
 
 
 class TaskConfirmView(UpdateAPIView):

@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 from .models import Profile
+from .services import PasswordGenerator
 import random
 import string
 import json
@@ -246,7 +247,7 @@ class PasswordResetView(View):
             username = form.cleaned_data['username']
             try:
                 user = User.objects.get(username=username)
-                new_password = self.generate_random_password()
+                new_password = PasswordGenerator.generate_random_password()
                 user.set_password(new_password)
                 user.save()
 
@@ -261,6 +262,3 @@ class PasswordResetView(View):
 
         return render(request, self.template_name, {'form': form})
 
-    def generate_random_password(self, length=8):
-        characters = string.ascii_letters + string.digits + string.punctuation
-        return ''.join(random.choice(characters) for i in range(length))

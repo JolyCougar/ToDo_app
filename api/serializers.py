@@ -56,7 +56,8 @@ class PasswordResetSerializer(serializers.Serializer):
     def get_user(self):
         email = self.validated_data['email']
         try:
-            return User.objects.get(email=email)
+            user = User.objects.get(email=email)
+            return user
         except User.DoesNotExist:
             raise serializers.ValidationError("Пользователь с таким email не найден.")
 
@@ -74,6 +75,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=uid)
+            print(user)
             if not default_token_generator.check_token(user, token):
                 raise serializers.ValidationError("Недействительный токен.")
             return user

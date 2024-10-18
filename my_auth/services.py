@@ -1,6 +1,8 @@
 from django.urls import reverse
 from .models import EmailVerification
 from .tasks import send_verification_email_task, send_new_password_email_task
+import random
+import string
 
 
 class EmailService:
@@ -21,3 +23,11 @@ class EmailService:
     def send_new_password_email(user, new_password):
         # Отправка нового пароля асинхронно
         send_new_password_email_task.delay(user.email, new_password)
+
+
+class PasswordGenerator:
+    @staticmethod
+    def generate_random_password(length=8):
+        """Генерация случайного пароля заданной длины."""
+        characters = string.ascii_letters + string.digits + string.punctuation
+        return ''.join(random.choice(characters) for _ in range(length))
