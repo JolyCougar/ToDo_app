@@ -1,6 +1,7 @@
 from rest_framework.generics import (ListAPIView, CreateAPIView, UpdateAPIView,
                                      RetrieveAPIView, DestroyAPIView)
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 from django_filters.rest_framework import DjangoFilterBackend
 from tasks.models import Task
 from rest_framework.views import APIView
@@ -14,51 +15,82 @@ from rest_framework.response import Response
 from my_auth.models import Profile
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
+from .permissions import IsEmailVerified
 
 
 class TaskListView(ListAPIView):
     serializer_class = TaskSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TaskFilter
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsEmailVerified]
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
 
+    def handle_exception(self, exc):
+        if isinstance(exc, PermissionDenied):
+            return Response({'detail': 'Пожалуйста, подтвердите адрес электронной почты.'},
+                            status=status.HTTP_403_FORBIDDEN)
+        return super().handle_exception(exc)
+
 
 class TaskCreateView(CreateAPIView):
     serializer_class = CreateTaskSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsEmailVerified]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def handle_exception(self, exc):
+        if isinstance(exc, PermissionDenied):
+            return Response({'detail': 'Пожалуйста, подтвердите адрес электронной почты.'},
+                            status=status.HTTP_403_FORBIDDEN)
+        return super().handle_exception(exc)
 
 
 class TaskUpdateView(UpdateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsEmailVerified]
 
     def perform_update(self, serializer):
         serializer.save()
+
+    def handle_exception(self, exc):
+        if isinstance(exc, PermissionDenied):
+            return Response({'detail': 'Пожалуйста, подтвердите адрес электронной почты.'},
+                            status=status.HTTP_403_FORBIDDEN)
+        return super().handle_exception(exc)
 
 
 class TaskDetailView(RetrieveAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskDetailSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsEmailVerified]
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
+
+    def handle_exception(self, exc):
+        if isinstance(exc, PermissionDenied):
+            return Response({'detail': 'Пожалуйста, подтвердите адрес электронной почты.'},
+                            status=status.HTTP_403_FORBIDDEN)
+        return super().handle_exception(exc)
 
 
 class TaskDeleteView(DestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskDetailSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsEmailVerified]
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
+
+    def handle_exception(self, exc):
+        if isinstance(exc, PermissionDenied):
+            return Response({'detail': 'Пожалуйста, подтвердите адрес электронной почты.'},
+                            status=status.HTTP_403_FORBIDDEN)
+        return super().handle_exception(exc)
 
 
 class RegisterView(CreateAPIView):
