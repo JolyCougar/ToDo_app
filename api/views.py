@@ -1,19 +1,25 @@
-from rest_framework.generics import (ListAPIView, CreateAPIView, UpdateAPIView,
+from rest_framework.generics import (ListAPIView, CreateAPIView, GenericAPIView,
                                      RetrieveAPIView, DestroyAPIView, RetrieveUpdateAPIView)
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.shortcuts import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from tasks.models import Task
 from rest_framework.views import APIView
 from .filters import TaskFilter
 from .serializers import (TaskSerializer, CreateTaskSerializer, TaskDetailSerializer,
-                          UserRegistrationSerializer, ProfileSerializer, UserSerializer)
+                          UserRegistrationSerializer, ProfileSerializer, UserSerializer,
+                          PasswordResetSerializer, PasswordResetConfirmSerializer)
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.tokens import default_token_generator
 from my_auth.services import EmailService
 from django.contrib import messages
 from rest_framework.response import Response
 from my_auth.models import Profile
 from django.contrib.auth import authenticate
+from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
 from .permissions import IsEmailVerified
 
@@ -156,3 +162,43 @@ class ProfileView(RetrieveUpdateAPIView):
             return Response({'user': user_serializer.data, 'profile': profile_serializer.data})
         return Response({'user_errors': user_serializer.errors, 'profile_errors': profile_serializer.errors},
                         status=400)
+
+
+class PasswordResetView(GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = PasswordResetSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.get_user()
+
+        # Генерация токена и UID
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        # Создание ссылки для сброса пароля
+        verification_link = request.build_absolute_uri(
+            reverse('password_reset_confirm', args=[uid, token])
+        )
+
+        # Отправка письма с ссылкой для сброса пароля
+        EmailService.send_verification_email(verification_link, user.email)
+
+        return Response({"detail": "Ссылка для сброса пароля отправлена на ваш email."}, status=status.HTTP_200_OK)
+
+
+class PasswordResetConfirmView(GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = PasswordResetConfirmSerializer
+
+    def post(self, request, uidb64, token, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Получение пользователя
+        user = serializer.get_user(uidb64, token)
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response({"detail": "Пароль успешно сброшен."}, status=status.HTTP_200_OK)
