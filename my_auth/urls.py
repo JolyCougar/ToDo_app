@@ -4,7 +4,7 @@ from .views import (CustomLoginView, CustomLogoutView, RegisterView,
                     ProfileView, ChangePasswordView, ResetAvatarView,
                     VerifyEmailView, ResendVerificationTokenView, ChangeEmailView,
                     AcceptCookiesView, CheckUsernameView, CheckEmailView,
-                    PasswordResetView)
+                    PasswordResetView,UpdateProfileView)
 
 app_name = 'my_auth'
 
@@ -22,5 +22,6 @@ urlpatterns = [
     path('check-username/', CheckUsernameView.as_view(), name='check_username'),
     path('check-email/', CheckEmailView.as_view(), name='check_email'),
     path('password-reset/', PasswordResetView.as_view(), name='password_reset'),
+    path('update-profile/', UpdateProfileView.as_view(), name='update_profile'),
 
 ]

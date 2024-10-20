@@ -1,10 +1,8 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
-from .models import Profile
-from .services import PasswordGenerator
-import random
-import string
+from .models import Profile, EmailVerification
+from .services import PasswordGenerator, EmailService, TaskScheduler
 import json
 from django.contrib.auth import login
 from django.http import JsonResponse
@@ -19,8 +17,6 @@ from .forms import UserRegistrationForm, ProfileForm, UsernameForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from .models import EmailVerification
-from .services import EmailService
 
 
 class CustomLoginView(LoginView):
@@ -262,3 +258,20 @@ class PasswordResetView(View):
 
         return render(request, self.template_name, {'form': form})
 
+
+class UpdateProfileView(LoginRequiredMixin, View):
+    def post(self, request):
+        data = json.loads(request.body)
+        profile = Profile.objects.get(user=request.user)
+
+        if 'delete_frequency' in data:
+            profile.delete_frequency = data['delete_frequency']
+            profile.save()
+
+            # Создайте экземпляр TaskScheduler и обновите расписание
+            scheduler = TaskScheduler(profile)
+            scheduler.schedule_deletion_tasks()
+
+            return JsonResponse({'status': 'success', 'message': 'Частота удаления задач успешно обновлена!'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Частота удаления задач не указана!'}, status=400)
