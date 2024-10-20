@@ -171,11 +171,19 @@ class ProfileView(RetrieveUpdateAPIView):
         profile_serializer = ProfileSerializer(request.user.profile, data=request.data.get('profile'), partial=True)
 
         if user_serializer.is_valid() and profile_serializer.is_valid():
+            # Проверяем, изменился ли email
+            if 'email' in user_serializer.validated_data:
+                new_email = user_serializer.validated_data['email']
+                if new_email != request.user.email:
+                    # Отправляем письмо для подтверждения нового email
+                    EmailService.send_verification_email(request, request.user)
+
             user_serializer.save()
             profile_serializer.save()
             return Response({'user': user_serializer.data, 'profile': profile_serializer.data})
+
         return Response({'user_errors': user_serializer.errors, 'profile_errors': profile_serializer.errors},
-                        status=400)
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordResetView(GenericAPIView):
