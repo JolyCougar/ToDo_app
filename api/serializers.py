@@ -26,16 +26,25 @@ class TaskDetailSerializer(serializers.ModelSerializer):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)  # Делаем поле e-mail обязательным
+
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
-        extra_kwargs = {'password': {'write_only': True}}  # Пароль только для записи
+        fields = ['username', 'email', 'password']
 
     def create(self, validated_data):
-        user = User(**validated_data)
-        user.set_password(validated_data['password'])  # Хешируем пароль
+        user = User(
+            username=validated_data['username'],
+            email=validated_data['email']
+        )
+        user.set_password(validated_data['password'])  # Устанавливаем пароль
         user.save()
         return user
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Пользователь с таким e-mail уже существует.")
+        return value
 
 
 class ProfileSerializer(serializers.ModelSerializer):

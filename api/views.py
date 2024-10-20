@@ -5,6 +5,8 @@ from rest_framework.exceptions import PermissionDenied
 from my_auth.services import PasswordGenerator
 from django_filters.rest_framework import DjangoFilterBackend
 from tasks.models import Task
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from rest_framework.views import APIView
 from .filters import TaskFilter
 from .serializers import (TaskSerializer, CreateTaskSerializer, TaskDetailSerializer,
@@ -95,6 +97,18 @@ class RegisterView(CreateAPIView):
         user_serializer = self.get_serializer(data=request.data)
         user_serializer.is_valid(raise_exception=True)  # Проверяем валидность данных
 
+        # Получаем пароль из сериализатора
+        password = user_serializer.validated_data.get('password')
+
+        # Проверка сложности пароля
+        try:
+            validate_password(password=password)
+        except ValidationError as e:
+            if 'This password is too short.' in e.messages or 'This password is too common.' in e.messages:
+                return Response({'password': ['Пароль слишком легкий. Пожалуйста, выберите более сложный пароль.']},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'password': list(e.messages)}, status=status.HTTP_400_BAD_REQUEST)
+
         # Сохраняем пользователя
         user = user_serializer.save()
 
@@ -111,7 +125,8 @@ class RegisterView(CreateAPIView):
             messages.warning(request, 'Регистрация успешна, но не удалось отправить письмо с подтверждением. '
                                       'Пожалуйста, проверьте вашу почту позже.')
 
-        return Response(user_serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'message': 'Регистрация прошла успешно! Проверьте вашу почту для подтверждения.'},
+                        status=status.HTTP_201_CREATED)
 
 
 class LogoutView(APIView):
