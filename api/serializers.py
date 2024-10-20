@@ -50,7 +50,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['bio', 'avatar', 'agreement_accepted', 'cookies_accepted']
+        fields = ['bio', 'avatar']
+
+    def update(self, instance, validated_data):
+        # Удаляем поля, которые не должны изменяться
+        validated_data.pop('agreement_accepted', None)
+        validated_data.pop('cookies_accepted', None)
+
+        # Обновляем остальные поля
+        return super().update(instance, validated_data)
 
 
 class UserSerializer(serializers.ModelSerializer):
