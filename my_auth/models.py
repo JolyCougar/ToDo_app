@@ -22,6 +22,14 @@ class Profile(models.Model):
     avatar = models.ImageField(null=True, blank=True, upload_to=profile_preview_directory_path)
     email_verified = models.BooleanField(default=False)
     cookies_accepted = models.BooleanField(default=False)
+    delete_frequency = models.CharField(max_length=20, choices=[
+        ('never', 'Никогда'),
+        ('minute', 'Раз в минуту'),
+        ('hour', 'Раз в час'),
+        ('day', 'Раз в день'),
+        ('week', 'Раз в неделю'),
+        ('month', 'Раз в месяц'),
+    ], default='never')
 
     def __str__(self):
         return self.user.username
