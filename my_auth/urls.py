@@ -5,7 +5,7 @@ from .views import (CustomLoginView, CustomLogoutView, RegisterView,
                     VerifyEmailView, ResendVerificationTokenView, ChangeEmailView,
                     AcceptCookiesView, CheckUsernameView, CheckEmailView,
                     PasswordResetView, UpdateProfileView, TelegramAuthView,
-                    csrf_token_view)
+                    csrf_token_view, UnsubscribeView)
 
 app_name = 'my_auth'
 
@@ -25,6 +25,7 @@ urlpatterns = [
     path('password-reset/', PasswordResetView.as_view(), name='password_reset'),
     path('update-profile/', UpdateProfileView.as_view(), name='update_profile'),
     path('auth/telegram/', TelegramAuthView.as_view(), name='telegram_auth'),
+    path('unsubscribe/', UnsubscribeView.as_view(), name='unsubscribe'),
     path('csrf-token/', csrf_token_view, name='csrf_token'),
 
 ]

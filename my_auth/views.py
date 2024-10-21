@@ -309,3 +309,15 @@ class TelegramAuthView(View):
 def csrf_token_view(request):
     token = get_token(request)
     return JsonResponse({'csrfToken': token})
+
+
+class UnsubscribeView(View):
+    def post(self, request, *args, **kwargs):
+        profile = get_object_or_404(Profile, user=request.user)
+
+        # Очищаем поля
+        profile.telegram_user_id = None
+        profile.telegram_username = None
+        profile.save()
+
+        return JsonResponse({'message': 'Вы успешно отписались!'})
