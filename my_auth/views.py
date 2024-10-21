@@ -3,6 +3,8 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 from .models import Profile, EmailVerification
 from .services import PasswordGenerator, EmailService, TaskScheduler
+from django.views.decorators.csrf import csrf_exempt
+from django.middleware.csrf import get_token
 import json
 from django.contrib.auth import login
 from django.http import JsonResponse
@@ -17,6 +19,9 @@ from .forms import UserRegistrationForm, ProfileForm, UsernameForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
+from django.views.decorators.csrf import csrf_exempt
+import hashlib
+import hmac
 
 
 class CustomLoginView(LoginView):
@@ -275,3 +280,32 @@ class UpdateProfileView(LoginRequiredMixin, View):
             return JsonResponse({'status': 'success', 'message': 'Частота удаления задач успешно обновлена!'})
         else:
             return JsonResponse({'status': 'error', 'message': 'Частота удаления задач не указана!'}, status=400)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class TelegramAuthView(View):
+    def post(self, request):
+        # Получаем данные из POST-запроса
+        user_id = request.POST.get('user_id')
+        telegram_id = request.POST.get('telegram_id')
+        telegram_username = request.POST.get('telegram_username')
+
+        if user_id and telegram_id:
+            try:
+                # Обновите профиль пользователя
+                profile = Profile.objects.get(id=user_id)
+                profile.telegram_user_id = telegram_id
+                profile.telegram_username = telegram_username
+                profile.save()
+
+                return JsonResponse({'status': 'success', 'message': 'Профиль успешно обновлен.'})
+            except Profile.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'Профиль не найден.'}, status=404)
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Недостаточно данных.'}, status=400)
+
+
+
+def csrf_token_view(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})

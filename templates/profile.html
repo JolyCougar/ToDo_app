@@ -186,8 +186,27 @@
                 <p><strong>Дата регистрации:</strong> <span
                         id="registrationDate">{{ user.date_joined|date:"d F Y" }}</span></p>
                 <p><strong>О себе:</strong> <span id="userBio">{{ user.profile.bio }}</span></p>
+
+
+                <div class="telegram-binding">
+    {% if user.profile.telegram_username %}
+        <p><strong>Telegram:</strong> <span>{{ user.profile.telegram_username }}</span></p>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" name="unbind_telegram" class="large-button">Отвязать Telegram</button>
+        </form>
+    {% else %}
+        <div class="form-group">
+            <strong>Telegram:</strong>
+           <a href="https://telegram.me/toDo_app_tessst_bot?start=bind_{{ user.id }}" class="large-button">Привязать</a>
+        </div>
+    {% endif %}
+</div>
+
+
             </div>
         </div>
+
 
         <button id="editProfileButton" class="large-button">Изменить профиль</button>
         <!-- Кнопка для открытия модального окна -->
@@ -281,6 +300,14 @@
     {% endif %}
 </div>
 <script>
+
+    document.getElementById('bindTelegramButton').onclick = function () {
+        document.getElementById('telegramAuthModal').style.display = 'block';
+    }
+
+    document.getElementById('closeTelegramAuthModal').onclick = function () {
+        document.getElementById('telegramAuthModal').style.display = 'none';
+    }
 
     document.addEventListener('DOMContentLoaded', function () {
         const changePasswordButton = document.getElementById('changePasswordButton');
