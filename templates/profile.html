@@ -187,24 +187,6 @@
                         id="registrationDate">{{ user.date_joined|date:"d F Y" }}</span></p>
                 <p><strong>О себе:</strong> <span id="userBio">{{ user.profile.bio }}</span></p>
 
-
-                <div class="telegram-binding">
-                    {% if user.profile.telegram_username %}
-                        <div style="display: flex; align-items: center;">
-                            <p><strong>Telegram:</strong> <span>{{ user.profile.telegram_username }}</span></p>
-                            <span style="margin-right: 10px;">{{ profile.telegram_username }}</span>
-                            <button id="unsubscribe-button" data-url="{% url 'my_auth:unsubscribe' %}">Отписаться
-                            </button>
-                        </div>
-                    {% else %}
-                        <div class="form-group">
-                            <strong>Telegram:</strong>
-                            <button id="bind-button">Привязать</button>
-                        </div>
-                    {% endif %}
-                </div>
-
-
             </div>
         </div>
 
@@ -301,50 +283,6 @@
     {% endif %}
 </div>
 <script>
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        // Обработчик для кнопки "Привязать"
-        const bindButton = document.getElementById('bind-button');
-        if (bindButton) {
-            bindButton.addEventListener('click', function() {
-                const userId = '{{ user.id }}';  // Получаем ID пользователя
-                const url = `https://telegram.me/toDo_app_tessst_bot?start=bind_${userId}`;
-                window.location.href = url;  // Перенаправляем на URL
-            });
-        }
-
-        // Обработчик для кнопки "Отписаться"
-        const unsubscribeButton = document.getElementById('unsubscribe-button');
-        if (unsubscribeButton) {
-            unsubscribeButton.addEventListener('click', function () {
-                const url = this.getAttribute('data-url');
-                const csrfToken = '{{ csrf_token }}';  // Получаем CSRF-токен
-
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', url, true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.setRequestHeader('X-CSRFToken', csrfToken);  // Устанавливаем заголовок CSRF
-
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === XMLHttpRequest.DONE) {
-                        if (xhr.status === 200) {
-                            // Обработка успешного ответа
-                            alert('Вы успешно отписались!');
-                            // Можно обновить интерфейс или скрыть кнопку
-                            unsubscribeButton.parentElement.style.display = 'none'; // Скрываем кнопку
-                        } else {
-                            // Обработка ошибки
-                            alert('Произошла ошибка. Попробуйте еще раз.');
-                        }
-                    }
-                };
-
-                xhr.send();  // Отправляем запрос
-            });
-        }
-    });
-    
-
     document.addEventListener('DOMContentLoaded', function () {
         const changePasswordButton = document.getElementById('changePasswordButton');
         const changePasswordModal = document.getElementById('changePasswordModal');
