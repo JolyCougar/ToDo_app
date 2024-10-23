@@ -282,6 +282,7 @@ class UpdateProfileView(LoginRequiredMixin, View):
             return JsonResponse({'status': 'error', 'message': 'Частота удаления задач не указана!'}, status=400)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class TelegramAuthView(View):
     def post(self, request):
         # Получаем данные из POST-запроса
@@ -304,10 +305,10 @@ class TelegramAuthView(View):
             return JsonResponse({'status': 'error', 'message': 'Недостаточно данных.'}, status=400)
 
 
-class CSRFTokenView(View):
-    def get(self, request):
-        token = get_token(request)
-        return JsonResponse({'csrfToken': token})
+
+def csrf_token_view(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})
 
 
 class UnsubscribeView(View):
