@@ -296,10 +296,10 @@ label {
         color: var(--white);
         border: none;
         border-radius: var(--border-radius);
-        padding: 5px 10px; /* Уменьшаем отступы для кнопки */
+        padding: 5px 10px; /* отступы для кнопки */
         cursor: pointer;
         transition: background-color 0.3s;
-        font-size: 14px; /* Уменьшаем размер шрифта */
+        font-size: 14px; /* размер шрифта */
     }
 
     .small-button:hover {
