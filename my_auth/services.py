@@ -1,5 +1,5 @@
 from django.urls import reverse
-from .models import EmailVerification, Profile
+from .models import EmailVerification
 from .tasks import send_verification_email_task, send_new_password_email_task
 import random
 import string
@@ -8,10 +8,12 @@ import json
 
 
 class EmailService:
+    """ Класс который взаимодействует с задачей Celery на отправку E-mail """
+
     @staticmethod
     def send_verification_email(request, user):
         # Получаем профиль пользователя
-        profile = user.profile  # Здесь вы получаете профиль пользователя
+        profile = user.profile
         # Создаем или получаем токен верификации
         email_verification, created = EmailVerification.objects.get_or_create(profile=profile)
         # Генерируем ссылку для подтверждения
@@ -28,6 +30,8 @@ class EmailService:
 
 
 class PasswordGenerator:
+    """ Генератор паролей """
+
     @staticmethod
     def generate_random_password(length=8):
         """Генерация случайного пароля заданной длины."""
@@ -36,15 +40,15 @@ class PasswordGenerator:
 
 
 class TaskScheduler:
+    """ Класс создания и применения рассписания на удаление выполненных задач """
     def __init__(self, profile):
         self.profile = profile
         self.task_name = f'delete_tasks_{self.profile.user.username}'
 
     def schedule_deletion_tasks(self):
-        # Удалите старую задачу, если она существует
+        # Удаляем старую задачу, если она существует
         PeriodicTask.objects.filter(name=self.task_name).delete()
 
-        # Создайте новое расписание
         schedule = self.get_schedule()
         if schedule:
             PeriodicTask.objects.create(
@@ -65,6 +69,5 @@ class TaskScheduler:
         elif self.profile.delete_frequency == 'week':
             return IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.WEEKS)[0]
         elif self.profile.delete_frequency == 'month':
-            # Пример для месячного расписания: первое число каждого месяца
             return CrontabSchedule.objects.get_or_create(minute=0, hour=0, day=1)[0]
         return None

@@ -8,6 +8,8 @@ from .tasks_mixins import EmailVerifiedMixin
 
 
 class TaskView(EmailVerifiedMixin, ListView):
+    """ Класс отображения задач """
+
     model = Task
     template_name = 'index.html'
     context_object_name = 'task_list'
@@ -18,6 +20,8 @@ class TaskView(EmailVerifiedMixin, ListView):
 
 
 class UpdateTaskView(View):
+    """ Класс обновления задачи """
+
     def post(self, request, task_id):
         try:
             task = Task.objects.get(id=task_id)
@@ -30,6 +34,8 @@ class UpdateTaskView(View):
 
 
 class DeleteTaskView(View):
+    """ Класс Удаления задачи """
+
     def delete(self, request, task_id):
         try:
             task = Task.objects.get(pk=task_id)
@@ -40,6 +46,8 @@ class DeleteTaskView(View):
 
 
 class AddTaskView(View):
+    """ Класс создания задачи """
+
     def post(self, request):
         data = json.loads(request.body)
         name = data.get('name')
@@ -55,6 +63,8 @@ class AddTaskView(View):
 
 
 class MainPageTask(TemplateView):
+    """ Класс главной страницы """
+
     template_name = 'main.html'
 
     def dispatch(self, request, *args, **kwargs):

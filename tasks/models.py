@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Task(models.Model):
+    """ Модель задачи """
     class Meta:
         verbose_name = "Задача"
         verbose_name_plural = "Задачи"

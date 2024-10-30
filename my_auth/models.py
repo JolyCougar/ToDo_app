@@ -12,6 +12,8 @@ def profile_preview_directory_path(instance: "Profile", filename: str) -> str:
 
 
 class Profile(models.Model):
+    """ Модель профиля пользователя"""
+
     class Meta:
         verbose_name = "Профиль"
         verbose_name_plural = "Профили"
@@ -36,5 +38,7 @@ class Profile(models.Model):
 
 
 class EmailVerification(models.Model):
+    """ Модель создания токена для подтверждения E-mail """
+
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
     token = models.UUIDField(default=uuid.uuid4, editable=False)

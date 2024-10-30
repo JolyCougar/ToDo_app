@@ -3,8 +3,6 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 from .models import Profile, EmailVerification
 from .services import PasswordGenerator, EmailService, TaskScheduler
-from django.views.decorators.csrf import csrf_exempt
-from django.middleware.csrf import get_token
 import json
 from django.contrib.auth import login
 from django.http import JsonResponse
@@ -19,12 +17,11 @@ from .forms import UserRegistrationForm, ProfileForm, UsernameForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from django.views.decorators.csrf import csrf_exempt
-import hashlib
-import hmac
 
 
 class CustomLoginView(LoginView):
+    """ Кастомный класс авторизации """
+
     template_name = 'login.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -57,12 +54,16 @@ class CustomLoginView(LoginView):
 
 
 class CustomLogoutView(LogoutView):
+    """ Кастомный класс выхода из системы """
+
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
         return response
 
 
 class RegisterView(CreateView):
+    """ Класс Регистрации пользователя """
+
     template_name = 'registration.html'
     form_class = UserRegistrationForm
     success_url = reverse_lazy('my_auth:login')
@@ -97,6 +98,8 @@ class RegisterView(CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class ProfileView(DetailView):
+    """ Класс просмотра профиля пользователя """
+
     model = User
     template_name = 'profile.html'
     context_object_name = "user"
@@ -136,6 +139,8 @@ class ProfileView(DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class ChangePasswordView(View):
+    """ Класс смены пароля """
+
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)  # Разбираем JSON из тела запроса
         form = PasswordChangeForm(request.user, data)  # Передаем данные в форму
@@ -149,6 +154,8 @@ class ChangePasswordView(View):
 
 @method_decorator(login_required, name='dispatch')
 class ResetAvatarView(View):
+    """ Класс сброса аватарки """
+
     def post(self, request, *args, **kwargs):
         profile = request.user.profile
         profile.avatar = ''
@@ -157,6 +164,8 @@ class ResetAvatarView(View):
 
 
 class VerifyEmailView(View):
+    """ Класс подтверждения E-mail """
+
     def get(self, request, token):
         try:
             verification = EmailVerification.objects.get(token=token)
@@ -173,6 +182,8 @@ class VerifyEmailView(View):
 
 
 class ResendVerificationTokenView(View):
+    """ Класс повторной отправки E-mail с подтверждением """
+
     def post(self, request):
         if not request.user.is_authenticated:
             messages.error(request, 'Вы должны быть авторизованы для отправки токена.')
@@ -188,6 +199,8 @@ class ResendVerificationTokenView(View):
 
 
 class ChangeEmailView(View):
+    """ Класс смены E-mail """
+
     def post(self, request):
         new_email = request.POST.get('new_email')
         # Получаем объект User
@@ -205,6 +218,8 @@ class ChangeEmailView(View):
 
 
 class AcceptCookiesView(LoginRequiredMixin, View):
+    """ Класс который подтверждает согласие на работу cookies """
+
     def post(self, request, *args, **kwargs):
         profile = Profile.objects.get(user=request.user)
         profile.cookies_accepted = True
@@ -213,6 +228,8 @@ class AcceptCookiesView(LoginRequiredMixin, View):
 
 
 class CheckUsernameView(View):
+    """ Проверка username на уникальность """
+
     def get(self, request):
         username = request.GET.get('username', None)
         if username:
@@ -222,6 +239,8 @@ class CheckUsernameView(View):
 
 
 class CheckEmailView(View):
+    """ Проверка E-mail на уникальность """
+
     def get(self, request):
         email = request.GET.get('email', None)
         if email:
@@ -231,6 +250,8 @@ class CheckEmailView(View):
 
 
 class PasswordResetView(View):
+    """ Класс сброса пароля """
+
     template_name = 'password_reset.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -257,7 +278,7 @@ class PasswordResetView(View):
                 messages.success(request,
                                  'Новый пароль был установлен и отправлен вам на почту.')
 
-                return redirect('my_auth:login')  # Путь к странице с сообщением об успешной отправке
+                return redirect('my_auth:login')
             except User.DoesNotExist:
                 form.add_error('username', 'Пользователь с таким именем не найден.')
 
@@ -265,6 +286,8 @@ class PasswordResetView(View):
 
 
 class UpdateProfileView(LoginRequiredMixin, View):
+    """ Класс обновления профиля пользователя """
+
     def post(self, request):
         data = json.loads(request.body)
         profile = Profile.objects.get(user=request.user)
@@ -273,7 +296,6 @@ class UpdateProfileView(LoginRequiredMixin, View):
             profile.delete_frequency = data['delete_frequency']
             profile.save()
 
-            # Создайте экземпляр TaskScheduler и обновите расписание
             scheduler = TaskScheduler(profile)
             scheduler.schedule_deletion_tasks()
 

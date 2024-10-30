@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 
 
 class UserRegistrationForm(forms.ModelForm):
+    """ Форма регистрации нового пользователя """
+
     password = forms.CharField(widget=forms.PasswordInput, label="Пароль")
     confirm_password = forms.CharField(widget=forms.PasswordInput, label="Подтвердите пароль")
     agreement_accepted = forms.BooleanField(required=True, label="Я согласен с лицензионным соглашением")
@@ -48,6 +50,8 @@ class UserRegistrationForm(forms.ModelForm):
 
 
 class ProfileForm(forms.ModelForm):
+    """ Форма профиля """
+
     first_name = forms.CharField(max_length=30, required=False)
     last_name = forms.CharField(max_length=30, required=False)
     email = forms.EmailField(required=False)
@@ -77,11 +81,12 @@ class ProfileForm(forms.ModelForm):
 
 
 class UsernameForm(forms.Form):
+    """ Класс для Username используется для сброса пароля"""
     username = forms.CharField(
         max_length=150,
         label='Имя пользователя',
         widget=forms.TextInput(attrs={
             'placeholder': 'Введите ваше имя пользователя',
-            'class': 'form-control'  # Вы можете добавить классы для стилизации
+            'class': 'form-control'
         })
     )

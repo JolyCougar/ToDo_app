@@ -1,4 +1,3 @@
-from django.http import HttpResponseForbidden
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 
