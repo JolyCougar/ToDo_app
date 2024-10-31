@@ -1,7 +1,11 @@
+from typing import Type
+from django.db.models import QuerySet
 from rest_framework.generics import (ListAPIView, CreateAPIView, GenericAPIView,
                                      UpdateAPIView, DestroyAPIView, RetrieveUpdateAPIView)
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.serializers import Serializer
+
 from my_auth.services import PasswordGenerator
 from django_filters.rest_framework import DjangoFilterBackend
 from tasks.models import Task
@@ -25,17 +29,37 @@ from django.contrib.auth.models import User
 
 
 class TaskListView(ListAPIView):
-    """ Просмотр всех задачей """
+    """
+    Этот класс предоставляет API для получения списка задач,
+    связанных с текущим пользователем. Доступ к этому представлению
+    разрешен только для пользователей с подтвержденным адресом электронной почты.
+    """
 
     serializer_class = TaskSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TaskFilter
     permission_classes = [IsEmailVerified]
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Task]:
+        """
+        Возвращает набор задач, связанных с текущим пользователем.
+
+        :return: QuerySet задач пользователя.
+        """
+
         return Task.objects.filter(user=self.request.user)
 
-    def handle_exception(self, exc):
+    def handle_exception(self, exc: Exception) -> Response:
+        """
+        Обрабатывает исключения, возникающие при выполнении запроса.
+        Если возникло исключение PermissionDenied, возвращает
+        сообщение с просьбой подтвердить адрес электронной почты.
+
+        :param exc: Исключение, возникшее при выполнении запроса.
+        :return: Response с сообщением об ошибке или результатом
+        обработки исключения.
+        """
+
         if isinstance(exc, PermissionDenied):
             return Response({'detail': 'Пожалуйста, подтвердите адрес электронной почты.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -43,15 +67,36 @@ class TaskListView(ListAPIView):
 
 
 class TaskCreateView(CreateAPIView):
-    """ Класс создания задачи """
+    """
+    Этот класс предоставляет API для создания новой задачи,
+    связанной с текущим пользователем. Доступ к этому представлению
+    разрешен только для пользователей с подтвержденным адресом электронной почты.
+    """
 
     serializer_class = CreateTaskSerializer
     permission_classes = [IsEmailVerified]
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer) -> None:
+        """
+        Сохраняет новую задачу, связывая её с текущим пользователем.
+
+        :param serializer: Сериализатор, содержащий данные для создания задачи.
+        """
+
         serializer.save(user=self.request.user)
 
-    def handle_exception(self, exc):
+    def handle_exception(self, exc: Exception) -> Response:
+        """
+        Обрабатывает исключения, возникающие при выполнении запроса.
+
+        Если возникло исключение PermissionDenied, возвращает
+        сообщение с просьбой подтвердить адрес электронной почты.
+
+        :param exc: Исключение, возникшее при выполнении запроса.
+        :return: Response с сообщением об ошибке или результатом
+        обработки исключения.
+        """
+
         if isinstance(exc, PermissionDenied):
             return Response({'detail': 'Пожалуйста, подтвердите адрес электронной почты.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -59,21 +104,47 @@ class TaskCreateView(CreateAPIView):
 
 
 class TaskDetailUpdateView(RetrieveUpdateAPIView):
-    """ Класс для деталей задачи """
+    """
+    Этот класс предоставляет API для получения и обновления
+    информации о задаче, связанной с текущим пользователем.
+    Доступ к этому представлению разрешен только для пользователей
+    с подтвержденным адресом электронной почты.
+    """
 
     permission_classes = [IsEmailVerified]
 
-    def get_queryset(self):
-        # Возвращаем только задачи, принадлежащие текущему пользователю
+    def get_queryset(self) -> QuerySet[Task]:
+        """
+        Возвращает только задачи, принадлежащие текущему пользователю.
+
+        :return: QuerySet задач пользователя.
+        """
+
         return Task.objects.filter(user=self.request.user)
 
-    def get_serializer_class(self):
-        # Используем разные сериализаторы для получения и обновления
+    def get_serializer_class(self) -> Type[Serializer]:
+        """
+        Возвращает сериализатор в зависимости от метода запроса.
+
+        :return: Сериализатор для получения или обновления задачи.
+        """
+
         if self.request.method == 'PUT':
             return TaskSerializer
         return TaskDetailSerializer
 
-    def handle_exception(self, exc):
+    def handle_exception(self, exc: Exception) -> Response:
+        """
+        Обрабатывает исключения, возникающие при выполнении запроса.
+
+        Если возникло исключение PermissionDenied, возвращает
+        сообщение с просьбой подтвердить адрес электронной почты.
+
+        :param exc: Исключение, возникшее при выполнении запроса.
+        :return: Response с сообщением об ошибке или результатом
+        обработки исключения.
+        """
+
         if isinstance(exc, PermissionDenied):
             return Response({'detail': 'Пожалуйста, подтвердите адрес электронной почты.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -81,16 +152,37 @@ class TaskDetailUpdateView(RetrieveUpdateAPIView):
 
 
 class TaskDeleteView(DestroyAPIView):
-    """ Класс удаления задачи """
+    """
+    Этот класс предоставляет API для удаления задачи,
+    связанной с текущим пользователем.
+    Доступ к этому представлению разрешен только для пользователей
+    с подтвержденным адресом электронной почты.
+    """
 
     queryset = Task.objects.all()
     serializer_class = TaskDetailSerializer
     permission_classes = [IsEmailVerified]
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Task]:
+        """
+        Возвращает только задачи, принадлежащие текущему пользователю.
+
+        :return: QuerySet задач пользователя.
+        """
+
         return Task.objects.filter(user=self.request.user)
 
-    def handle_exception(self, exc):
+    def handle_exception(self, exc: Exception) -> Response:
+        """
+        Обрабатывает исключения, возникающие при выполнении запроса.
+        Если возникло исключение PermissionDenied, возвращает
+        сообщение с просьбой подтвердить адрес электронной почты.
+
+        :param exc: Исключение, возникшее при выполнении запроса.
+        :return: Response с сообщением об ошибке или результатом
+        обработки исключения.
+        """
+
         if isinstance(exc, PermissionDenied):
             return Response({'detail': 'Пожалуйста, подтвердите адрес электронной почты.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -98,11 +190,20 @@ class TaskDeleteView(DestroyAPIView):
 
 
 class RegisterView(CreateAPIView):
-    """ Класс регистрации пользователей """
+    """
+    Этот класс предоставляет API для регистрации новых пользователей.
+    """
 
-    serializer_class = UserRegistrationSerializer  # Используем наш сериализатор
+    serializer_class = UserRegistrationSerializer
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs) -> Response:
+        """
+        Обрабатывает создание нового пользователя.
+
+        :param request: HTTP запрос с данными для регистрации.
+        :return: Response с результатом регистрации.
+        """
+
         user_serializer = self.get_serializer(data=request.data)
         user_serializer.is_valid(raise_exception=True)  # Проверяем валидность данных
 
@@ -139,18 +240,37 @@ class RegisterView(CreateAPIView):
 
 
 class LogoutView(APIView):
-    """ Класс Logout """
+    """
+    Этот класс предоставляет API для выхода пользователя из системы.
+    """
 
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def post(self, request) -> Response:
+        """
+        Обрабатывает выход пользователя из системы.
+
+        :param request: HTTP запрос.
+        :return: Response с результатом выхода.
+        """
+
         request.user.auth_token.delete()
         return Response(status=status.HTTP_200_OK)
 
 
 class LoginView(APIView):
-    """ Класс авторизации """
-    def post(self, request):
+    """
+    Этот класс предоставляет API для входа пользователей в систему.
+    """
+
+    def post(self, request) -> Response:
+        """
+        Обрабатывает вход пользователя в систему.
+
+        :param request: HTTP запрос с данными для авторизации.
+        :return: Response с токеном или сообщением об ошибке.
+        """
+
         username = request.data.get('username')
         password = request.data.get('password')
 
@@ -170,17 +290,34 @@ class LoginView(APIView):
 
 
 class ProfileView(RetrieveUpdateAPIView):
-    """ Класс Профиля """
+    """
+    Этот класс предоставляет API для получения и обновления
+    информации о профиле текущего пользователя.
+    """
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Возвращает информацию о пользователе и его профиле.
+
+        :param request: HTTP запрос.
+        :return: Response с данными пользователя и профиля.
+        """
+
         profile = request.user.profile
         user_data = UserSerializer(request.user).data
         profile_data = ProfileSerializer(profile).data
         return Response({'user': user_data, 'profile': profile_data})
 
-    def put(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs) -> Response:
+        """
+        Обрабатывает обновление информации о пользователе и профиле.
+
+        :param request: HTTP запрос с данными для обновления.
+        :return: Response с обновленными данными или ошибками.
+        """
+
         user_serializer = UserSerializer(request.user, data=request.data.get('user'), partial=True)
         profile_serializer = ProfileSerializer(request.user.profile, data=request.data.get('profile'), partial=True)
 
@@ -201,12 +338,21 @@ class ProfileView(RetrieveUpdateAPIView):
 
 
 class PasswordResetView(GenericAPIView):
-    """ Класс сброса пароля """
+    """
+    Этот класс предоставляет API для сброса пароля пользователя.
+    """
 
     permission_classes = [AllowAny]
     serializer_class = PasswordResetSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> Response:
+        """
+        Обрабатывает запрос на сброс пароля.
+
+        :param request: HTTP запрос с данными для сброса пароля.
+        :return: Response с результатом сброса пароля.
+        """
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.get_user()  # Убедитесь, что это объект User
@@ -229,13 +375,23 @@ class PasswordResetView(GenericAPIView):
 
 
 class TaskConfirmView(UpdateAPIView):
-    """ Класс подтверждения задачи """
+    """
+    Этот класс предоставляет API для подтверждения задачи,
+    связанной с текущим пользователем.
+    """
 
     permission_classes = [IsAuthenticated]
     queryset = Task.objects.all()
     serializer_class = TaskSerializer  # Используем тот же сериализатор
 
-    def patch(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs) -> Response:
+        """
+        Обрабатывает запрос на подтверждение задачи.
+
+        :param request: HTTP запрос.
+        :return: Response с результатом подтверждения задачи.
+        """
+
         task = self.get_object()
 
         # Проверка прав пользователя
