@@ -7,12 +7,16 @@ from django.utils.http import urlsafe_base64_decode
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    """ Сериалайзер задач """
+
     class Meta:
         model = Task
         fields = ['id', 'name', 'description', 'complete']
 
 
 class CreateTaskSerializer(serializers.ModelSerializer):
+    """ Сериалайзер создания задачи """
+
     class Meta:
         model = Task
         fields = ['id', 'user', 'name', 'description', 'create_at', 'complete']
@@ -20,12 +24,16 @@ class CreateTaskSerializer(serializers.ModelSerializer):
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):
+    """ Сериалайзер деталей задачи """
+
     class Meta:
         model = Task
         fields = '__all__'
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    """ Сериалайзер для регистрации нового пользователя """
+
     email = serializers.EmailField(required=True)  # Делаем поле e-mail обязательным
 
     class Meta:
@@ -48,6 +56,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    """ Сериалайзер профиля """
+
     class Meta:
         model = Profile
         fields = ['bio', 'avatar']
@@ -62,12 +72,16 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """ Сериалайзер юзер """
+
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
 
 
 class PasswordResetSerializer(serializers.Serializer):
+    """ Сериалайзер для сброса пароля """
+
     email = serializers.EmailField()
 
     def get_user(self):
@@ -80,6 +94,8 @@ class PasswordResetSerializer(serializers.Serializer):
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
+    """ Сериалайзер подтверждения сброса пароля """
+
     new_password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 
@@ -101,6 +117,8 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
 
 class TaskConfirmSerializer(serializers.ModelSerializer):
+    """ Сериалайзер для подтверждения задачи """
+
     class Meta:
         model = Task
         fields = ['complete']

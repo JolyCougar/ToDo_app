@@ -11,9 +11,8 @@ from rest_framework.views import APIView
 from .filters import TaskFilter
 from .serializers import (TaskSerializer, CreateTaskSerializer, TaskDetailSerializer,
                           UserRegistrationSerializer, ProfileSerializer, UserSerializer,
-                          PasswordResetSerializer, PasswordResetConfirmSerializer, TaskConfirmSerializer)
+                          PasswordResetSerializer)
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.tokens import default_token_generator
 from my_auth.services import EmailService
 from django.contrib import messages
 from rest_framework.response import Response
@@ -26,6 +25,8 @@ from django.contrib.auth.models import User
 
 
 class TaskListView(ListAPIView):
+    """ Просмотр всех задачей """
+
     serializer_class = TaskSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TaskFilter
@@ -42,6 +43,8 @@ class TaskListView(ListAPIView):
 
 
 class TaskCreateView(CreateAPIView):
+    """ Класс создания задачи """
+
     serializer_class = CreateTaskSerializer
     permission_classes = [IsEmailVerified]
 
@@ -56,6 +59,8 @@ class TaskCreateView(CreateAPIView):
 
 
 class TaskDetailUpdateView(RetrieveUpdateAPIView):
+    """ Класс для деталей задачи """
+
     permission_classes = [IsEmailVerified]
 
     def get_queryset(self):
@@ -76,6 +81,8 @@ class TaskDetailUpdateView(RetrieveUpdateAPIView):
 
 
 class TaskDeleteView(DestroyAPIView):
+    """ Класс удаления задачи """
+
     queryset = Task.objects.all()
     serializer_class = TaskDetailSerializer
     permission_classes = [IsEmailVerified]
@@ -91,6 +98,8 @@ class TaskDeleteView(DestroyAPIView):
 
 
 class RegisterView(CreateAPIView):
+    """ Класс регистрации пользователей """
+
     serializer_class = UserRegistrationSerializer  # Используем наш сериализатор
 
     def create(self, request, *args, **kwargs):
@@ -130,6 +139,8 @@ class RegisterView(CreateAPIView):
 
 
 class LogoutView(APIView):
+    """ Класс Logout """
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -138,6 +149,7 @@ class LogoutView(APIView):
 
 
 class LoginView(APIView):
+    """ Класс авторизации """
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -158,6 +170,8 @@ class LoginView(APIView):
 
 
 class ProfileView(RetrieveUpdateAPIView):
+    """ Класс Профиля """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
@@ -187,6 +201,8 @@ class ProfileView(RetrieveUpdateAPIView):
 
 
 class PasswordResetView(GenericAPIView):
+    """ Класс сброса пароля """
+
     permission_classes = [AllowAny]
     serializer_class = PasswordResetSerializer
 
@@ -213,6 +229,8 @@ class PasswordResetView(GenericAPIView):
 
 
 class TaskConfirmView(UpdateAPIView):
+    """ Класс подтверждения задачи """
+
     permission_classes = [IsAuthenticated]
     queryset = Task.objects.all()
     serializer_class = TaskSerializer  # Используем тот же сериализатор

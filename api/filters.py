@@ -3,6 +3,8 @@ from tasks.models import Task
 
 
 class TaskFilter(django_filters.FilterSet):
+    """ Класс для фильтрации """
+
     class Meta:
         model = Task
         fields = {
