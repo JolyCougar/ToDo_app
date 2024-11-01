@@ -231,7 +231,7 @@
         })
             .then(response => {
                 if (response.ok) {
-                    alert('Частота удаления задач успешно обновлена!');
+                    
                     document.getElementById('settingsModal').style.display = 'none'; // Закрываем модальное окно
                 } else {
                     alert('Произошла ошибка при обновлении частоты удаления задач.');
@@ -239,7 +239,6 @@
             })
             .catch(error => {
                 console.error('Ошибка:', error);
-                alert('Произошла ошибка. Пожалуйста, проверьте консоль для подробностей.');
             });
     });
 
