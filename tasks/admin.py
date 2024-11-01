@@ -35,3 +35,8 @@ class TaskAdmin(admin.ModelAdmin):
         if len(obj.description) < 48:
             return obj.description
         return obj.description[:48] + "..."
+
+
+admin.site.site_header = "toDo"
+admin.site.site_title = "toDo"
+admin.site.index_title = "toDo Admin"
