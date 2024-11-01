@@ -8,10 +8,16 @@ import json
 
 
 class EmailService:
-    """ Класс который взаимодействует с задачей Celery на отправку E-mail """
+    """
+    Класс который взаимодействует с задачей Celery на отправку E-mail
+    """
 
     @staticmethod
     def send_verification_email(request, user):
+        """
+        Отправляет письмо с кодом проверки для подтверждения E-mail.
+        """
+
         # Получаем профиль пользователя
         profile = user.profile
         # Создаем или получаем токен верификации
@@ -25,27 +31,40 @@ class EmailService:
 
     @staticmethod
     def send_new_password_email(user, new_password):
+        """
+        Отправляет новый пароль
+        """
         # Отправка нового пароля асинхронно
         send_new_password_email_task.delay(user.email, new_password)
 
 
 class PasswordGenerator:
-    """ Генератор паролей """
+    """
+    Генератор паролей
+     """
 
     @staticmethod
     def generate_random_password(length=8):
-        """Генерация случайного пароля заданной длины."""
+        """
+        Генерация случайного пароля заданной длины.
+        """
         characters = string.ascii_letters + string.digits + string.punctuation
         return ''.join(random.choice(characters) for _ in range(length))
 
 
 class TaskScheduler:
-    """ Класс создания и применения рассписания на удаление выполненных задач """
+    """
+    Класс создания и применения рассписания на удаление выполненных задач
+    """
     def __init__(self, profile):
         self.profile = profile
         self.task_name = f'delete_tasks_{self.profile.user.username}'
 
     def schedule_deletion_tasks(self):
+        """
+        Создаем расписание
+        """
+
         # Удаляем старую задачу, если она существует
         PeriodicTask.objects.filter(name=self.task_name).delete()
 
@@ -60,6 +79,10 @@ class TaskScheduler:
             )
 
     def get_schedule(self):
+        """
+        Устанавливаем рассписание в зависимости от выбора пользователя
+        """
+
         if self.profile.delete_frequency == 'minute':
             return IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.MINUTES)[0]
         elif self.profile.delete_frequency == 'hour':

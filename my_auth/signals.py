@@ -3,7 +3,9 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from .models import Profile
 
-"""Сигналы на создание и сохранение профиля при регистрации пользователя """
+"""
+Сигналы на создание и сохранение профиля при регистрации пользователя 
+"""
 
 
 @receiver(post_save, sender=User)

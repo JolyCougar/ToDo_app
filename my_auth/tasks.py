@@ -5,7 +5,7 @@ from django.utils.html import strip_tags
 from decouple import config
 from tasks.models import Task
 
-""" Задачи Celery """
+""" Задачи Celery  для отправки писем """
 
 
 @shared_task
@@ -46,6 +46,11 @@ def send_new_password_email_task(user_email, new_password):
         fail_silently=False,
         html_message=html_message,
     )
+
+
+"""
+Задача Celery удаления всех выполненых задач
+"""
 
 
 @shared_task

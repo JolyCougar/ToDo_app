@@ -33,5 +33,5 @@ class Task(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False, db_index=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name

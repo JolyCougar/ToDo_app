@@ -5,7 +5,7 @@ from .models import Profile, EmailVerification
 from .services import PasswordGenerator, EmailService, TaskScheduler
 import json
 from django.contrib.auth import login
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
@@ -20,11 +20,21 @@ from django.contrib.auth.forms import PasswordChangeForm
 
 
 class CustomLoginView(LoginView):
-    """ Кастомный класс авторизации """
+    """
+    Кастомный класс авторизации, который обрабатывает вход пользователей.
+
+    Если пользователь уже аутентифицирован, он будет перенаправлен на главную страницу.
+    Также добавляет сообщения об успешной регистрации и ошибках входа в контекст.
+    """
 
     template_name = 'login.html'
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs) -> HttpResponse:
+        """
+        Обрабатывает запрос и проверяет, аутентифицирован ли пользователь.
+        Если да, перенаправляет на главную страницу.
+        """
+
         if request.user.is_authenticated:
             return redirect(reverse_lazy('task:task_view'))  # Перенаправление на главную страницу
 
@@ -40,40 +50,69 @@ class CustomLoginView(LoginView):
 
         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
+        """
+        Получает контекст для шаблона и добавляет дополнительные данные.
+        """
+
         # Получаем контекст из родительского класса
         context = super().get_context_data(**kwargs)
         # Объединяем контекст с дополнительными данными
         context.update(self.extra_context)
         return context
 
-    def form_invalid(self, form):
+    def form_invalid(self, form) -> HttpResponse:
+        """
+        Обрабатывает случай, когда форма входа недействительна,
+        добавляя сообщение об ошибке в контекст.
+        """
+
         # Если форма недействительна, добавляем сообщение об ошибке
         self.extra_context['login_error'] = "Неправильное имя пользователя или пароль."
         return self.render_to_response(self.get_context_data(form=form))
 
 
 class CustomLogoutView(LogoutView):
-    """ Кастомный класс выхода из системы """
+    """
+    Кастомный класс выхода из системы.
+    Обрабатывает выход пользователя и перенаправляет на страницу входа.
+    """
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        """
+        Обрабатывает GET-запрос для выхода из системы.
+        """
+
         response = super().get(request, *args, **kwargs)
         return response
 
 
 class RegisterView(CreateView):
-    """ Класс Регистрации пользователя """
+    """
+    Класс Регистрации пользователя.
+
+    Обрабатывает регистрацию нового пользователя и отправляет письмо с подтверждением.
+    """
 
     template_name = 'registration.html'
     form_class = UserRegistrationForm
     success_url = reverse_lazy('my_auth:login')
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs) -> HttpResponse:
+        """
+        Проверяет, аутентифицирован ли пользователь.
+        Если да, перенаправляет на главную страницу.
+        """
+
         if request.user.is_authenticated:
             return redirect(reverse_lazy('task:task_view'))
         return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponse:
+        """
+        Обрабатывает валидную форму регистрации, создавая пользователя и профиль.
+        Отправляет письмо с подтверждением.
+        """
         user = form.save(commit=False)
         user.set_password(form.cleaned_data['password'])
         user.save()
@@ -98,21 +137,39 @@ class RegisterView(CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class ProfileView(DetailView):
-    """ Класс просмотра профиля пользователя """
+    """
+    Класс просмотра профиля пользователя.
+
+    Позволяет пользователю просматривать и редактировать свой профиль.
+    """
 
     model = User
     template_name = 'profile.html'
     context_object_name = "user"
 
-    def get_object(self, queryset=None):
+    def get_object(self, queryset=None) -> User:
+        """
+        Получает объект пользователя по идентификатору текущего аутентифицированного пользователя.
+        Если пользователь не найден, возвращает 404.
+        """
+
         return get_object_or_404(User, pk=self.request.user.pk)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
+        """
+        Получает контекст для шаблона и добавляет форму профиля в контекст.
+        """
+
         context = super().get_context_data(**kwargs)
         context['form'] = ProfileForm(instance=self.object.profile, user=self.object)
         return context
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> HttpResponse:
+        """
+        Обрабатывает POST-запрос для обновления профиля пользователя.
+        Если email изменился, отправляет новое письмо для подтверждения.
+        """
+
         self.object = self.get_object()
         form = ProfileForm(request.POST, request.FILES, instance=self.object.profile, user=self.object)
 
@@ -139,9 +196,18 @@ class ProfileView(DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class ChangePasswordView(View):
-    """ Класс смены пароля """
+    """
+    Класс смены пароля.
 
-    def post(self, request, *args, **kwargs):
+    Позволяет пользователю изменить свой пароль через AJAX-запрос.
+    """
+
+    def post(self, request, *args, **kwargs) -> JsonResponse:
+        """
+        Обрабатывает POST-запрос для изменения пароля пользователя.
+        Возвращает JSON-ответ с результатом операции.
+        """
+
         data = json.loads(request.body)  # Разбираем JSON из тела запроса
         form = PasswordChangeForm(request.user, data)  # Передаем данные в форму
         if form.is_valid():
@@ -154,9 +220,18 @@ class ChangePasswordView(View):
 
 @method_decorator(login_required, name='dispatch')
 class ResetAvatarView(View):
-    """ Класс сброса аватарки """
+    """
+    Класс сброса аватарки.
 
-    def post(self, request, *args, **kwargs):
+    Позволяет пользователю сбросить свой аватар.
+    """
+
+    def post(self, request, *args, **kwargs) -> JsonResponse:
+        """
+        Обрабатывает POST-запрос для сброса аватарки пользователя.
+        Возвращает JSON-ответ с результатом операции.
+        """
+
         profile = request.user.profile
         profile.avatar = ''
         profile.save()
@@ -164,9 +239,18 @@ class ResetAvatarView(View):
 
 
 class VerifyEmailView(View):
-    """ Класс подтверждения E-mail """
+    """
+    Класс подтверждения E-mail.
 
-    def get(self, request, token):
+    Обрабатывает запрос на подтверждение адреса электронной почты пользователя.
+    """
+
+    def get(self, request, token) -> HttpResponse:
+        """
+        Обрабатывает GET-запрос для подтверждения email по токену.
+        Если токен действителен, активирует пользователя и перенаправляет на главную страницу.
+        """
+
         try:
             verification = EmailVerification.objects.get(token=token)
             profile = verification.profile
@@ -182,9 +266,18 @@ class VerifyEmailView(View):
 
 
 class ResendVerificationTokenView(View):
-    """ Класс повторной отправки E-mail с подтверждением """
+    """
+    Класс повторной отправки E-mail с подтверждением.
 
-    def post(self, request):
+    Позволяет пользователю запросить повторную отправку токена подтверждения на его адрес электронной почты.
+    """
+
+    def post(self, request) -> HttpResponse:
+        """
+        Обрабатывает POST-запрос для повторной отправки токена подтверждения.
+        Если пользователь не аутентифицирован, отображает сообщение об ошибке.
+        """
+
         if not request.user.is_authenticated:
             messages.error(request, 'Вы должны быть авторизованы для отправки токена.')
             return redirect('my_auth:login')
@@ -199,9 +292,18 @@ class ResendVerificationTokenView(View):
 
 
 class ChangeEmailView(View):
-    """ Класс смены E-mail """
+    """
+    Класс смены E-mail.
 
-    def post(self, request):
+    Позволяет пользователю изменить свой адрес электронной почты и отправляет новый код подтверждения.
+    """
+
+    def post(self, request) -> HttpResponse:
+        """
+        Обрабатывает POST-запрос для изменения адреса электронной почты пользователя.
+        Отправляет новый код подтверждения на указанный email.
+        """
+
         new_email = request.POST.get('new_email')
         # Получаем объект User
         user = request.user
@@ -218,9 +320,18 @@ class ChangeEmailView(View):
 
 
 class AcceptCookiesView(LoginRequiredMixin, View):
-    """ Класс который подтверждает согласие на работу cookies """
+    """
+    Класс, который подтверждает согласие на работу cookies.
 
-    def post(self, request, *args, **kwargs):
+    Позволяет пользователю подтвердить использование cookies на сайте.
+    """
+
+    def post(self, request, *args, **kwargs) -> JsonResponse:
+        """
+        Обрабатывает POST-запрос для подтверждения согласия на использование cookies.
+        Возвращает JSON-ответ с результатом операции.
+        """
+
         profile = Profile.objects.get(user=request.user)
         profile.cookies_accepted = True
         profile.save()
@@ -228,9 +339,18 @@ class AcceptCookiesView(LoginRequiredMixin, View):
 
 
 class CheckUsernameView(View):
-    """ Проверка username на уникальность """
+    """
+    Проверка username на уникальность.
 
-    def get(self, request):
+    Позволяет проверить, существует ли указанный username в базе данных.
+    """
+
+    def get(self, request) -> JsonResponse:
+        """
+        Обрабатывает GET-запрос для проверки уникальности username.
+        Возвращает JSON-ответ с результатом проверки.
+        """
+
         username = request.GET.get('username', None)
         if username:
             exists = User.objects.filter(username=username).exists()
@@ -239,9 +359,18 @@ class CheckUsernameView(View):
 
 
 class CheckEmailView(View):
-    """ Проверка E-mail на уникальность """
+    """
+    Проверка E-mail на уникальность.
 
-    def get(self, request):
+    Позволяет проверить, существует ли указанный email в базе данных.
+    """
+
+    def get(self, request) -> JsonResponse:
+        """
+        Обрабатывает GET-запрос для проверки уникальности email.
+        Возвращает JSON-ответ с результатом проверки.
+        """
+
         email = request.GET.get('email', None)
         if email:
             exists = User.objects.filter(email=email).exists()
@@ -250,20 +379,39 @@ class CheckEmailView(View):
 
 
 class PasswordResetView(View):
-    """ Класс сброса пароля """
+    """
+    Класс сброса пароля.
+
+    Позволяет пользователю сбросить пароль, отправляя новый пароль на его email.
+    """
 
     template_name = 'password_reset.html'
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs) -> HttpResponse:
+        """
+        Проверяет, аутентифицирован ли пользователь.
+        Если да, перенаправляет на главную страницу.
+        """
+
         if request.user.is_authenticated:
             return redirect(reverse_lazy('task:task_view'))
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request):
+    def get(self, request) -> HttpResponse:
+        """
+        Отображает форму для сброса пароля.
+        """
+
         form = UsernameForm()
         return render(request, self.template_name, {'form': form})
 
-    def post(self, request):
+    def post(self, request) -> HttpResponse:
+        """
+        Обрабатывает POST-запрос для сброса пароля пользователя.
+        Генерирует новый пароль и отправляет его на email пользователя.
+        Если пользователь с указанным именем не найден, добавляет ошибку в форму.
+        """
+
         form = UsernameForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -286,9 +434,18 @@ class PasswordResetView(View):
 
 
 class UpdateProfileView(LoginRequiredMixin, View):
-    """ Класс обновления профиля пользователя """
+    """
+    Класс обновления профиля пользователя.
 
-    def post(self, request):
+    Позволяет пользователю обновлять настройки профиля, такие как частота удаления задач.
+    """
+
+    def post(self, request) -> JsonResponse:
+        """
+        Обрабатывает POST-запрос для обновления настроек профиля пользователя.
+        Возвращает JSON-ответ с результатом операции.
+        """
+
         data = json.loads(request.body)
         profile = Profile.objects.get(user=request.user)
 
