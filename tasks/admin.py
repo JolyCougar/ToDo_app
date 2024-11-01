@@ -5,8 +5,6 @@ from .models import Task
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     """
-    Отоброжение модели задачи в админке
-
     Отображение модели задачи в админке.
 
     Этот класс настраивает отображение модели задачи в административном
@@ -33,6 +31,7 @@ class TaskAdmin(admin.ModelAdmin):
         :return: Укороченное описание задачи (до 48 символов) с добавлением
                  многоточия, если описание длиннее.
         """
+
         if len(obj.description) < 48:
             return obj.description
         return obj.description[:48] + "..."
