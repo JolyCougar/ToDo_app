@@ -1,4 +1,5 @@
-from django.http import JsonResponse
+from django.db.models import QuerySet
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect
 import json
 from django.urls import reverse_lazy
@@ -8,21 +9,46 @@ from .tasks_mixins import EmailVerifiedMixin
 
 
 class TaskView(EmailVerifiedMixin, ListView):
-    """ Класс отображения задач """
+    """
+    Этот класс предоставляет список задач,
+    связанных с текущим пользователем. Доступ к этому представлению
+    разрешен только для пользователей с подтвержденным адресом электронной почты.
+    """
 
     model = Task
     template_name = 'index.html'
     context_object_name = 'task_list'
     login_url = reverse_lazy('my_auth:login')
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Task]:
+        """
+        Возвращает набор задач, связанных с текущим пользователем.
+
+        :return: QuerySet задач пользователя.
+        """
+
         return Task.objects.filter(user=self.request.user)
 
 
 class UpdateTaskView(View):
-    """ Класс обновления задачи """
+    """
+    Класс для обновления статуса задачи.
 
-    def post(self, request, task_id):
+    Этот класс обрабатывает POST-запросы для обновления состояния задачи
+    по заданному идентификатору. Он извлекает данные из тела запроса,
+    обновляет поле 'complete' задачи и сохраняет изменения в базе данных.
+    """
+
+    def post(self, request, task_id) -> JsonResponse:
+        """
+        Обрабатывает обновление статуса задачи.
+
+        :param request: HTTP запрос с данными для обновления статуса задачи.
+        :param task_id: Идентификатор задачи, которую необходимо обновить.
+        :return: JsonResponse с информацией об успехе операции и текущем статусе задачи
+                 или сообщение об ошибке, если задача не найдена.
+        """
+
         try:
             task = Task.objects.get(id=task_id)
             data = json.loads(request.body)
@@ -34,9 +60,23 @@ class UpdateTaskView(View):
 
 
 class DeleteTaskView(View):
-    """ Класс Удаления задачи """
+    """
+    Класс для удаления задачи.
 
-    def delete(self, request, task_id):
+    Этот класс обрабатывает DELETE-запросы для удаления задачи
+    по заданному идентификатору из базы данных.
+    """
+
+    def delete(self, request, task_id) -> JsonResponse:
+        """
+        Обрабатывает удаление задачи.
+
+        :param request: HTTP запрос с данными для обновления удаления задачи.
+        :param task_id: Идентификатор задачи, которую необходимо удалить.
+        :return: JsonResponse с информацией об успехе операции и текущем статусе задачи
+                 или сообщение об ошибке, если задача не найдена.
+        """
+
         try:
             task = Task.objects.get(pk=task_id)
             task.delete()
@@ -46,9 +86,23 @@ class DeleteTaskView(View):
 
 
 class AddTaskView(View):
-    """ Класс создания задачи """
+    """
+    Класс для добавления задачи.
 
-    def post(self, request):
+    Этот класс обрабатывает POST-запросы для добавления задачи
+    извлекает название и описание задачи которые ввел пользователь,
+     и добавляет в базу данных.
+    """
+
+    def post(self, request) -> JsonResponse:
+        """
+        Обрабатывает добавление задачи.
+
+        :param request: HTTP запрос с данными для добавления задачи.
+        :return: JsonResponse с информацией об успехе операции и текущем статусе задачи
+                 или сообщение об ошибке, если задача не найдена.
+        """
+
         data = json.loads(request.body)
         name = data.get('name')
         description = data.get('description', '')
@@ -63,11 +117,26 @@ class AddTaskView(View):
 
 
 class MainPageTask(TemplateView):
-    """ Класс главной страницы """
+    """
+    Класс для отображения главной страницы.
+
+    Этот класс обрабатывает запросы к главной странице приложения.
+    Если пользователь аутентифицирован, он будет перенаправлен на
+    страницу задач. В противном случае будет отображена главная страница.
+    """
 
     template_name = 'main.html'
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs) -> HttpResponse:
+        """
+        Обрабатывает входящие запросы и выполняет перенаправление
+        для аутентифицированных пользователей.
+
+        :param request: HTTP запрос.
+        :return: HttpResponse с перенаправлением на страницу задач
+                 или ответом для отображения главной страницы.
+        """
+
         if request.user.is_authenticated:
             return redirect(reverse_lazy('task:task_view'))
         return super().dispatch(request, *args, **kwargs)
