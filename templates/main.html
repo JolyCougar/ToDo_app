@@ -15,6 +15,7 @@
             background-size: cover;
             color: white;
         }
+
         .hero {
             display: flex;
             flex-direction: column;
@@ -24,17 +25,21 @@
             text-align: center;
             background-color: rgba(0, 0, 0, 0.3);
         }
+
         .hero h1 {
             font-size: 3em;
             margin: 0;
         }
+
         .hero p {
             font-size: 1.5em;
             margin: 20px 0;
         }
+
         .button-container {
             margin-top: 20px;
         }
+
         .button {
             background-color: #007BFF;
             color: white;
@@ -47,19 +52,20 @@
             transition: background-color 0.3s;
             text-decoration: none; /* Убираем подчеркивание */
         }
+
         .button:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <h1>Добро пожаловать в To Do App</h1>
-        <p>Управляйте своими задачами легко и удобно!</p>
-        <div class="button-container">
-            <a href="{% url 'my_auth:register' %}" class="button">Зарегистрироваться</a>
-            <a href="{% url 'my_auth:login' %}" class="button">Войти</a>
-        </div>
+<div class="hero">
+    <h1>Добро пожаловать в To Do App</h1>
+    <p>Управляйте своими задачами легко и удобно!</p>
+    <div class="button-container">
+        <a href="{% url 'my_auth:register' %}" class="button">Зарегистрироваться</a>
+        <a href="{% url 'my_auth:login' %}" class="button">Войти</a>
     </div>
+</div>
 </body>
 </html>

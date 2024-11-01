@@ -8,42 +8,42 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css" media="all">
     <style>
         * {
-            box-sizing: border-box; /* Убедитесь, что отступы учитываются в ширине */
+            box-sizing: border-box;
         }
 
         .modal {
-            display: none; /* Скрыто по умолчанию */
+            display: none;
             position: fixed;
             z-index: 1;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; /* Позволяет прокручивать содержимое, если оно превышает высоту */
-            background-color: rgba(0, 0, 0, 0.4); /* Черный с прозрачностью */
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
         .modal-content {
             background-color: #fefefe;
-            margin: 5% auto; /* Уменьшите отступ сверху */
-            padding: 20px; /* Увеличьте внутренние отступы */
+            margin: 5% auto;
+            padding: 20px;
             border: 1px solid #888;
             width: 80%;
-            height: 65%; /* Увеличьте ширину модального окна (например, до 80%) */
-            max-width: 700px; /* Установите максимальную ширину (например, 800px) */
-            max-height: 95%; /* Увеличьте максимальную высоту (например, до 95%) */
-            overflow-y: auto; /* Позволяет прокручивать содержимое по вертикали */
+            height: 65%;
+            max-width: 700px;
+            max-height: 95%;
+            overflow-y: auto;
         }
 
         .modal-content_pass {
             background-color: #fefefe;
-            margin: 5% auto; /* Уменьшите отступ сверху */
-            padding: 20px; /* Увеличьте внутренние отступы */
+            margin: 5% auto;
+            padding: 20px;
             border: 1px solid #888;
-            width: 80%; /* Увеличьте ширину модального окна (например, до 80%) */
-            max-width: 700px; /* Установите максимальную ширину (например, 800px) */
-            max-height: 95%; /* Увеличьте максимальную высоту (например, до 95%) */
-            overflow-y: auto; /* Позволяет прокручивать содержимое по вертикали */
+            width: 80%;
+            max-width: 700px;
+            max-height: 95%;
+            overflow-y: auto;
         }
 
 
@@ -62,93 +62,93 @@
         }
 
         .form-group {
-            display: flex; /* Используйте Flexbox для выравнивания по горизонтали */
-            align-items: center; /* Центрируйте элементы по вертикали */
-            margin: 10px 0; /* Установите отступы между элементами формы */
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
         }
 
         .form-group label {
-            width: 30%; /* Установите ширину метки */
-            margin-right: 10px; /* Отступ между меткой и полем ввода */
+            width: 30%;
+            margin-right: 10px;
         }
 
         .form-group input[type="text"],
         .form-group input[type="email"],
         .form-group textarea {
-            width: 70%; /* Установите ширину на 70% от родительского элемента */
-            padding: 5px; /* Уменьшите внутренние отступы для удобства ввода */
-            font-size: 14px; /* Уменьшите размер шрифта */
+            width: 70%;
+            padding: 5px;
+            font-size: 14px;
         }
 
         .form-group input[type="file"] {
-            display: none; /* Скрыть стандартный элемент input */
+            display: none;
         }
 
         .custom-file-upload {
-            display: flex; /* Используйте flex для выравнивания текста */
-            align-items: center; /* Центрируйте текст по вертикали */
-            padding: 8px 16px; /* Увеличьте отступы для кнопки */
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
             cursor: pointer;
-            background-color: #007bff; /* Цвет кнопки */
-            color: white; /* Цвет текста */
-            border-radius: 4px; /* Закруглите углы */
-            margin-left: 10px; /* Отступ слева для кнопки */
-            white-space: nowrap; /* Запретить перенос текста */
-            min-width: 120px; /* Установите минимальную ширину для кнопки */
-            text-align: center; /* Центрируйте текст */
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            margin-left: 10px;
+            white-space: nowrap;
+            min-width: 120px;
+            text-align: center;
         }
 
 
         .form-group textarea {
-            height: 50px; /* Установите высоту текстовой области */
+            height: 50px;
         }
 
         button.large-button {
-            padding: 8px 12px; /* Уменьшите отступы для кнопки */
-            font-size: 14px; /* Уменьшите размер шрифта для кнопки */
-            background-color: #007bff; /* Установите цвет фона для кнопки */
-            color: white; /* Установите цвет текста для кнопки */
-            border: none; /* Уберите границу */
-            border-radius: 4px; /* Закруглите углы */
-            cursor: pointer; /* Установите курсор в виде указателя */
-            width: auto; /* Установите ширину на авто */
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: auto;
         }
 
         button.large-button:hover {
-            background-color: #0056b3; /* Цвет фона при наведении */
+            background-color: #0056b3;
         }
 
         .avatar-preview {
-            margin-right: 10px; /* Отступ справа для превью */
-            width: 100px; /* Увеличьте ширину превью */
-            height: 100px; /* Увеличьте высоту превью */
-            border-radius: 50%; /* Закругление для превью */
-            object-fit: cover; /* Обеспечьте обрезку изображения */
+            margin-right: 10px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .form-group .preview-container {
-            display: flex; /* Используйте Flexbox для выравнивания по горизонтали */
-            align-items: center; /* Центрируйте элементы по вертикали */
+            display: flex;
+            align-items: center;
         }
 
         .header {
-            display: flex; /* Используем Flexbox для выравнивания элементов */
-            align-items: center; /* Центрируем элементы по вертикали */
-            justify-content: space-between; /* Распределяем пространство между элементами */
-            padding: 10px; /* Добавляем отступы */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
         }
 
         .back-button {
-            padding: 10px 15px; /* Отступы внутри кнопки */
-            background-color: #007bff; /* Цвет кнопки */
-            color: white; /* Цвет текста */
-            border-radius: 4px; /* Закругление углов */
-            text-decoration: none; /* Убираем подчеркивание */
-            transition: background-color 0.3s; /* Плавный переход цвета фона */
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
         }
 
         .back-button:hover {
-            background-color: #0056b3; /* Цвет фона при наведении */
+            background-color: #0056b3;
         }
 
         .h1_profile {
@@ -332,8 +332,8 @@
                 },
                 body: JSON.stringify({
                     old_password: oldPassword,
-                    new_password1: newPassword, // Изменено на new_password1
-                    new_password2: confirmPassword // Изменено на new_password2
+                    new_password1: newPassword,
+                    new_password2: confirmPassword
                 }),
             })
                 .then(response => {
@@ -410,7 +410,7 @@
         const resetAvatarButton = document.getElementById('resetAvatarButton');
 
         resetAvatarButton.addEventListener('click', function () {
-            fetch('/reset-avatar/', { // Замените на правильный URL
+            fetch('/reset-avatar/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -425,8 +425,8 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        // Обновите изображение аватара на странице
-                        document.getElementById('avatarPreview').src = '{% static "images/default_avatar.png" %}'; // Установите путь к изображению по умолчанию
+
+                        document.getElementById('avatarPreview').src = '{% static "images/default_avatar.png" %}';
                     } else {
                         alert('Ошибка: ' + JSON.stringify(data.errors));
                     }
