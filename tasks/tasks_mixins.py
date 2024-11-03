@@ -1,6 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class EmailVerifiedMixin(LoginRequiredMixin):
@@ -27,6 +30,7 @@ class EmailVerifiedMixin(LoginRequiredMixin):
         if request.user.is_authenticated:
             # Проверяем, подтверждена ли электронная почта
             if not request.user.profile.email_verified:
+                logger.warning(f'Пользователь {request.user.id} пытается получить доступ без потвержденной почты.')
                 # Если не подтверждена, рендерим страницу с сообщением
                 return self.handle_email_not_verified(request)
         return super().dispatch(request, *args, **kwargs)
@@ -41,4 +45,5 @@ class EmailVerifiedMixin(LoginRequiredMixin):
                  подтверждения электронной почты.
         """
 
+        logger.info(f'Пользователь {request.user.id} перенаправлен на страницу потверждения почты.')
         return render(request, 'email_verification_required.html')

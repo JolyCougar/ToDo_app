@@ -1,4 +1,5 @@
 from django.db.models import QuerySet
+import logging
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect
 import json
@@ -6,6 +7,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, View, TemplateView
 from .models import Task
 from .tasks_mixins import EmailVerifiedMixin
+
+logger = logging.getLogger(__name__)
 
 
 class TaskView(EmailVerifiedMixin, ListView):
@@ -54,8 +57,10 @@ class UpdateTaskView(View):
             data = json.loads(request.body)
             task.complete = data.get('complete', False)
             task.save()
+            logger.info(f'Задача с номером {task_id} у пользователя {request.user.id} выполнена ={task.complete}')
             return JsonResponse({'success': True, 'complete': task.complete})
         except Task.DoesNotExist:
+            logger.error(f'Задача id {task_id} не найдена у пользователя {request.user.id}')
             return JsonResponse({'success': False, 'error': 'Task not found'})
 
 
@@ -80,6 +85,7 @@ class DeleteTaskView(View):
         try:
             task = Task.objects.get(pk=task_id)
             task.delete()
+            logger.info(f'Задача с номером {task_id} удалена у пользователя {request.user.id}')
             return JsonResponse({'success': True})
         except Task.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Задача не найдена.'})
@@ -113,6 +119,7 @@ class AddTaskView(View):
         user = request.user
 
         task = Task.objects.create(user=user, name=name, description=description, complete=False)
+        logger.info(f'Добавлена новая задача {task.id} у пользователя {user.id}')
         return JsonResponse({'success': True, 'task_id': task.id})
 
 
@@ -138,5 +145,6 @@ class MainPageTask(TemplateView):
         """
 
         if request.user.is_authenticated:
+            logger.info(f'Пользователь {request.user.id} перенаправлен на станицу список задач')
             return redirect(reverse_lazy('task:task_view'))
         return super().dispatch(request, *args, **kwargs)

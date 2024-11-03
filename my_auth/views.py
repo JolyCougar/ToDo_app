@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from .models import Profile, EmailVerification
 from .services import PasswordGenerator, EmailService, TaskScheduler
 import json
+import logging
 from django.contrib.auth import login
 from django.http import JsonResponse, HttpResponse
 from django.views import View
@@ -17,6 +18,8 @@ from .forms import UserRegistrationForm, ProfileForm, UsernameForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
+
+logger = logging.getLogger(__name__)
 
 
 class CustomLoginView(LoginView):
@@ -67,6 +70,7 @@ class CustomLoginView(LoginView):
         добавляя сообщение об ошибке в контекст.
         """
 
+        logger.warning(f'Неудачная попытка авторизации для : {form.cleaned_data.get("username")}')
         # Если форма недействительна, добавляем сообщение об ошибке
         self.extra_context['login_error'] = "Неправильное имя пользователя или пароль."
         return self.render_to_response(self.get_context_data(form=form))
@@ -83,6 +87,7 @@ class CustomLogoutView(LogoutView):
         Обрабатывает GET-запрос для выхода из системы.
         """
 
+        logger.info(f'User {request.user.username} вышел из системы.')
         response = super().get(request, *args, **kwargs)
         return response
 
@@ -116,11 +121,13 @@ class RegisterView(CreateView):
         user = form.save(commit=False)
         user.set_password(form.cleaned_data['password'])
         user.save()
+        logger.info(f'Зарегистрировался пользователь: {user.username}')
 
         # Создание или получение профиля
         profile, created = Profile.objects.get_or_create(user=user)
         profile.agreement_accepted = form.cleaned_data['agreement_accepted']
         profile.save()
+        logger.info(f'Создан профиль для пользователя: {user.username}')
 
         # Отправка письма с подтверждением
         try:
@@ -133,6 +140,10 @@ class RegisterView(CreateView):
                              'Пожалуйста, проверьте вашу почту позже.')
 
         return super().form_valid(form)
+
+    def form_invalid(self, form) -> HttpResponse:
+        logger.error('Неудачная попытка регистрации: введены некоректные данные.')
+        return super().form_invalid(form)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -177,6 +188,7 @@ class ProfileView(DetailView):
             # Сохраняем старый email для сравнения
             old_email = self.object.email
             form.save()
+            logger.info(f'Пользователь {self.object.username} обновил свой профиль.')
 
             # Проверяем, изменился ли email
             if old_email != form.instance.user.email:
@@ -189,6 +201,7 @@ class ProfileView(DetailView):
             messages.success(request, 'Информация о профиле успешно обновлена!')
             return redirect('my_auth:profile', pk=self.object.pk)
         else:
+            logger.error(f'Ошибка при обновлении профиля. {self.object.username}: {form.errors}')
             messages.error(request, 'Ошибка при обновлении профиля. Пожалуйста, проверьте введенные данные.')
 
         return self.get(request, *args, **kwargs)
@@ -213,8 +226,10 @@ class ChangePasswordView(View):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  # Обновляем сессию, чтобы пользователь не вышел
+            logger.info(f'Пользователь {request.user.username} успешно сменил свой пароль.')
             return JsonResponse({'success': True, 'message': 'Пароль успешно изменен!'})
         else:
+            logger.info(f'Неудачная попытка смены пароля у пользователя {request.user.username}.')
             return JsonResponse({'success': False, 'errors': form.errors})
 
 
@@ -235,6 +250,7 @@ class ResetAvatarView(View):
         profile = request.user.profile
         profile.avatar = ''
         profile.save()
+        logger.info(f'Пользователь {profile.user.username} сбросил свой аватар.')
         return JsonResponse({'success': True})
 
 
@@ -260,8 +276,10 @@ class VerifyEmailView(View):
             profile.save()
             verification.delete()  # Удаляем токен после подтверждения
             login(request, profile.user)  # Вход пользователя
+            logger.info(f'Пользователь {profile.user.username} подтвердил свой E-mail.')
             return redirect('task:task_view')  # Перенаправление на главную страницу
         except EmailVerification.DoesNotExist:
+            logger.warning(f'Ошибка подтверждения E-mail: неверный токен.')
             return render(request, 'verification_failed.html')
 
 
@@ -284,8 +302,10 @@ class ResendVerificationTokenView(View):
         try:
             user = request.user
             EmailService.send_verification_email(request, user)
+            logger.info(f'Пользователь {request.user.username} отправил токен подтверждения себе на E-mail.')
             messages.success(request, 'Токен подтверждения был отправлен на ваш email.')
         except Exception as e:
+            logger.info(f'Пользователь {request.user.username} не смог отправить токен подтверждения себе на E-mail.')
             messages.error(request, 'Произошла ошибка при отправке токена. Пожалуйста, попробуйте еще раз.')
 
         return redirect('task:task_view')
@@ -312,6 +332,7 @@ class ChangeEmailView(View):
         user.save()  # Сохраняем изменения
         # Отправляем новый код подтверждения
         EmailService.send_verification_email(request, user)
+        logger.info(f'Пользователь {request.user.username} сменил E-mail.')
 
         messages.success(request,
                          'Новый адрес электронной почты был установлен. '
@@ -335,6 +356,7 @@ class AcceptCookiesView(LoginRequiredMixin, View):
         profile = Profile.objects.get(user=request.user)
         profile.cookies_accepted = True
         profile.save()
+        logger.info(f'Пользователь {request.user.username} подтвердил согласие на использования Cookies.')
         return JsonResponse({'status': 'success'})
 
 
@@ -354,6 +376,7 @@ class CheckUsernameView(View):
         username = request.GET.get('username', None)
         if username:
             exists = User.objects.filter(username=username).exists()
+            logger.info(f'Попытка регистрации пользователь {username} cуществует.')
             return JsonResponse({'exists': exists})
         return JsonResponse({'exists': False})
 
@@ -374,6 +397,7 @@ class CheckEmailView(View):
         email = request.GET.get('email', None)
         if email:
             exists = User.objects.filter(email=email).exists()
+            logger.info(f'Попытка регистрации пользователь с данной почтой уже существует.')
             return JsonResponse({'exists': exists})
         return JsonResponse({'exists': False})
 
@@ -425,9 +449,11 @@ class PasswordResetView(View):
                 EmailService.send_new_password_email(user, new_password)
                 messages.success(request,
                                  'Новый пароль был установлен и отправлен вам на почту.')
+                logger.info(f'Пароль сброшен для пользователя {user.username}. Новый пароль отправлен на E-mail.')
 
                 return redirect('my_auth:login')
             except User.DoesNotExist:
+                logger.error('Неудалось сбросить пароль: Пользователь с таким именем не найден.')
                 form.add_error('username', 'Пользователь с таким именем не найден.')
 
         return render(request, self.template_name, {'form': form})
@@ -459,5 +485,3 @@ class UpdateProfileView(LoginRequiredMixin, View):
             return JsonResponse({'status': 'success', 'message': 'Частота удаления задач успешно обновлена!'})
         else:
             return JsonResponse({'status': 'error', 'message': 'Частота удаления задач не указана!'}, status=400)
-
-

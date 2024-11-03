@@ -5,6 +5,8 @@ from celery.schedules import crontab
 from django.urls import reverse_lazy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+logs_dir = BASE_DIR / 'logs'
+logs_dir.mkdir(exist_ok=True)
 
 SECRET_KEY = 'django-insecure-zgb0lv@4_f1c+$ri*kh2k+=y*11m+*i!9$oz@y!eqrqpzgg9ue'
 
@@ -147,3 +149,52 @@ REST_FRAMEWORK = {
 }
 
 APPEND_SLASH = True
+
+LOGFILE_NAME = BASE_DIR / 'logs' / 'log.txt'
+LOGFILE_SIZE = 5 * 1024 * 1024  # 5mb
+LOGFILE_COUNT = 3
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'logfile': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGFILE_NAME,
+            'maxBytes': LOGFILE_SIZE,
+            'backupCount': LOGFILE_COUNT,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'logfile'],
+            'level': 'INFO',
+        },
+        'tasks': {
+            'handlers': ['console', 'logfile'],
+            'level': 'INFO',
+        },
+        'my_auth': {
+            'handlers': ['console', 'logfile'],
+            'level': 'INFO',
+        },
+        'api': {
+            'handlers': ['console', 'logfile'],
+            'level': 'INFO',
+        },
+    },
+}
+

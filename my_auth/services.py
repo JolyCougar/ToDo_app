@@ -1,10 +1,14 @@
 from django.urls import reverse
 from .models import EmailVerification
 from .tasks import send_verification_email_task, send_new_password_email_task
+from django.core.exceptions import ObjectDoesNotExist
 import random
+import logging
 import string
 from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSchedule
 import json
+
+logger = logging.getLogger(__name__)
 
 
 class EmailService:
@@ -17,23 +21,29 @@ class EmailService:
         """
         Отправляет письмо с кодом проверки для подтверждения E-mail.
         """
+        try:
+            # Получаем профиль пользователя
+            profile = user.profile
+            # Создаем или получаем токен верификации
+            email_verification, created = EmailVerification.objects.get_or_create(profile=profile)
+            # Генерируем ссылку для подтверждения
+            verification_link = request.build_absolute_uri(
+                reverse('my_auth:verify_email', args=[email_verification.token])
+            )
+            # Отправляем электронное письмо асинхронно
+            send_verification_email_task.delay(verification_link, user.email)
+        except ObjectDoesNotExist:
+            logger.error(f"Не найден профиль для пользователя: {user.id}")
 
-        # Получаем профиль пользователя
-        profile = user.profile
-        # Создаем или получаем токен верификации
-        email_verification, created = EmailVerification.objects.get_or_create(profile=profile)
-        # Генерируем ссылку для подтверждения
-        verification_link = request.build_absolute_uri(
-            reverse('my_auth:verify_email', args=[email_verification.token])
-        )
-        # Отправляем электронное письмо асинхронно
-        send_verification_email_task.delay(verification_link, user.email)
+        except Exception as e:
+            logger.error(f"Ошибка отправки письма подтверждения E-mail: {str(e)}")
 
     @staticmethod
     def send_new_password_email(user, new_password):
         """
         Отправляет новый пароль
         """
+
         # Отправка нового пароля асинхронно
         send_new_password_email_task.delay(user.email, new_password)
 
@@ -48,6 +58,7 @@ class PasswordGenerator:
         """
         Генерация случайного пароля заданной длины.
         """
+
         characters = string.ascii_letters + string.digits + string.punctuation
         return ''.join(random.choice(characters) for _ in range(length))
 
@@ -56,6 +67,7 @@ class TaskScheduler:
     """
     Класс создания и применения рассписания на удаление выполненных задач
     """
+
     def __init__(self, profile):
         self.profile = profile
         self.task_name = f'delete_tasks_{self.profile.user.username}'
