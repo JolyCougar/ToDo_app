@@ -120,7 +120,7 @@ class AddTaskView(View):
 
         task = Task.objects.create(user=user, name=name, description=description, complete=False)
         logger.info(f'Добавлена новая задача {task.id} у пользователя {user.id}')
-        return JsonResponse({'success': True, 'task_id': task.id})
+        return JsonResponse({'success': True, 'task_id': task.id}, status=201)
 
 
 class MainPageTask(TemplateView):
