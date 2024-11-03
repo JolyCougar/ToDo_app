@@ -1,4 +1,7 @@
 from rest_framework import permissions
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class IsEmailVerified(permissions.BasePermission):
@@ -20,5 +23,9 @@ class IsEmailVerified(permissions.BasePermission):
         # Проверяем, аутентифицирован ли пользователь
         if request.user and request.user.is_authenticated:
             # Проверяем, подтвержден ли email
-            return request.user.profile.email_verified  # Предполагается, что у вас есть поле is_email_verified
+            if hasattr(request.user, 'profile'):
+                return request.user.profile.email_verified
+            else:
+                logger.warning(f"Пользователь {request.user.username}: "
+                               f"пытается получить доступ с неподтвержденным E-mail.")
         return False

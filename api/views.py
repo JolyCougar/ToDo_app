@@ -3,6 +3,7 @@ from django.db.models import QuerySet
 from rest_framework.generics import (ListAPIView, CreateAPIView, GenericAPIView,
                                      UpdateAPIView, DestroyAPIView, RetrieveUpdateAPIView)
 from rest_framework import status
+import logging
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.serializers import Serializer
 
@@ -26,6 +27,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
 from .permissions import IsEmailVerified
 from django.contrib.auth.models import User
+
+logger = logging.getLogger(__name__)
 
 
 class TaskListView(ListAPIView):
@@ -84,6 +87,7 @@ class TaskCreateView(CreateAPIView):
         """
 
         serializer.save(user=self.request.user)
+        logger.info(f"Пользователь {self.request.user.username} создал новую задачу.")
 
     def handle_exception(self, exc: Exception) -> Response:
         """
@@ -170,6 +174,7 @@ class TaskDeleteView(DestroyAPIView):
         :return: QuerySet задач пользователя.
         """
 
+        logger.info(f"Пользователь {self.request.user.username} удалил задачу.")
         return Task.objects.filter(user=self.request.user)
 
     def handle_exception(self, exc: Exception) -> Response:
@@ -221,17 +226,20 @@ class RegisterView(CreateAPIView):
 
         # Сохраняем пользователя
         user = user_serializer.save()
+        logger.info(f"Зарегистрирован пользователь: {user.username}")
 
         # Создаем или обновляем профиль
         profile, created = Profile.objects.get_or_create(user=user)
         profile.agreement_accepted = True
         profile.save()
+        logger.info(f"Создан профиль для пользователя: {user.username}")
 
         # Отправляем электронное письмо для подтверждения
         try:
             EmailService.send_verification_email(request, user)  # Отправляем письмо
             messages.success(request, 'Регистрация прошла успешна! Проверьте вашу почту для подтверждения.')
         except Exception as e:
+            logger.error(f"Не удалось отправить письмо с подтверждением для пользователя {user.username}: {str(e)}")
             messages.warning(request, 'Регистрация успешна, но не удалось отправить письмо с подтверждением. '
                                       'Пожалуйста, проверьте вашу почту позже.')
 
@@ -255,6 +263,7 @@ class LogoutView(APIView):
         """
 
         request.user.auth_token.delete()
+        logger.info(f"Пользователь успешно вышел: {request.user.username}")
         return Response(status=status.HTTP_200_OK)
 
 
@@ -284,8 +293,10 @@ class LoginView(APIView):
         if user is not None:
             # Если аутентификация успешна, получаем или создаем токен
             token, created = Token.objects.get_or_create(user=user)
+            logger.info(f"Авторизовался пользователь: {username}")
             return Response({'token': token.key}, status=status.HTTP_200_OK)
         else:
+            logger.warning(f"Неудачная попытка авторизации для пользователя: {username}")
             return Response({'error': 'Неверные учетные данные'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -331,8 +342,9 @@ class ProfileView(RetrieveUpdateAPIView):
 
             user_serializer.save()
             profile_serializer.save()
+            logger.info(f"Пользователь {request.user.username} обновил свой профиль.")
             return Response({'user': user_serializer.data, 'profile': profile_serializer.data})
-
+        logger.info(f"Пользователь {request.user.username} ошибка обновления профиля.")
         return Response({'user_errors': user_serializer.errors, 'profile_errors': profile_serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -370,7 +382,7 @@ class PasswordResetView(GenericAPIView):
 
         # Отправка нового пароля пользователю
         EmailService.send_new_password_email(user, new_password)
-
+        logger.info(f"Пользователь {request.user.username} сбросил свой пароль.")
         return Response({"detail": "Новый пароль отправлен на ваш email."}, status=status.HTTP_200_OK)
 
 
@@ -402,5 +414,5 @@ class TaskConfirmView(UpdateAPIView):
         # Обновление поля complete
         task.complete = True
         task.save()  # Сохраняем изменения в базе данных
-
+        logger.info(f"Пользователь {request.user.username} подтвердил задачу.")
         return Response({"detail": "Задача успешно подтверждена."}, status=status.HTTP_200_OK)
