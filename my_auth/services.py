@@ -95,14 +95,11 @@ class TaskScheduler:
         Устанавливаем рассписание в зависимости от выбора пользователя
         """
 
-        if self.profile.delete_frequency == 'minute':
-            return IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.MINUTES)[0]
-        elif self.profile.delete_frequency == 'hour':
-            return IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.HOURS)[0]
-        elif self.profile.delete_frequency == 'day':
-            return IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.DAYS)[0]
-        elif self.profile.delete_frequency == 'week':
-            return IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.WEEKS)[0]
-        elif self.profile.delete_frequency == 'month':
-            return CrontabSchedule.objects.get_or_create(minute=0, hour=0, day=1)[0]
-        return None
+        schedule_map = {
+            'minute': IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.MINUTES)[0],
+            'hour': IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.HOURS)[0],
+            'day': IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.DAYS)[0],
+            'week': IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.WEEKS)[0],
+            'month': CrontabSchedule.objects.get_or_create(minute=0, hour=0, day=1)[0],
+        }
+        return schedule_map.get(self.profile.delete_frequency)
