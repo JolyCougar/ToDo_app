@@ -1,11 +1,15 @@
 import json
+import string
 import uuid
+from decouple import config
 from django.test import TestCase
 from django.urls import reverse
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock, call
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from .models import Profile, EmailVerification
+from .services import EmailService, PasswordGenerator, TaskScheduler
+from .tasks import send_verification_email_task, send_new_password_email_task, delete_completed_tasks
 
 User = get_user_model()
 
@@ -92,7 +96,8 @@ class CustomLoginViewTests(TestCase):
 
 class RegisterViewTests(TestCase):
 
-    def test_register_user(self):
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_register_user(self, mock_send_verification_email):
         response = self.client.post(reverse('my_auth:register'), {
             'username': 'newuser',
             'password': 'newpassword',
@@ -100,10 +105,16 @@ class RegisterViewTests(TestCase):
             'email': 'test@test.com',
             'agreement_accepted': True,
         })
+
         self.assertRedirects(response, reverse('my_auth:login'))
+
         self.assertTrue(User.objects.filter(username='newuser').exists())
 
-    def test_register_invalid_data(self):
+        new_user = User.objects.get(username='newuser')
+        mock_send_verification_email.assert_called_once_with(response.wsgi_request, new_user)
+
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_register_invalid_data(self, mock_send_verification_email):
         response = self.client.post(reverse('my_auth:register'), {
             'username': '',
             'password': 'newpassword',
@@ -111,12 +122,15 @@ class RegisterViewTests(TestCase):
             'email': 'test@test.com',
             'agreement_accepted': True,
         })
+
         self.assertEqual(response.status_code, 200)
 
         form = response.context['form']
         self.assertTrue(form.errors)
         self.assertIn('username', form.errors)
         self.assertEqual(form.errors['username'], ['Обязательное поле.'])
+
+        mock_send_verification_email.assert_not_called()
 
 
 class ProfileViewTests(TestCase):
@@ -192,30 +206,50 @@ class VerifyEmailViewTests(TestCase):
         self.token = uuid.uuid4()
         EmailVerification.objects.create(profile=self.profile, token=self.token)
 
-    def test_verify_email_success(self):
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_verify_email_success(self, mock_send_verification_email):
         response = self.client.get(reverse('my_auth:verify_email', kwargs={'token': str(self.token)}))
+
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.email_verified)
 
-    def test_verify_email_invalid_token(self):
+        mock_send_verification_email.assert_not_called()
+
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_verify_email_invalid_token(self, mock_send_verification_email):
         response = self.client.get(reverse('my_auth:verify_email', kwargs={'token': str(uuid.uuid4())}))
+
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'verification_failed.html')
         self.assertContains(response, "Не удалось подтвердить ваш адрес электронной почты")
+
+        mock_send_verification_email.assert_not_called()
 
 
 class ResendVerificationTokenViewTests(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='testpassword',
-                                             email='test@test.com', is_active=True)
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpassword',
+            email='test@test.com',
+            is_active=True
+        )
         self.profile, created = Profile.objects.get_or_create(user=self.user)
         self.client.login(username='testuser', password='testpassword')
 
-    def test_resend_verification_token(self):
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_resend_verification_token(self, mock_send_verification_email):
+        self.profile.email_verified = False
+        self.profile.save()
+
         response = self.client.post(reverse('my_auth:resend_verification_token'))
-        self.profile.email_verified = True
+        mock_send_verification_email.assert_called_once_with(
+            response.wsgi_request,
+            self.user
+        )
         self.assertRedirects(response, reverse('task:task_view'))
+        self.assertFalse(self.profile.email_verified)
 
 
 class ChangeEmailViewTests(TestCase):
@@ -224,11 +258,23 @@ class ChangeEmailViewTests(TestCase):
         self.user = User.objects.create_user(username='testuser', password='testpassword')
         self.client.login(username='testuser', password='testpassword')
 
-    def test_change_email_success(self):
+    @patch('my_auth.services.EmailService.send_verification_email')  # Замокируйте метод отправки email
+    def test_change_email_success(self, mock_send_verification_email):
+        # Отправляем POST-запрос для изменения email
         response = self.client.post(reverse('my_auth:change_email'), {'new_email': 'newemail@example.com'})
+
+        # Проверяем, что произошел редирект
         self.assertRedirects(response, reverse('task:task_view'))
+
+        # Проверяем, что email пользователя обновился
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, 'newemail@example.com')
+
+        # Проверяем, что метод отправки email был вызван с правильным аргументом
+        mock_send_verification_email.assert_called_once_with(
+            response.wsgi_request,
+            self.user
+        )
 
 
 class AcceptCookiesViewTests(TestCase):
@@ -345,3 +391,146 @@ class UpdateProfileViewTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertJSONEqual(response.content, {'status': 'error',
                                                 'message': 'Частота удаления задач не указана!'})
+
+
+class EmailTasksTests(TestCase):
+
+    @patch('my_auth.tasks.send_mail')
+    @patch('my_auth.tasks.render_to_string')
+    @patch('my_auth.tasks.strip_tags')
+    def test_send_verification_email_task(self, mock_strip_tags, mock_render_to_string, mock_send_mail):
+        mock_render_to_string.return_value = '<html>Verification Link</html>'
+        mock_strip_tags.return_value = 'Verification Link'
+
+        verification_link = 'http://example.com/verify?token=123'
+        user_email = 'test@example.com'
+
+        send_verification_email_task(verification_link, user_email)
+
+        mock_render_to_string.assert_called_once_with('messages_to_verification.html', {
+            'verification_link': verification_link,
+        })
+        mock_send_mail.assert_called_once_with(
+            'toDo app: Добро пожаловать!',
+            'Verification Link',
+            config('EMAIL_HOST_USER'),  # Замените на ваш EMAIL_HOST_USER
+            [user_email],
+            fail_silently=False,
+            html_message='<html>Verification Link</html>',
+        )
+
+    @patch('my_auth.tasks.send_mail')
+    @patch('my_auth.tasks.render_to_string')
+    @patch('my_auth.tasks.strip_tags')
+    def test_send_new_password_email_task(self, mock_strip_tags, mock_render_to_string, mock_send_mail):
+        mock_render_to_string.return_value = '<html>New Password</html>'
+        mock_strip_tags.return_value = 'New Password'
+
+        user_email = 'test@example.com'
+        new_password = 'new_password123'
+
+        send_new_password_email_task(user_email, new_password)
+
+        mock_render_to_string.assert_called_once_with('messages_to_new_password.html', {
+            'new_password': new_password,
+        })
+        mock_send_mail.assert_called_once_with(
+            'toDo app: Ваш новый пароль',
+            'New Password',
+            config('EMAIL_HOST_USER'),  # Замените на ваш EMAIL_HOST_USER
+            [user_email],
+            fail_silently=False,
+            html_message='<html>New Password</html>',
+        )
+
+
+class DeleteCompletedTasksTests(TestCase):
+
+    @patch('tasks.models.Task.objects.filter')
+    def test_delete_completed_tasks(self, mock_filter):
+        user_id = 1
+        mock_filter.return_value.delete.return_value = None  # Эмулируем успешное удаление
+
+        delete_completed_tasks(user_id)
+
+        mock_filter.assert_called_once_with(user_id=user_id, complete=True)
+        mock_filter.return_value.delete.assert_called_once()
+
+
+class EmailServiceTests(TestCase):
+
+    @patch('my_auth.services.send_verification_email_task.delay')
+    @patch('my_auth.services.EmailVerification.objects.get_or_create')
+    def test_send_verification_email(self, mock_get_or_create, mock_send_verification_email_task):
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        profile, created = Profile.objects.get_or_create(user=user)
+
+        mock_get_or_create.return_value = (EmailVerification(profile=profile), True)
+        request = MagicMock()
+        request.build_absolute_uri.return_value = 'http://example.com/verify?token=123'
+
+        EmailService.send_verification_email(request, user)
+
+        mock_get_or_create.assert_called_once_with(profile=profile)
+        mock_send_verification_email_task.assert_called_once_with('http://example.com/verify?token=123', user.email)
+
+    @patch('my_auth.services.send_new_password_email_task.delay')
+    def test_send_new_password_email(self, mock_send_new_password_email_task):
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        new_password = 'new_password123'
+
+        EmailService.send_new_password_email(user, new_password)
+
+        mock_send_new_password_email_task.assert_called_once_with(user.email, new_password)
+
+
+class PasswordGeneratorTests(TestCase):
+
+    def test_generate_random_password_length(self):
+        password = PasswordGenerator.generate_random_password(length=12)
+        self.assertEqual(len(password), 12)
+
+    def test_generate_random_password_characters(self):
+        password = PasswordGenerator.generate_random_password(length=12)
+        self.assertTrue(any(c.isdigit() for c in password))
+        self.assertTrue(any(c.isalpha() for c in password))
+        self.assertTrue(any(c in string.punctuation for c in password))
+
+
+class TaskSchedulerTests(TestCase):
+
+    @patch('my_auth.services.PeriodicTask.objects.create')
+    @patch('my_auth.services.PeriodicTask.objects.filter')
+    @patch('my_auth.services.IntervalSchedule.objects.get_or_create')
+    def test_schedule_deletion_tasks(self, mock_get_or_create, mock_filter, mock_create):
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        profile, created = Profile.objects.get_or_create(user=user)
+        profile.delete_frequency = 'hour'
+        profile.save()
+        scheduler = TaskScheduler(profile)
+
+        mock_get_or_create.return_value = (MagicMock(), True)
+
+        scheduler.schedule_deletion_tasks()
+
+        mock_filter.assert_called_once_with(name=scheduler.task_name)
+        mock_create.assert_called_once()
+        self.assertEqual(mock_create.call_args[1]['args'], json.dumps([profile.user.id]))
+
+    @patch('my_auth.services.IntervalSchedule.objects.get_or_create')
+    def test_get_schedule(self, mock_get_or_create):
+        user = User.objects.create_user(username='testuser', email='test@example.com', password='testpassword')
+        profile, created = Profile.objects.get_or_create(user=user)
+        profile.delete_frequency = 'hours'
+        profile.save()
+        scheduler = TaskScheduler(profile)
+
+        scheduler.get_schedule()
+
+        expected_calls = [
+            call(every=1, period='minutes'),
+            call(every=1, period='hours'),
+            call(every=1, period='days'),
+            call(every=7, period='days'),
+        ]
+        mock_get_or_create.assert_has_calls(expected_calls, any_order=True)

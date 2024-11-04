@@ -58,9 +58,15 @@ class PasswordGenerator:
         """
         Генерация случайного пароля заданной длины.
         """
+        if length < 1:
+            raise ValueError("Длина пароля должна быть больше 0")
 
+        password = [random.choice(string.digits)]
         characters = string.ascii_letters + string.digits + string.punctuation
-        return ''.join(random.choice(characters) for _ in range(length))
+        password += random.choices(characters, k=length - 1)
+        random.shuffle(password)
+
+        return ''.join(password)
 
 
 class TaskScheduler:
