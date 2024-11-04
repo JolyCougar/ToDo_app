@@ -472,16 +472,22 @@ class UpdateProfileView(LoginRequiredMixin, View):
         Возвращает JSON-ответ с результатом операции.
         """
 
-        data = json.loads(request.body)
-        profile = Profile.objects.get(user=request.user)
+        try:
+            data = json.loads(request.body)
+            profile = Profile.objects.get(user=request.user)
 
-        if 'delete_frequency' in data:
-            profile.delete_frequency = data['delete_frequency']
-            profile.save()
+            if 'delete_frequency' in data and data['delete_frequency']:
+                profile.delete_frequency = data['delete_frequency']
+                profile.save()
 
-            scheduler = TaskScheduler(profile)
-            scheduler.schedule_deletion_tasks()
+                scheduler = TaskScheduler(profile)
+                scheduler.schedule_deletion_tasks()
 
-            return JsonResponse({'status': 'success', 'message': 'Частота удаления задач успешно обновлена!'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'Частота удаления задач не указана!'}, status=400)
+                return JsonResponse({'status': 'success', 'message': 'Частота удаления задач успешно обновлена!'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Частота удаления задач не указана!'}, status=400)
+
+        except Profile.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Профиль не найден!'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Неверный JSON'}, status=400)

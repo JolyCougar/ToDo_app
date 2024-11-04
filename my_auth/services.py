@@ -99,7 +99,7 @@ class TaskScheduler:
             'minute': IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.MINUTES)[0],
             'hour': IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.HOURS)[0],
             'day': IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.DAYS)[0],
-            'week': IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.WEEKS)[0],
-            'month': CrontabSchedule.objects.get_or_create(minute=0, hour=0, day=1)[0],
+            'week': IntervalSchedule.objects.get_or_create(every=7, period=IntervalSchedule.DAYS)[0],
+            'month': CrontabSchedule.objects.get_or_create(minute=0, hour=0, day_of_month=1)[0],
         }
         return schedule_map.get(self.profile.delete_frequency)
