@@ -1,5 +1,5 @@
 from django.test import TestCase
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -252,3 +252,29 @@ class TaskCreateViewTests(APITestCase):
         data = {'name': 'New Task', 'description': 'Task Description'}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class TaskDetailUpdateViewTests(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='testuser', password='testpass', email='test@example.com')
+        self.profile = Profile.objects.get(user=self.user)
+        self.profile.email_verified = True
+        self.profile.save()
+        self.task = Task.objects.create(name='Test Task', user=self.user)
+        self.token = Token.objects.create(user=self.user)
+
+    def test_get_task_detail(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.get(f'/api/v1/tasks/{self.task.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], 'Test Task')
+
+    def test_get_task_detail_unverified_user(self):
+        self.profile.email_verified = False
+        self.profile.save()
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f'/api/v1/tasks/{self.task.id}/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['detail'], 'Пожалуйста, подтвердите адрес электронной почты.')
