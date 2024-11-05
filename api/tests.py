@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+from unittest.mock import patch
 from rest_framework.test import APIRequestFactory
 from django.contrib.auth.models import AnonymousUser
 from tasks.models import Task
@@ -104,10 +105,10 @@ class PasswordResetSerializerTests(TestCase):
     def test_get_user_invalid_email(self):
         data = {'email': 'invalid@example.com'}
         serializer = PasswordResetSerializer(data=data)
-        with self.assertRaises(ValidationError) as context:
-            serializer.is_valid(raise_exception=True)
-            serializer.get_user()
-        self.assertIn('Пользователь с таким email не найден.', str(context.exception))
+        self.assertTrue(serializer.is_valid())
+        serializer.is_valid()
+        user = serializer.get_user()
+        self.assertIsNone(user)
 
 
 class PasswordResetConfirmSerializerTests(TestCase):
@@ -315,3 +316,270 @@ class TaskDeleteViewTests(APITestCase):
         response = self.client.delete(url_not_found)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class RegisterViewTests(APITestCase):
+    def setUp(self):
+        self.url = reverse('api:register')
+
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_register_user_success(self, mock_send_verification_email):
+        data = {
+            'username': 'testuser',
+            'password': 'StrongPassword123!',
+            'email': 'test@example.com'
+        }
+
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(User.objects.get().username, 'testuser')
+
+        profile = Profile.objects.get(user=User.objects.get())
+        self.assertTrue(profile.agreement_accepted)
+
+        mock_send_verification_email.assert_called_once()
+
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_register_user_password_too_short(self, mock_send_verification_email):
+        data = {
+            'username': 'testuser',
+            'password': 'short',
+            'email': 'test@example.com'
+        }
+
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('password', response.data)
+
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_register_user_email_already_exists(self, mock_send_verification_email):
+        User.objects.create_user(username='existinguser', password='StrongPassword123!', email='test@example.com')
+
+        data = {
+            'username': 'newuser',
+            'password': 'StrongPassword123!',
+            'email': 'test@example.com'
+        }
+
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('email', response.data)
+
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_register_user_username_already_exists(self, mock_send_verification_email):
+        User.objects.create_user(username='existinguser', password='StrongPassword123!', email='test@example.com')
+
+        data = {
+            'username': 'existinguser',
+            'password': 'StrongPassword123!',
+            'email': 'newemail@example.com'
+        }
+
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('username', response.data)
+
+
+class LogoutViewTests(APITestCase):
+    def setUp(self):
+        self.url = reverse('api:logout')
+        self.user = User.objects.create_user(username='testuser', password='testpass', email='test@example.com')
+        self.token = Token.objects.create(user=self.user)
+
+    def test_logout_success(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(Token.objects.filter(user=self.user).exists())
+
+    def test_logout_unauthenticated(self):
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class LoginViewTests(APITestCase):
+    def setUp(self):
+        self.url = reverse('api:login')
+        self.user = User.objects.create_user(username='testuser', password='testpass', email='test@example.com')
+
+    def test_login_success(self):
+        data = {
+            'username': 'testuser',
+            'password': 'testpass'
+        }
+
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('token', response.data)
+
+        token = Token.objects.get(user=self.user)
+        self.assertEqual(response.data['token'], token.key)
+
+    def test_login_invalid_credentials(self):
+        data = {
+            'username': 'testuser',
+            'password': 'wrongpassword'
+        }
+
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertIn('error', response.data)
+
+    def test_login_missing_fields(self):
+        data = {
+            'password': 'testpass'
+        }
+
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('error', response.data)
+
+        data = {
+            'username': 'testuser'
+        }
+
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('error', response.data)
+
+
+class ProfileViewTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass', email='test@example.com')
+        self.token = Token.objects.create(user=self.user)
+        self.url = reverse('api:profile')
+
+    def authenticate(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+
+    def test_get_profile_success(self):
+        self.authenticate()
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['user']['email'], self.user.email)
+        self.assertIsNotNone(response.data['profile'])
+
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_update_profile_success(self, mock_send_verification_email):
+        self.authenticate()
+        data = {
+            "user": {
+                "email": "newemail@example.com"
+            },
+            "profile": {
+                'bio': 'Updated bio',
+            }
+        }
+
+        response = self.client.put(self.url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, 'newemail@example.com')
+
+        profile = self.user.profile
+        self.assertEqual(profile.bio, 'Updated bio')
+
+        mock_send_verification_email.assert_called_once()
+
+    @patch('my_auth.services.EmailService.send_verification_email')
+    def test_update_profile_invalid_data(self, mock_send_verification_email):
+        self.authenticate()
+        data = {
+            'user': {
+                'email': 'invalid-email'
+            },
+            'profile': {
+                'bio': 'Updated bio',
+            }
+        }
+
+        response = self.client.put(self.url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('user_errors', response.data)
+
+
+class PasswordResetViewTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', email='test@example.com', password='testpass')
+        self.token = Token.objects.create(user=self.user)
+        self.url = reverse('api:password_reset')
+
+    @patch('my_auth.services.EmailService.send_new_password_email')
+    @patch('my_auth.services.PasswordGenerator.generate_random_password')
+    def test_password_reset_success(self, mock_generate_random_password, mock_send_new_password_email):
+        mock_generate_random_password.return_value = 'new_random_password'
+        data = {
+            'email': 'test@example.com'
+        }
+
+        response = self.client.post(self.url, data, HTTP_AUTHORIZATION='Token ' + self.token.key)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"detail": "Новый пароль отправлен на ваш email."})
+
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password('new_random_password'))
+
+        mock_send_new_password_email.assert_called_once_with(self.user, 'new_random_password')
+
+    @patch('my_auth.services.EmailService.send_new_password_email')
+    def test_password_reset_user_not_found(self, mock_send_new_password_email):
+        data = {
+            'email': 'nonexistent@example.com'
+        }
+
+        response = self.client.post(self.url, data, HTTP_AUTHORIZATION='Token ' + self.token.key)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data, {"detail": "Пользователь не найден."})
+
+        mock_send_new_password_email.assert_not_called()
+
+
+class TaskConfirmViewTests(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+        self.task = Task.objects.create(user=self.user, complete=False)
+        self.token = Token.objects.create(user=self.user)
+
+    def test_confirm_task_success(self):
+        url = reverse('api:task-confirm', kwargs={'pk': self.task.pk})
+
+        response = self.client.patch(url, HTTP_AUTHORIZATION='Token ' + self.token.key)
+
+        self.task.refresh_from_db()
+        self.assertTrue(self.task.complete)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"detail": "Задача успешно подтверждена."})
+
+    def test_confirm_task_forbidden(self):
+        other_user = User.objects.create_user(username='otheruser', password='otherpass')
+        other_token = Token.objects.create(user=other_user)
+
+        url = reverse('api:task-confirm', kwargs={'pk': self.task.pk})
+
+        response = self.client.patch(url, HTTP_AUTHORIZATION='Token ' + other_token.key)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {"detail": "У вас нет прав на подтверждение этой задачи."})
+
+    def test_confirm_task_unauthenticated(self):
+        url = reverse('api:task-confirm', kwargs={'pk': self.task.pk})
+        response = self.client.patch(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

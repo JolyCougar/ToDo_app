@@ -339,13 +339,16 @@ class ProfileView(RetrieveUpdateAPIView):
                 if new_email != request.user.email:
                     # Отправляем письмо для подтверждения нового email
                     EmailService.send_verification_email(request, request.user)
+                    request.user.profile.email_verified = False
+                    request.user.profile.save()
 
             user_serializer.save()
             profile_serializer.save()
             logger.info(f"Пользователь {request.user.username} обновил свой профиль.")
             return Response({'user': user_serializer.data, 'profile': profile_serializer.data})
+
         logger.info(f"Пользователь {request.user.username} ошибка обновления профиля.")
-        return Response({'user_errors': user_serializer.errors, 'profile_errors': profile_serializer.errors},
+        return Response({'user_errors': user_serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -394,7 +397,7 @@ class TaskConfirmView(UpdateAPIView):
 
     permission_classes = [IsAuthenticated]
     queryset = Task.objects.all()
-    serializer_class = TaskSerializer  # Используем тот же сериализатор
+    serializer_class = TaskSerializer
 
     def patch(self, request, *args, **kwargs) -> Response:
         """

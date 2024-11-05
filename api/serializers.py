@@ -147,11 +147,7 @@ class PasswordResetSerializer(serializers.Serializer):
         """
 
         email = self.validated_data['email']
-        try:
-            user = User.objects.get(email=email)
-            return user
-        except User.DoesNotExist:
-            raise serializers.ValidationError("Пользователь с таким email не найден.")
+        return User.objects.filter(email=email).first()
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
