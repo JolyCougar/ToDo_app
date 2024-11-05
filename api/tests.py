@@ -1,4 +1,8 @@
 from django.test import TestCase
+from rest_framework.test import APITestCase
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from rest_framework.test import APIRequestFactory
 from django.contrib.auth.models import AnonymousUser
@@ -161,3 +165,90 @@ class IsEmailVerifiedTests(TestCase):
         request.user = self.user
         permission = IsEmailVerified()
         self.assertFalse(permission.has_permission(request, None))
+
+
+class TaskListViewTests(APITestCase):
+
+    def setUp(self):
+        self.user_with_verified_email = User.objects.create_user(
+            username='verifieduser', password='testpassword'
+        )
+        self.profile_verified = Profile.objects.get(user=self.user_with_verified_email)
+        self.profile_verified.email_verified = True
+        self.profile_verified.save()
+
+        self.user_without_verified_email = User.objects.create_user(
+            username='unverifieduser', password='testpassword'
+        )
+        self.profile_unverified = Profile.objects.get(user=self.user_without_verified_email)
+        self.profile_unverified.email_verified = False
+        self.profile_unverified.save()
+
+        Task.objects.create(name='Task 1', description='Description 1', user=self.user_with_verified_email)
+        Task.objects.create(name='Task 2', description='Description 2', user=self.user_with_verified_email)
+
+        self.token_verified = Token.objects.create(user=self.user_with_verified_email)
+        self.token_unverified = Token.objects.create(user=self.user_without_verified_email)
+
+    def test_list_tasks_verified_user(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token_verified.key)
+        url = reverse('api:task-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+    def test_list_tasks_unverified_user(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token_unverified.key)
+        url = reverse('api:task-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {'detail': 'Пожалуйста, подтвердите адрес электронной почты.'})
+
+    def test_list_tasks_unauthenticated_user(self):
+        url = reverse('api:task-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class TaskCreateViewTests(APITestCase):
+
+    def setUp(self):
+        self.user_with_verified_email = User.objects.create_user(
+            username='verifieduser', password='testpassword'
+        )
+        self.profile_verified = Profile.objects.get(user=self.user_with_verified_email)
+        self.profile_verified.email_verified = True
+        self.profile_verified.save()
+
+        self.user_without_verified_email = User.objects.create_user(
+            username='unverifieduser', password='testpassword'
+        )
+        self.profile_unverified = Profile.objects.get(user=self.user_without_verified_email)
+        self.profile_unverified.email_verified = False
+        self.profile_unverified.save()
+
+        self.token_verified = Token.objects.create(user=self.user_with_verified_email)
+        self.token_unverified = Token.objects.create(user=self.user_without_verified_email)
+
+    def test_create_task_verified_user(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token_verified.key)
+        url = reverse('api:task-create')
+        data = {'name': 'New Task', 'description': 'Task Description'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Task.objects.count(), 1)
+        self.assertEqual(Task.objects.get().name, 'New Task')
+
+    def test_create_task_unverified_user(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token_unverified.key)
+        url = reverse('api:task-create')
+        data = {'name': 'New Task', 'description': 'Task Description'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {'detail': 'Пожалуйста, подтвердите адрес электронной почты.'})
+
+    def test_create_task_unauthenticated_user(self):
+        url = reverse('api:task-create')
+        data = {'name': 'New Task', 'description': 'Task Description'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
