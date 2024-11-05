@@ -278,3 +278,40 @@ class TaskDetailUpdateViewTests(APITestCase):
         response = self.client.get(f'/api/v1/tasks/{self.task.id}/')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data['detail'], 'Пожалуйста, подтвердите адрес электронной почты.')
+
+
+class TaskDeleteViewTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass', email='test@example.com')
+        self.profile = Profile.objects.get(user=self.user)
+        self.profile.email_verified = True
+        self.profile.save()
+        self.token = Token.objects.create(user=self.user)
+
+        self.task = Task.objects.create(name='Test Task', user=self.user)
+
+        self.url = reverse('api:task-delete', kwargs={'pk': self.task.pk})
+
+    def test_delete_task_success(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.delete(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Task.objects.filter(pk=self.task.pk).exists())
+
+    def test_delete_task_permission_denied(self):
+        self.profile.email_verified = False
+        self.profile.save()
+
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.delete(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {'detail': 'Пожалуйста, подтвердите адрес электронной почты.'})
+
+    def test_delete_task_not_found(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        url_not_found = reverse('api:task-delete', kwargs={'pk': 999})
+        response = self.client.delete(url_not_found)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
