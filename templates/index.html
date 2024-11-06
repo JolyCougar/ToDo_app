@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load static %}
+{% load static i18n %}
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -64,17 +64,17 @@
                 <span id="username">{{ user.username }}</span>
             </a>
             <span id="dateDisplay"></span>
-            <span id="taskCount" style="margin-left: 20px;">Невыполненные задачи: <span
+            <span id="taskCount" style="margin-left: 20px;">{% trans "Невыполненные задачи:" %} <span
                     id="incompleteCount">0</span></span>
             <form method="post" action="{% url 'my_auth:logout' %}" class="logout-form">
                 {% csrf_token %}
-                <button type="submit" class="small-button">Выйти</button>
+                <button type="submit" class="small-button">{% trans "Выйти" %}</button>
             </form>
         </div>
 
         <div class="header-buttons">
-            <button class="settings" id="settingsBtn">Настройки</button>
-            <button class="large-button" id="addTaskButton">Добавить задачу</button>
+            <button class="settings" id="settingsBtn">{% trans "Настройки" %}</button>
+            <button class="large-button" id="addTaskButton">{% trans "Добавить задачу" %}</button>
         </div>
     </header>
 
@@ -83,12 +83,12 @@
     <div id="modal" class="modal" style="display: none;">
         <div class="modal-content_task">
             <span class="close" id="closeModal">&times;</span>
-            <h2>Добавить новую задачу</h2>
+            <h2>{% trans "Добавить новую задачу" %}</h2>
             <form id="taskForm" novalidate>
                 {% csrf_token %}
-                <input type="text" id="taskInput" placeholder="Введите название задачи" required>
-                <textarea id="taskDescription" placeholder="Введите описание задачи"></textarea>
-                <button id="confirmAddTask" type="submit">Добавить</button>
+                <input type="text" id="taskInput" placeholder="{% trans "Введите название задачи" %}" required>
+                <textarea id="taskDescription" placeholder="{% trans "Введите описание задачи" %}"></textarea>
+                <button id="confirmAddTask" type="submit">{% trans "Добавить" %}</button>
             </form>
         </div>
     </div>
@@ -97,10 +97,10 @@
     <div id="settingsModal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close" id="closeSettingsModal">&times;</span>
-            <h2>Настройки</h2>
+            <h2>{% trans "Настройки" %}</h2>
             <form id="settingsForm" novalidate>
                 <div class="form-group">
-                    <label for="fontSelect">Шрифт:</label>
+                    <label for="fontSelect">{% trans "Шрифт:" %}</label>
                     <select id="fontSelect">
                         <option value="Arial">Arial</option>
                         <option value="Courier New">Courier New</option>
@@ -111,7 +111,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="fontSizeSelect">Размер шрифта:</label>
+                    <label for="fontSizeSelect">{% trans "Размер шрифта:" %}</label>
                     <select id="fontSizeSelect">
                         <option value="14">14px</option>
                         <option value="16" selected>16px</option>
@@ -123,37 +123,37 @@
                 <div class="form-group">
                     <label>
                         <input type="checkbox" id="showCompletedTasks" checked>
-                        Отображать выполненные задачи
+                        {% trans "Отображать выполненные задачи" %}
                     </label>
                 </div>
 
                 <div class="form-group">
-                    <label for="backgroundSelect">Фон:</label>
+                    <label for="backgroundSelect">{% trans "Фон" %}:</label>
                     <select id="backgroundSelect">
-                        <option value="default">По умолчанию</option>
-                        <option value="background1">Фон 1</option>
-                        <option value="background2">Фон 2</option>
-                        <option value="background3">Фон 3</option>
-                        <option value="custom">Пользовательский фон</option>
+                        <option value="default">{% trans "По умолчанию" %}</option>
+                        <option value="background1">{% trans "Фон 1" %}</option>
+                        <option value="background2">{% trans "Фон 2" %}</option>
+                        <option value="background3">{% trans "Фон 3" %}</option>
+                        <option value="custom">{% trans "Пользовательский фон" %}</option>
                     </select>
                 </div>
                 <div class="form-group" id="customBackgroundGroup" style="display: none;">
-                    <label for="customBackgroundInput" class="file-input-label">Загрузить свой фон:</label>
+                    <label for="customBackgroundInput" class="file-input-label">{% trans "Загрузить свой фон" %}:</label>
                     <input type="file" id="customBackgroundInput" accept="image/*" class="file-input">
                 </div>
                 <div class="form-group">
-                    <label for="deleteFrequencySelect">Частота удаления выполненных задач:</label>
+                    <label for="deleteFrequencySelect">{% trans "Частота удаления выполненных задач" %}:</label>
                     <select id="deleteFrequencySelect">
-                        <option value="never">Никогда</option>
-                        <option value="minute">Раз в минуту</option>
-                        <option value="hour">Раз в час</option>
-                        <option value="day">Раз в день</option>
-                        <option value="week">Раз в неделю</option>
-                        <option value="month">Раз в месяц</option>
+                        <option value="never">{% trans "Никогда" %}</option>
+                        <option value="minute">{% trans "Раз в минуту" %}</option>
+                        <option value="hour">{% trans "Раз в час" %}</option>
+                        <option value="day">{% trans "Раз в день" %}</option>
+                        <option value="week">{% trans "Раз в неделю" %}</option>
+                        <option value="month">{% trans "Раз в месяц" %}</option>
                     </select>
                 </div>
 
-                <button type="submit" id="saveSettingsButton">Сохранить настройки</button>
+                <button type="submit" id="saveSettingsButton">{% trans "Сохранить настройки" %}</button>
             </form>
         </div>
     </div>
@@ -161,7 +161,7 @@
 
     <main>
         <section>
-            <h2>Невыполненные задачи</h2>
+            <h2>{% trans "Невыполненные задачи" %}</h2>
             <ul class="task-list" id="taskList">
                 {% for task in task_list %}
                     {% if not task.complete %}
@@ -171,7 +171,7 @@
                             <span class="task-details">
                                 <span>{{ task.description }}</span>
                             </span>
-                            <button class="delete-task" aria-label="Удалить задачу">🗑️</button>
+                            <button class="delete-task" aria-label="{% trans "Удалить задачу" %}">🗑️</button>
                         </li>
                     {% endif %}
                 {% endfor %}
@@ -180,8 +180,8 @@
 
         <section>
             <h2>
-                Выполненные задачи
-                <button id="toggleCompletedList" aria-label="Развернуть список выполненных задач">Развернуть</button>
+                {% trans "Выполненные задачи" %}
+                <button id="toggleCompletedList" aria-label="{% trans "Развернуть список выполненных задач" %}">{% trans "Развернуть" %}</button>
             </h2>
             <ul class="completed-list" id="completedList">
                 {% for task in task_list %}
@@ -189,7 +189,7 @@
                         <li class="completed-item" data-task-id="{{ task.id }}">
                             <span class="completed-label">{{ task.name }}</span>
                             <span class="completed-label">{{ task.description }}</span>
-                            <button class="delete-task" aria-label="Удалить задачу">🗑️</button>
+                            <button class="delete-task" aria-label="{% trans "Удалить задачу" %}">🗑️</button>
                         </li>
                     {% endif %}
                 {% endfor %}
@@ -201,8 +201,8 @@
 <!-- Проверка согласия на использование cookies -->
 {% if not user.profile.cookies_accepted %}
     <div class="cookie-banner" id="cookieBanner">
-        <p>Этот сайт использует cookies для улучшения пользовательского опыта.
-            <button id="acceptCookiesButton">Принять</button>
+        <p>{% trans "Этот сайт использует cookies для улучшения пользовательского опыта." %}
+            <button id="acceptCookiesButton">{% trans "Принять" %}</button>
         </p>
     </div>
 {% endif %}

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-{% load static %}
+{% load static i18n %}
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль пользователя</title>
+    <title>{% trans "Профиль пользователя" %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css" media="all">
     <style>
         * {
@@ -163,8 +163,8 @@
 <div class="container">
     <header class="header">
 
-        <h1 class="h1_profile">Профиль пользователя</h1>
-        <a href="{% url 'task:task_view' %}" class="back-button">Назад к задачам</a>
+        <h1 class="h1_profile">{% trans "Профиль пользователя" %}</h1>
+        <a href="{% url 'task:task_view' %}" class="back-button">{% trans "Назад к задачам" %}</a>
     </header>
 
     <section class="user-info">
@@ -180,41 +180,41 @@
                 {% endif %}
             </div>
             <div class="info-container">
-                <p><strong>Имя:</strong> <span id="userName">{{ user.first_name }}</span></p>
-                <p><strong>Фамилия:</strong> <span id="lastName">{{ user.last_name }}</span></p>
-                <p><strong>Email:</strong> <span id="userEmail">{{ user.email }}</span></p>
-                <p><strong>Дата регистрации:</strong> <span
+                <p><strong>{% trans "Имя" %}:</strong> <span id="userName">{{ user.first_name }}</span></p>
+                <p><strong>{% trans "Фамилия" %}:</strong> <span id="lastName">{{ user.last_name }}</span></p>
+                <p><strong>{% trans "Email" %}:</strong> <span id="userEmail">{{ user.email }}</span></p>
+                <p><strong>{% trans "Дата регистрации" %}:</strong> <span
                         id="registrationDate">{{ user.date_joined|date:"d F Y" }}</span></p>
-                <p><strong>О себе:</strong> <span id="userBio">{{ user.profile.bio }}</span></p>
+                <p><strong>{% trans "О себе" %}:</strong> <span id="userBio">{{ user.profile.bio }}</span></p>
 
             </div>
         </div>
 
 
-        <button id="editProfileButton" class="large-button">Изменить профиль</button>
+        <button id="editProfileButton" class="large-button">{% trans "Изменить профиль" %}</button>
         <!-- Кнопка для открытия модального окна -->
-        <button id="changePasswordButton" class="large-button">Сменить пароль</button>
+        <button id="changePasswordButton" class="large-button">{% trans "Сменить пароль" %}</button>
 
         <!-- Модальное окно для смены пароля -->
         <div id="changePasswordModal" class="modal">
             <div class="modal-content_pass">
                 <span class="close" id="closeChangePasswordModal">&times;</span>
-                <h2>Сменить пароль</h2>
+                <h2>{% trans "Сменить пароль" %}</h2>
                 <form id="changePasswordForm">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="old_password">Старый пароль:</label>
+                        <label for="old_password">{% trans "Старый пароль" %}:</label>
                         <input type="password" id="old_password" name="old_password" required>
                     </div>
                     <div class="form-group">
-                        <label for="new_password">Новый пароль:</label>
+                        <label for="new_password">{% trans "Новый пароль" %}:</label>
                         <input type="password" id="new_password" name="new_password" required>
                     </div>
                     <div class="form-group">
-                        <label for="confirm_password">Подтвердите новый пароль:</label>
+                        <label for="confirm_password">{% trans "Подтвердите новый пароль" %}:</label>
                         <input type="password" id="confirm_password" name="confirm_password" required>
                     </div>
-                    <button type="submit" class="large-button" style="width: auto; float: right;">Сменить пароль
+                    <button type="submit" class="large-button" style="width: auto; float: right;">{% trans "Сменить пароль" %}
                     </button>
                 </form>
                 <div id="passwordChangeMessage"></div>
@@ -225,11 +225,11 @@
         <div id="profileModal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <h2>Изменить профиль</h2>
+                <h2>{% trans "Изменить профиль" %}</h2>
                 <form method="POST" enctype="multipart/form-data" id="profileForm">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="avatar">Аватар:</label>
+                        <label for="avatar">{% trans "Аватар" %}:</label>
                         <div class="preview-container">
                             <img id="avatarPreview" class="avatar-preview" src="
                                     {% if user.profile.avatar %}
@@ -241,19 +241,19 @@
                             <label class="custom-file-upload">
                                 <input type="file" id="avatar" name="avatar" accept="image/*"
                                        onchange="previewAvatar(event)">
-                                Загрузить
+                                {% trans "Загрузить" %}
                             </label>
                             <button type="button" id="resetAvatarButton" class="large-button"
-                                    style="margin-left: 10px;">Сбросить аватар
+                                    style="margin-left: 10px;">{% trans "Сбросить аватар" %}
                             </button>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="first_name">Имя:</label>
+                        <label for="first_name">{% trans "Имя" %}:</label>
                         <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}">
                     </div>
                     <div class="form-group">
-                        <label for="last_name">Фамилия:</label>
+                        <label for="last_name">{% trans "Фамилия" %}:</label>
                         <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}">
                     </div>
                     <div class="form-group">
@@ -261,10 +261,10 @@
                         <input type="email" id="email" name="email" value="{{ user.email }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="bio">О себе:</label>
+                        <label for="bio">{% trans "О себе" %}:</label>
                         <textarea id="bio" name="bio" rows="4">{{ user.profile.bio }}</textarea>
                     </div>
-                    <button type="submit" class="large-button" style="width: auto; float: right;">Сохранить изменения
+                    <button type="submit" class="large-button" style="width: auto; float: right;">{% trans "Сохранить изменения" %}
                     </button>
                 </form>
             </div>

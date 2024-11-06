@@ -1,35 +1,35 @@
 <!DOCTYPE html>
-{% load static %}
+{% load static i18n %}
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подтверждение электронной почты</title>
+    <title>{% trans "Подтверждение электронной почты" %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css" media="all">
 </head>
 <body>
 <div class="container">
     <header>
         <div class="header-info">
-            <h1>Подтверждение электронной почты</h1>
+            <h1>{% trans "Подтверждение электронной почты" %}</h1>
             <form class="logout-form" method="post" action="{% url 'my_auth:logout' %}">
                 {% csrf_token %}
-                <button type="submit" class="small-button">Выйти</button>
+                <button type="submit" class="small-button">{% trans "Выйти" %}</button>
             </form>
             <form class="logout-form" method="get" action="{% url 'my_auth:profile' pk=user.profile.id %}">
                 {% csrf_token %}
-                <button type="submit" class="small-button">Профиль</button>
+                <button type="submit" class="small-button">{% trans "Профиль" %}</button>
             </form>
         </div>
     </header>
 
     <main>
         <section>
-            <p>К сожалению, ваша электронная почта не была подтверждена. Пожалуйста, проверьте ссылку в вашем
-                электронном письме и попробуйте снова.</p>
-            <p>Если у вас возникли проблемы, вы можете запросить новое письмо для подтверждения.</p>
+            <p>{% trans "К сожалению, ваша электронная почта не была подтверждена.Пожалуйста, проверьте ссылку в вашем электронном письме и попробуйте снова." %}</p>
+                
+            <p>{% trans "Если у вас возникли проблемы, вы можете запросить новое письмо для подтверждения." %}</p>
             <div class="error-message">
-                <p>Пожалуйста, свяжитесь с поддержкой, если проблема не решается.</p>
+                <p>{% trans "Пожалуйста, свяжитесь с поддержкой, если проблема не решается." %}</p>
             </div>
             {% if messages %}
                 {% for message in messages %}
@@ -40,20 +40,20 @@
 
 
         <div class="resend-token">
-            <h3>Повторная отправка токена</h3>
-            <p>Ваш зарегистрированный адрес электронной почты: <strong>{{ user.email }}</strong></p>
+            <h3>{% trans "Повторная отправка токена" %}</h3>
+            <p>{% trans "Ваш зарегистрированный адрес электронной почты:" %} <strong>{{ user.email }}</strong></p>
             <form method="post" action="{% url 'my_auth:resend_verification_token' %}">
                 {% csrf_token %}
-                <button type="submit" class="large-button">Отправить токен повторно</button>
+                <button type="submit" class="large-button">{% trans "Отправить токен повторно" %}</button>
             </form>
         </div>
 
         <div class="change-email">
-            <h3>Изменить адрес электронной почты</h3>
+            <h3>{% trans "Изменить адрес электронной почты" %}</h3>
             <form method="post" action="{% url 'my_auth:change_email' %}">
                 {% csrf_token %}
-                <input type="email" name="new_email" placeholder="Введите новый email" required>
-                <button type="submit" class="large-button">Изменить email</button>
+                <input type="email" name="new_email" placeholder="{% trans "Введите новый email" %}" required>
+                <button type="submit" class="large-button">{% trans "Изменить email" %}</button>
             </form>
         </div>
     </main>

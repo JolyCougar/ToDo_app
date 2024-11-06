@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подтверждение электронной почты</title>
+    <title>{% trans "Подтверждение электронной почты" %}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,27 +23,27 @@
         }
 
         .logo {
-            max-width: 150px; /* Установите нужный размер логотипа */
-            margin-bottom: 20px; /* Отступ снизу от логотипа */
+            max-width: 150px;
+            margin-bottom: 20px; 
         }
 
         h1 {
-            font-size: 24px; /* Увеличен размер заголовка */
+            font-size: 24px;
             color: #333;
-            margin: 0; /* Убираем отступы у заголовка */
+            margin: 0;
         }
 
         h2 {
-            font-size: 20px; /* Размер подзаголовка */
+            font-size: 20px;
             color: #555;
-            margin: 5px 0; /* Отступы для подзаголовка */
+            margin: 5px 0;
         }
 
         p {
             font-size: 16px;
             line-height: 1.5;
             color: #555;
-            margin: 5px 0; /* Убираем лишние отступы у параграфов */
+            margin: 5px 0;
         }
 
         .button {
@@ -66,11 +67,11 @@
 </head>
 <body>
 <div class="container">
-    <h1>Подтверждение электронной почты</h1>
+    <h1>{% trans "Подтверждение электронной почты" %}</h1>
     <h2>toDo app</h2>
-    <p>Для завершения регистрации, пожалуйста, подтвердите вашу электронную почту, перейдя по следующей ссылке:</p>
-    <a href="{{ verification_link }}" class="button">Подтвердить электронную почту</a>
-    <p class="footer">Если вы не создавали учетную запись, просто проигнорируйте это сообщение.</p>
+    <p>{% trans "Для завершения регистрации, пожалуйста, подтвердите вашу электронную почту, перейдя по следующей ссылке:" %}</p>
+    <a href="{{ verification_link }}" class="button">{% trans "Подтвердить электронную почту" %}</a>
+    <p class="footer">{% trans "Если вы не создавали учетную запись, просто проигнорируйте это сообщение." %}</p>
 </div>
 </body>
 </html>
