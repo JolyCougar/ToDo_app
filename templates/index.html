@@ -99,6 +99,15 @@
             <span class="close" id="closeSettingsModal">&times;</span>
             <h2>{% trans "Настройки" %}</h2>
             <form id="settingsForm" novalidate>
+                
+                <div class="form-group">
+                <label for="languageSelect">{% trans "Язык:" %}</label>
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="ru" selected>Русский</option>
+                </select>
+            </div>
+                
                 <div class="form-group">
                     <label for="fontSelect">{% trans "Шрифт:" %}</label>
                     <select id="fontSelect">
@@ -234,7 +243,7 @@
                     
                     document.getElementById('settingsModal').style.display = 'none'; // Закрываем модальное окно
                 } else {
-                    alert('Произошла ошибка при обновлении частоты удаления задач.');
+                    console.error('Произошла ошибка при обновлении частоты удаления задач.');
                 }
             })
             .catch(error => {
@@ -242,6 +251,27 @@
             });
     });
 
+    document.getElementById('languageSelect').addEventListener('change', function() {
+    const selectedLanguage = this.value;
+    // Отправка запроса на сервер для переключения языка
+    fetch(`/set_language/${selectedLanguage}/`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+    }).then(response => {
+        if (response.ok) {
+            // Перезагрузить страницу, чтобы применить изменения языка
+            location.reload();
+        } else {
+            console.error('Ошибка при переключении языка');
+        }
+    }).catch(error => {
+        console.error('Ошибка сети:', error);
+    });
+});
+
+    
     
 </script>
 </body>
