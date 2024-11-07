@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-07 08:19+0300\n"
+"POT-Creation-Date: 2024-11-07 08:49+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
 #: my_auth/views.py:77
 msgid "Неправильное имя пользователя или пароль."
 msgstr "Неправильное имя пользователя или пароль."
@@ -175,103 +176,107 @@ msgstr "Введите описание задачи"
 msgid "Добавить"
 msgstr "Добавить"
 
-#: templates/index.html:103
+#: templates/index.html:104
+msgid "Язык:"
+msgstr "Язык:"
+
+#: templates/index.html:112
 msgid "Шрифт:"
 msgstr "Шрифт:"
 
-#: templates/index.html:114
+#: templates/index.html:123
 msgid "Размер шрифта:"
 msgstr "Размер шрифта:"
 
-#: templates/index.html:126
+#: templates/index.html:135
 msgid "Отображать выполненные задачи"
 msgstr "Отображать выполненные задачи"
 
-#: templates/index.html:131
+#: templates/index.html:140
 msgid "Фон"
 msgstr "Фон"
 
-#: templates/index.html:133
+#: templates/index.html:142
 msgid "По умолчанию"
 msgstr "По умолчанию"
 
-#: templates/index.html:134
+#: templates/index.html:143
 msgid "Фон 1"
 msgstr "Фон 1"
 
-#: templates/index.html:135
+#: templates/index.html:144
 msgid "Фон 2"
 msgstr "Фон 2"
 
-#: templates/index.html:136
+#: templates/index.html:145
 msgid "Фон 3"
 msgstr "Фон 3"
 
-#: templates/index.html:137
+#: templates/index.html:146
 msgid "Пользовательский фон"
 msgstr "Пользовательский фон"
 
-#: templates/index.html:141
+#: templates/index.html:150
 msgid "Загрузить свой фон"
 msgstr "Загрузить свой фон"
 
-#: templates/index.html:145
+#: templates/index.html:154
 msgid "Частота удаления выполненных задач"
 msgstr "Частота удаления выполненных задач"
 
-#: templates/index.html:147
+#: templates/index.html:156
 msgid "Никогда"
 msgstr "Никогда"
 
-#: templates/index.html:148
+#: templates/index.html:157
 msgid "Раз в минуту"
 msgstr "Раз в минуту"
 
-#: templates/index.html:149
+#: templates/index.html:158
 msgid "Раз в час"
 msgstr "Раз в час"
 
-#: templates/index.html:150
+#: templates/index.html:159
 msgid "Раз в день"
 msgstr "Раз в день"
 
-#: templates/index.html:151
+#: templates/index.html:160
 msgid "Раз в неделю"
 msgstr "Раз в неделю"
 
-#: templates/index.html:152
+#: templates/index.html:161
 msgid "Раз в месяц"
 msgstr "Раз в месяц"
 
-#: templates/index.html:156
+#: templates/index.html:165
 msgid "Сохранить настройки"
 msgstr "Сохранить настройки"
 
-#: templates/index.html:164
+#: templates/index.html:173
 msgid "Невыполненные задачи"
 msgstr "Невыполненные задачи"
 
-#: templates/index.html:174 templates/index.html:192
+#: templates/index.html:183 templates/index.html:201
 msgid "Удалить задачу"
 msgstr "Удалить задачу"
 
-#: templates/index.html:183
+#: templates/index.html:192
 msgid "Выполненные задачи"
 msgstr "Выполненные задачи"
 
-#: templates/index.html:184
+#: templates/index.html:193
 msgid "Развернуть список выполненных задач"
 msgstr "Развернуть список выполненных задач"
 
-#: templates/index.html:184
+#: templates/index.html:193
 msgid "Развернуть"
 msgstr "Развернуть"
 
-#: templates/index.html:204
+#: templates/index.html:213
 msgid "Этот сайт использует cookies для улучшения пользовательского опыта."
 msgstr "Этот сайт использует cookies для улучшения пользовательского опыта."
 
-#: templates/index.html:205
+#: templates/index.html:214
 msgid "Принять"
 msgstr "Принять"
 
