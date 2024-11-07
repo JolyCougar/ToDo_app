@@ -1,0 +1,631 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-07 08:19+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+#: my_auth/views.py:77
+msgid "Неправильное имя пользователя или пароль."
+msgstr "Неправильное имя пользователя или пароль."
+
+#: my_auth/views.py:138
+msgid "Регистрация прошла успешна! Проверьте вашу почту для подтверждения. "
+msgstr "Регистрация прошла успешна! Проверьте вашу почту для подтверждения. "
+
+#: my_auth/views.py:141
+msgid ""
+"Регистрация успешна, но не удалось отправить письмо с подтверждением. "
+"Пожалуйста попробуйте отправить письмо через несколько минут"
+msgstr ""
+"Регистрация успешна, но не удалось отправить письмо с подтверждением. "
+"Пожалуйста попробуйте отправить письмо через несколько минут"
+
+#: my_auth/views.py:204
+msgid "Информация о профиле успешно обновлена!"
+msgstr "Информация о профиле успешно обновлена!"
+
+#: my_auth/views.py:209
+msgid "Ошибка при обновлении профиля. Пожалуйста, проверьте введенные данные."
+msgstr "Ошибка при обновлении профиля. Пожалуйста, проверьте введенные данные."
+
+#: my_auth/views.py:235
+msgid "Пароль успешно изменен!"
+msgstr "Пароль успешно изменен!"
+
+#: my_auth/views.py:313
+msgid "Токен подтверждения был отправлен на ваш email."
+msgstr "Токен подтверждения был отправлен на ваш email."
+
+#: my_auth/views.py:317
+msgid "Произошла ошибка при отправке токена. Пожалуйста, попробуйте еще раз."
+msgstr "Произошла ошибка при отправке токена. Пожалуйста, попробуйте еще раз."
+
+#: my_auth/views.py:347
+msgid ""
+"Новый адрес электронной почты был установлен.Проверьте ваш почтовый ящик для "
+"подтверждения."
+msgstr ""
+"Новый адрес электронной почты был установлен.Проверьте ваш почтовый ящик для "
+"подтверждения."
+
+#: my_auth/views.py:460
+msgid "Новый пароль был установлен и отправлен вам на почту."
+msgstr "Новый пароль был установлен и отправлен вам на почту."
+
+#: my_auth/views.py:467
+msgid "Пользователь с таким именем не найден."
+msgstr "Пользователь с таким именем не найден."
+
+#: my_auth/views.py:496
+msgid "Частота удаления задач успешно обновлена!"
+msgstr "Частота удаления задач успешно обновлена!"
+
+#: my_auth/views.py:500
+msgid "Частота удаления задач не указана!"
+msgstr "Частота удаления задач не указана!"
+
+#: my_auth/views.py:504
+msgid "Профиль не найден!"
+msgstr "Профиль не найден!"
+
+#: my_auth/views.py:507
+msgid "Неверный JSON"
+msgstr "Неверный JSON"
+
+#: templates/email_verification_required.html:7
+#: templates/email_verification_required.html:14
+#: templates/messages_to_verification.html:7
+#: templates/messages_to_verification.html:70
+msgid "Подтверждение электронной почты"
+msgstr "Подтверждение электронной почты"
+
+#: templates/email_verification_required.html:17 templates/index.html:71
+msgid "Выйти"
+msgstr "Выйти"
+
+#: templates/email_verification_required.html:21
+msgid "Профиль"
+msgstr "Профиль"
+
+#: templates/email_verification_required.html:28
+msgid ""
+"К сожалению, ваша электронная почта не была подтверждена.Пожалуйста, "
+"проверьте ссылку в вашем электронном письме и попробуйте снова."
+msgstr ""
+"К сожалению, ваша электронная почта не была подтверждена.Пожалуйста, "
+"проверьте ссылку в вашем электронном письме и попробуйте снова."
+
+#: templates/email_verification_required.html:30
+msgid ""
+"Если у вас возникли проблемы, вы можете запросить новое письмо для "
+"подтверждения."
+msgstr ""
+"Если у вас возникли проблемы, вы можете запросить новое письмо для "
+"подтверждения."
+
+#: templates/email_verification_required.html:32
+#: templates/verification_failed.html:26
+msgid "Пожалуйста, свяжитесь с поддержкой, если проблема не решается."
+msgstr "Пожалуйста, свяжитесь с поддержкой, если проблема не решается."
+
+#: templates/email_verification_required.html:43
+msgid "Повторная отправка токена"
+msgstr "Повторная отправка токена"
+
+#: templates/email_verification_required.html:44
+msgid "Ваш зарегистрированный адрес электронной почты:"
+msgstr "Ваш зарегистрированный адрес электронной почты:"
+
+#: templates/email_verification_required.html:47
+msgid "Отправить токен повторно"
+msgstr "Отправить токен повторно"
+
+#: templates/email_verification_required.html:52
+msgid "Изменить адрес электронной почты"
+msgstr "Изменить адрес электронной почты"
+
+#: templates/email_verification_required.html:55
+msgid "Введите новый email"
+msgstr "Введите новый email"
+
+#: templates/email_verification_required.html:56
+msgid "Изменить email"
+msgstr "Изменить email"
+
+#: templates/index.html:67
+msgid "Невыполненные задачи:"
+msgstr "Невыполненные задачи:"
+
+#: templates/index.html:76 templates/index.html:100
+msgid "Настройки"
+msgstr "Настройки"
+
+#: templates/index.html:77
+msgid "Добавить задачу"
+msgstr "Добавить задачу"
+
+#: templates/index.html:86
+msgid "Добавить новую задачу"
+msgstr "Добавить новую задачу"
+
+#: templates/index.html:89
+msgid "Введите название задачи"
+msgstr "Введите название задачи"
+
+#: templates/index.html:90
+msgid "Введите описание задачи"
+msgstr "Введите описание задачи"
+
+#: templates/index.html:91
+msgid "Добавить"
+msgstr "Добавить"
+
+#: templates/index.html:103
+msgid "Шрифт:"
+msgstr "Шрифт:"
+
+#: templates/index.html:114
+msgid "Размер шрифта:"
+msgstr "Размер шрифта:"
+
+#: templates/index.html:126
+msgid "Отображать выполненные задачи"
+msgstr "Отображать выполненные задачи"
+
+#: templates/index.html:131
+msgid "Фон"
+msgstr "Фон"
+
+#: templates/index.html:133
+msgid "По умолчанию"
+msgstr "По умолчанию"
+
+#: templates/index.html:134
+msgid "Фон 1"
+msgstr "Фон 1"
+
+#: templates/index.html:135
+msgid "Фон 2"
+msgstr "Фон 2"
+
+#: templates/index.html:136
+msgid "Фон 3"
+msgstr "Фон 3"
+
+#: templates/index.html:137
+msgid "Пользовательский фон"
+msgstr "Пользовательский фон"
+
+#: templates/index.html:141
+msgid "Загрузить свой фон"
+msgstr "Загрузить свой фон"
+
+#: templates/index.html:145
+msgid "Частота удаления выполненных задач"
+msgstr "Частота удаления выполненных задач"
+
+#: templates/index.html:147
+msgid "Никогда"
+msgstr "Никогда"
+
+#: templates/index.html:148
+msgid "Раз в минуту"
+msgstr "Раз в минуту"
+
+#: templates/index.html:149
+msgid "Раз в час"
+msgstr "Раз в час"
+
+#: templates/index.html:150
+msgid "Раз в день"
+msgstr "Раз в день"
+
+#: templates/index.html:151
+msgid "Раз в неделю"
+msgstr "Раз в неделю"
+
+#: templates/index.html:152
+msgid "Раз в месяц"
+msgstr "Раз в месяц"
+
+#: templates/index.html:156
+msgid "Сохранить настройки"
+msgstr "Сохранить настройки"
+
+#: templates/index.html:164
+msgid "Невыполненные задачи"
+msgstr "Невыполненные задачи"
+
+#: templates/index.html:174 templates/index.html:192
+msgid "Удалить задачу"
+msgstr "Удалить задачу"
+
+#: templates/index.html:183
+msgid "Выполненные задачи"
+msgstr "Выполненные задачи"
+
+#: templates/index.html:184
+msgid "Развернуть список выполненных задач"
+msgstr "Развернуть список выполненных задач"
+
+#: templates/index.html:184
+msgid "Развернуть"
+msgstr "Развернуть"
+
+#: templates/index.html:204
+msgid "Этот сайт использует cookies для улучшения пользовательского опыта."
+msgstr "Этот сайт использует cookies для улучшения пользовательского опыта."
+
+#: templates/index.html:205
+msgid "Принять"
+msgstr "Принять"
+
+#: templates/login.html:7 templates/login.html:73
+msgid "Авторизация"
+msgstr "Авторизация"
+
+#: templates/login.html:86
+msgid "Регистрация прошла успешно!"
+msgstr "Регистрация прошла успешно!"
+
+#: templates/login.html:95
+msgid "Имя пользователя"
+msgstr "Имя пользователя"
+
+#: templates/login.html:99
+msgid "Пароль"
+msgstr "Пароль"
+
+#: templates/login.html:105 templates/main.html:67
+#: templates/password_reset.html:86
+msgid "Войти"
+msgstr "Войти"
+
+#: templates/login.html:108
+msgid "Нет аккаунта"
+msgstr "Нет аккаунта"
+
+#: templates/login.html:108 templates/main.html:66
+#: templates/registration.html:45
+msgid "Зарегистрироваться"
+msgstr "Зарегистрироваться"
+
+#: templates/login.html:111
+msgid "Забыли пароль"
+msgstr "Забыли пароль"
+
+#: templates/main.html:7
+msgid "Главная страница"
+msgstr "Главная страница"
+
+#: templates/main.html:63
+msgid "Добро пожаловать в "
+msgstr "Добро пожаловать в "
+
+#: templates/main.html:64
+msgid "Управляйте своими задачами легко и удобно!"
+msgstr "Управляйте своими задачами легко и удобно!"
+
+#: templates/messages_to_new_password.html:7 templates/profile.html:210
+msgid "Новый пароль"
+msgstr "Новый пароль"
+
+#: templates/messages_to_new_password.html:59
+msgid "Ваш новый пароль"
+msgstr "Ваш новый пароль"
+
+#: templates/messages_to_new_password.html:62
+msgid "Здравствуйте!"
+msgstr "Здравствуйте!"
+
+#: templates/messages_to_new_password.html:63
+msgid "Ваш пароль был успешно изменен. Вот ваш новый пароль"
+msgstr "Ваш пароль был успешно изменен. Вот ваш новый пароль"
+
+#: templates/messages_to_new_password.html:65
+msgid "Пожалуйста, сохраните его в безопасном месте."
+msgstr "Пожалуйста, сохраните его в безопасном месте."
+
+#: templates/messages_to_new_password.html:66
+msgid ""
+"Если вы не запрашивали изменение пароля, пожалуйста, игнорируйте это "
+"сообщение."
+msgstr ""
+"Если вы не запрашивали изменение пароля, пожалуйста, игнорируйте это "
+"сообщение."
+
+#: templates/messages_to_new_password.html:70
+msgid "Все права защищены."
+msgstr "Все права защищены."
+
+#: templates/messages_to_verification.html:72
+msgid ""
+"Для завершения регистрации, пожалуйста, подтвердите вашу электронную почту, "
+"перейдя по следующей ссылке:"
+msgstr ""
+"Для завершения регистрации, пожалуйста, подтвердите вашу электронную почту, "
+"перейдя по следующей ссылке:"
+
+#: templates/messages_to_verification.html:73
+msgid "Подтвердить электронную почту"
+msgstr "Подтвердить электронную почту"
+
+#: templates/messages_to_verification.html:74
+msgid ""
+"Если вы не создавали учетную запись, просто проигнорируйте это сообщение."
+msgstr ""
+"Если вы не создавали учетную запись, просто проигнорируйте это сообщение."
+
+#: templates/password_reset.html:7 templates/password_reset.html:67
+msgid "Восстановление пароля"
+msgstr "Восстановление пароля"
+
+#: templates/password_reset.html:79
+msgid "Имя пользователя:"
+msgstr "Имя пользователя:"
+
+#: templates/password_reset.html:80
+msgid "Введите ваше имя пользователя"
+msgstr "Введите ваше имя пользователя"
+
+#: templates/password_reset.html:83
+msgid "Отправить ссылку для восстановления пароля"
+msgstr "Отправить ссылку для восстановления пароля"
+
+#: templates/password_reset.html:86
+msgid "Вспомнили пароль?"
+msgstr "Вспомнили пароль?"
+
+#: templates/profile.html:7 templates/profile.html:166
+msgid "Профиль пользователя"
+msgstr "Профиль пользователя"
+
+#: templates/profile.html:167
+msgid "Назад к задачам"
+msgstr "Назад к задачам"
+
+#: templates/profile.html:183 templates/profile.html:252
+msgid "Имя"
+msgstr "Имя"
+
+#: templates/profile.html:184 templates/profile.html:256
+msgid "Фамилия"
+msgstr "Фамилия"
+
+#: templates/profile.html:185
+msgid "Email"
+msgstr "Email"
+
+#: templates/profile.html:186
+msgid "Дата регистрации"
+msgstr "Дата регистрации"
+
+#: templates/profile.html:188 templates/profile.html:264
+msgid "О себе"
+msgstr "О себе"
+
+#: templates/profile.html:194 templates/profile.html:228
+msgid "Изменить профиль"
+msgstr "Изменить профиль"
+
+#: templates/profile.html:196 templates/profile.html:202
+#: templates/profile.html:217
+msgid "Сменить пароль"
+msgstr "Сменить пароль"
+
+#: templates/profile.html:206
+msgid "Старый пароль"
+msgstr "Старый пароль"
+
+#: templates/profile.html:214
+msgid "Подтвердите новый пароль"
+msgstr "Подтвердите новый пароль"
+
+#: templates/profile.html:232
+msgid "Аватар"
+msgstr "Аватар"
+
+#: templates/profile.html:244
+msgid "Загрузить"
+msgstr "Загрузить"
+
+#: templates/profile.html:247
+msgid "Сбросить аватар"
+msgstr "Сбросить аватар"
+
+#: templates/profile.html:267
+msgid "Сохранить изменения"
+msgstr "Сохранить изменения"
+
+#: templates/registration.html:7 templates/registration.html:15
+msgid "Регистрация"
+msgstr "Регистрация"
+
+#: templates/registration.html:31
+msgid "Показать пароль"
+msgstr "Показать пароль"
+
+#: templates/registration.html:40
+msgid "Я согласен с"
+msgstr "Я согласен с"
+
+#: templates/registration.html:40
+msgid "лицензионным соглашением"
+msgstr "лицензионным соглашением"
+
+#: templates/registration.html:64
+msgid ""
+"\n"
+"            <h2>Лицензионное соглашение</h2>\n"
+"            <h2>1. Общие положения</h2>\n"
+"            <p>1.1. Настоящее лицензионное соглашение (далее – "
+"\"Соглашение\") регулирует условия использования приложения\n"
+"                \"To\n"
+"                Do\" (далее – \"Приложение\"), разработанного [Название "
+"компании] (далее – \"Разработчик\").</p>\n"
+"            <p>1.2. Устанавливая и/или используя Приложение, пользователь "
+"(далее – \"Пользователь\") подтверждает свое\n"
+"                согласие с условиями настоящего Соглашения.</p>\n"
+"\n"
+"            <h2>2. Лицензия</h2>\n"
+"            <p>2.1. Разработчик предоставляет Пользователю неисключительную, "
+"непередаваемую лицензию на использование\n"
+"                Приложения в личных, некоммерческих целях.</p>\n"
+"            <p>2.2. Пользователь имеет право:</p>\n"
+"            <ul>\n"
+"                <li>Использовать Приложение на своих устройствах.</li>\n"
+"                <li>Создавать и редактировать списки задач.</li>\n"
+"            </ul>\n"
+"            <p>2.3. Пользователь не имеет права:</p>\n"
+"            <ul>\n"
+"                <li>Распространять, продавать или сдавать в аренду "
+"Приложение.</li>\n"
+"                <li>Модифицировать, декомпилировать или разбирать Приложение."
+"</li>\n"
+"            </ul>\n"
+"\n"
+"            <h2>3. Ответственность</h2>\n"
+"            <p>3.1. Приложение предоставляется \"как есть\". Разработчик не "
+"несет ответственности за любые убытки,\n"
+"                возникшие в\n"
+"                результате использования или невозможности использования "
+"Приложения.</p>\n"
+"            <p>3.2. Разработчик не гарантирует отсутствие ошибок в "
+"Приложении и его соответствие ожиданиям\n"
+"                Пользователя.</p>\n"
+"\n"
+"            <h2>4. Конфиденциальность</h2>\n"
+"            <p>4.1. Разработчик обязуется не раскрывать личные данные "
+"Пользователя третьим лицам без его согласия, за\n"
+"                исключением случаев, предусмотренных законодательством "
+"Российской Федерации.</p>\n"
+"\n"
+"            <h2>5. Заключительные положения</h2>\n"
+"            <p>5.1. Настоящее Соглашение вступает в силу с момента его "
+"<b>Принятия</b> Пользователем и действует до\n"
+"                момента\n"
+"                его\n"
+"                расторжения.</p>\n"
+"            <p>5.2. Разработчик имеет право вносить изменения в условия "
+"настоящего Соглашения, уведомляя об этом\n"
+"                Пользователя.</p>\n"
+"            <p>5.3. Все споры, возникающие из настоящего Соглашения, "
+"подлежат разрешению в соответствии с\n"
+"                законодательством\n"
+"                Российской Федерации.</p>\n"
+"        "
+msgstr ""
+"\n"
+"            <h2>Лицензионное соглашение</h2>\n"
+"            <h2>1. Общие положения</h2>\n"
+"            <p>1.1. Настоящее лицензионное соглашение (далее – "
+"\"Соглашение\") регулирует условия использования приложения\n"
+"                \"To\n"
+"                Do\" (далее – \"Приложение\"), разработанного [Название "
+"компании] (далее – \"Разработчик\").</p>\n"
+"            <p>1.2. Устанавливая и/или используя Приложение, пользователь "
+"(далее – \"Пользователь\") подтверждает свое\n"
+"                согласие с условиями настоящего Соглашения.</p>\n"
+"\n"
+"            <h2>2. Лицензия</h2>\n"
+"            <p>2.1. Разработчик предоставляет Пользователю неисключительную, "
+"непередаваемую лицензию на использование\n"
+"                Приложения в личных, некоммерческих целях.</p>\n"
+"            <p>2.2. Пользователь имеет право:</p>\n"
+"            <ul>\n"
+"                <li>Использовать Приложение на своих устройствах.</li>\n"
+"                <li>Создавать и редактировать списки задач.</li>\n"
+"            </ul>\n"
+"            <p>2.3. Пользователь не имеет права:</p>\n"
+"            <ul>\n"
+"                <li>Распространять, продавать или сдавать в аренду "
+"Приложение.</li>\n"
+"                <li>Модифицировать, декомпилировать или разбирать Приложение."
+"</li>\n"
+"            </ul>\n"
+"\n"
+"            <h2>3. Ответственность</h2>\n"
+"            <p>3.1. Приложение предоставляется \"как есть\". Разработчик не "
+"несет ответственности за любые убытки,\n"
+"                возникшие в\n"
+"                результате использования или невозможности использования "
+"Приложения.</p>\n"
+"            <p>3.2. Разработчик не гарантирует отсутствие ошибок в "
+"Приложении и его соответствие ожиданиям\n"
+"                Пользователя.</p>\n"
+"\n"
+"            <h2>4. Конфиденциальность</h2>\n"
+"            <p>4.1. Разработчик обязуется не раскрывать личные данные "
+"Пользователя третьим лицам без его согласия, за\n"
+"                исключением случаев, предусмотренных законодательством "
+"Российской Федерации.</p>\n"
+"\n"
+"            <h2>5. Заключительные положения</h2>\n"
+"            <p>5.1. Настоящее Соглашение вступает в силу с момента его "
+"<b>Принятия</b> Пользователем и действует до\n"
+"                момента\n"
+"                его\n"
+"                расторжения.</p>\n"
+"            <p>5.2. Разработчик имеет право вносить изменения в условия "
+"настоящего Соглашения, уведомляя об этом\n"
+"                Пользователя.</p>\n"
+"            <p>5.3. Все споры, возникающие из настоящего Соглашения, "
+"подлежат разрешению в соответствии с\n"
+"                законодательством\n"
+"                Российской Федерации.</p>\n"
+"        "
+
+#: templates/registration.html:113
+msgid "Принимаю"
+msgstr "Принимаю"
+
+#: templates/verification_failed.html:7 templates/verification_failed.html:13
+msgid "Ошибка подтверждения"
+msgstr "Ошибка подтверждения"
+
+#: templates/verification_failed.html:18
+msgid "Не удалось подтвердить ваш адрес электронной почты"
+msgstr "Не удалось подтвердить ваш адрес электронной почты"
+
+#: templates/verification_failed.html:19
+msgid ""
+"К сожалению, токен подтверждения недействителен или истек. Пожалуйста, "
+"проверьте ссылку в вашем"
+msgstr ""
+"К сожалению, токен подтверждения недействителен или истек. Пожалуйста, "
+"проверьте ссылку в вашем"
+
+#: templates/verification_failed.html:20
+msgid "электронном письме и попробуйте снова."
+msgstr "электронном письме и попробуйте снова."
+
+#: templates/verification_failed.html:21
+msgid ""
+"Если у вас возникли проблемы, вы можете запросить новое письмо для "
+"подтверждения, для этого"
+msgstr ""
+"Если у вас возникли проблемы, вы можете запросить новое письмо для "
+"подтверждения, для этого"
+
+#: templates/verification_failed.html:22
+msgid "авторизуйтесь"
+msgstr "авторизуйтесь"
+
+#: templates/verification_failed.html:30
+msgid "Вернуться на главную страницу"
+msgstr "Вернуться на главную страницу"

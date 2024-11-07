@@ -8,7 +8,7 @@ import logging
 from django.utils import translation
 from django.utils.translation import gettext as _
 from django.contrib.auth import login
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
@@ -135,10 +135,10 @@ class RegisterView(CreateView):
         # Отправка письма с подтверждением
         try:
             EmailService.send_verification_email(self.request, user)
-            message_success = 'Регистрация прошла успешна! Проверьте вашу почту для подтверждения. '
+            message_success = _('Регистрация прошла успешна! Проверьте вашу почту для подтверждения. ')
             messages.success(self.request, message_success)
         except Exception as e:
-            message_warning = ('Регистрация успешна, но не удалось отправить письмо с подтверждением. '
+            message_warning = _('Регистрация успешна, но не удалось отправить письмо с подтверждением. '
                                'Пожалуйста попробуйте отправить письмо через несколько минут')
             messages.warning(self.request, message_warning)
 
@@ -201,12 +201,12 @@ class ProfileView(DetailView):
                 # Отправляем новое письмо для подтверждения email
                 EmailService.send_verification_email(request, self.object)
 
-            message_success = 'Информация о профиле успешно обновлена!'
+            message_success = _('Информация о профиле успешно обновлена!')
             messages.success(request, message_success)
             return redirect('my_auth:profile', pk=self.object.pk)
         else:
             logger.error(f'Ошибка при обновлении профиля. {self.object.username}: {form.errors}')
-            message_error = 'Ошибка при обновлении профиля. Пожалуйста, проверьте введенные данные.'
+            message_error = _('Ошибка при обновлении профиля. Пожалуйста, проверьте введенные данные.')
             messages.error(request, message_error)
 
         return self.get(request, *args, **kwargs)
@@ -232,7 +232,7 @@ class ChangePasswordView(View):
             user = form.save()
             update_session_auth_hash(request, user)  # Обновляем сессию, чтобы пользователь не вышел
             logger.info(f'Пользователь {request.user.username} успешно сменил свой пароль.')
-            message_success = 'Пароль успешно изменен!'
+            message_success = _('Пароль успешно изменен!')
             return JsonResponse({'success': True, 'message': message_success})
         else:
             logger.info(f'Неудачная попытка смены пароля у пользователя {request.user.username}.')
@@ -310,11 +310,11 @@ class ResendVerificationTokenView(View):
             user = request.user
             EmailService.send_verification_email(request, user)
             logger.info(f'Пользователь {request.user.username} отправил токен подтверждения себе на E-mail.')
-            message_success = 'Токен подтверждения был отправлен на ваш email.'
+            message_success = _('Токен подтверждения был отправлен на ваш email.')
             messages.success(request, message_success)
         except Exception as e:
             logger.info(f'Пользователь {request.user.username} не смог отправить токен подтверждения себе на E-mail.')
-            message_error = 'Произошла ошибка при отправке токена. Пожалуйста, попробуйте еще раз.'
+            message_error = _('Произошла ошибка при отправке токена. Пожалуйста, попробуйте еще раз.')
             messages.error(request, message_error)
 
         return redirect('task:task_view')
@@ -344,7 +344,7 @@ class ChangeEmailView(View):
         EmailService.send_verification_email(request, user)
         logger.info(f'Пользователь {request.user.username} сменил E-mail.')
 
-        message_success = ('Новый адрес электронной почты был установлен.'
+        message_success = _('Новый адрес электронной почты был установлен.'
                            'Проверьте ваш почтовый ящик для подтверждения.')
         messages.success(request, message_success)
         return redirect('task:task_view')
@@ -457,14 +457,14 @@ class PasswordResetView(View):
 
                 # Отправка нового пароля пользователю через EmailService
                 EmailService.send_new_password_email(user, new_password)
-                message_success = 'Новый пароль был установлен и отправлен вам на почту.'
+                message_success = _('Новый пароль был установлен и отправлен вам на почту.')
                 messages.success(request, message_success)
                 logger.info(f'Пароль сброшен для пользователя {user.username}. Новый пароль отправлен на E-mail.')
 
                 return redirect('my_auth:login')
             except User.DoesNotExist:
                 logger.error('Неудалось сбросить пароль: Пользователь с таким именем не найден.')
-                form_error = 'Пользователь с таким именем не найден.'
+                form_error = _('Пользователь с таким именем не найден.')
                 form.add_error('username', form_error)
 
         return render(request, self.template_name, {'form': form})
@@ -493,18 +493,18 @@ class UpdateProfileView(LoginRequiredMixin, View):
 
                 scheduler = TaskScheduler(profile)
                 scheduler.schedule_deletion_tasks()
-                message_confirm = 'Частота удаления задач успешно обновлена!'
+                message_confirm = _('Частота удаления задач успешно обновлена!')
 
                 return JsonResponse({'status': 'success', 'message': message_confirm})
             else:
-                message_error = 'Частота удаления задач не указана!'
+                message_error = _('Частота удаления задач не указана!')
                 return JsonResponse({'status': 'error', 'message': message_error}, status=400)
 
         except Profile.DoesNotExist:
-            message_profile_nf = 'Профиль не найден!'
+            message_profile_nf = _('Профиль не найден!')
             return JsonResponse({'status': 'error', 'message': message_profile_nf}, status=404)
         except json.JSONDecodeError:
-            message_error_json = 'Неверный JSON'
+            message_error_json = _('Неверный JSON')
             return JsonResponse({'status': 'error', 'message': message_error_json}, status=400)
 
 
@@ -516,7 +516,7 @@ class SetLanguageView(View):
     выбранный язык и сохраняя его в сессии пользователя.
     """
 
-    def get(self, request, language):
+    def get(self, request, language) -> HttpResponseRedirect:
         """
         Обрабатывает GET-запрос для переключения языка.
 
