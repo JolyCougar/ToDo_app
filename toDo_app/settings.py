@@ -38,6 +38,7 @@ SILENCED_SYSTEM_CHECKS = ["security.W019"]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'toDo_app.middleware.LanguageMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -59,6 +60,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'toDo_app.context_processors.current_language',
             ],
         },
     },
@@ -206,4 +208,3 @@ LOGGING = {
         },
     },
 }
-

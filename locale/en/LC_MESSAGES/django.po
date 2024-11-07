@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-07 09:26+0300\n"
+"POT-Creation-Date: 2024-11-07 10:39+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -175,111 +175,111 @@ msgstr "Add"
 msgid "Язык:"
 msgstr "Language:"
 
-#: templates/index.html:106
+#: templates/index.html:107
 msgid "English"
 msgstr "English"
 
-#: templates/index.html:108
+#: templates/index.html:110
 msgid "Русский"
 msgstr "Russian"
 
-#: templates/index.html:114
+#: templates/index.html:116
 msgid "Шрифт:"
 msgstr "Font:"
 
-#: templates/index.html:125
+#: templates/index.html:127
 msgid "Размер шрифта:"
 msgstr "Font size:"
 
-#: templates/index.html:137
+#: templates/index.html:139
 msgid "Отображать выполненные задачи"
 msgstr "Display completed tasks"
 
-#: templates/index.html:142
+#: templates/index.html:144
 msgid "Фон"
 msgstr "Background"
 
-#: templates/index.html:144
+#: templates/index.html:146
 msgid "По умолчанию"
 msgstr "Default"
 
-#: templates/index.html:145
+#: templates/index.html:147
 msgid "Фон 1"
 msgstr "Background 1"
 
-#: templates/index.html:146
+#: templates/index.html:148
 msgid "Фон 2"
 msgstr "Background 2"
 
-#: templates/index.html:147
+#: templates/index.html:149
 msgid "Фон 3"
 msgstr "Background 3"
 
-#: templates/index.html:148
+#: templates/index.html:150
 msgid "Пользовательский фон"
 msgstr "Custom Background"
 
-#: templates/index.html:153
+#: templates/index.html:155
 msgid "Загрузить свой фон"
 msgstr "Upload your own background"
 
-#: templates/index.html:157
+#: templates/index.html:159
 msgid "Частота удаления выполненных задач"
 msgstr "Frequency of deleting completed tasks"
 
-#: templates/index.html:159
+#: templates/index.html:161
 msgid "Никогда"
 msgstr "Never"
 
-#: templates/index.html:160
+#: templates/index.html:162
 msgid "Раз в минуту"
 msgstr "Once a minute"
 
-#: templates/index.html:161
+#: templates/index.html:163
 msgid "Раз в час"
 msgstr "Once an hour"
 
-#: templates/index.html:162
+#: templates/index.html:164
 msgid "Раз в день"
 msgstr "Once a day"
 
-#: templates/index.html:163
+#: templates/index.html:165
 msgid "Раз в неделю"
 msgstr "Once a week"
 
-#: templates/index.html:164
+#: templates/index.html:166
 msgid "Раз в месяц"
 msgstr "Once a month"
 
-#: templates/index.html:168
+#: templates/index.html:170
 msgid "Сохранить настройки"
 msgstr "Save settings"
 
-#: templates/index.html:176
+#: templates/index.html:178
 msgid "Невыполненные задачи"
 msgstr "Uncompleted tasks"
 
-#: templates/index.html:186 templates/index.html:205
+#: templates/index.html:188 templates/index.html:207
 msgid "Удалить задачу"
 msgstr "Delete task"
 
-#: templates/index.html:195
+#: templates/index.html:197
 msgid "Выполненные задачи"
 msgstr "Completed tasks"
 
-#: templates/index.html:197
+#: templates/index.html:199
 msgid "Развернуть список выполненных задач"
 msgstr "Expand the list of completed tasks"
 
-#: templates/index.html:197
+#: templates/index.html:199
 msgid "Развернуть"
 msgstr "Expand"
 
-#: templates/index.html:217
+#: templates/index.html:219
 msgid "Этот сайт использует cookies для улучшения пользовательского опыта."
 msgstr "This site uses cookies to improve your user experience."
 
-#: templates/index.html:218
+#: templates/index.html:220
 msgid "Принять"
 msgstr "Accept"
 
@@ -636,6 +636,8 @@ msgstr "log in"
 #: templates/verification_failed.html:30
 msgid "Вернуться на главную страницу"
 msgstr "Return to main page"
+
+
 
 #, fuzzy
 #~| msgid "лицензионным соглашением"

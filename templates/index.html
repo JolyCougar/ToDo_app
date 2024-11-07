@@ -103,9 +103,11 @@
                 <div class="form-group">
                     <label for="languageSelect">{% trans "Язык:" %}</label>
                     <select id="languageSelect">
-                        <option value="en" {% if request.session.django_language == 'en' %}selected{% endif %}>{% trans "English" %}
+                        <option value="en"
+                                {% if request.session.django_language == 'en' %}selected{% endif %}>{% trans "English" %}
                         </option>
-                        <option value="ru" {% if request.session.django_language == 'ru' %}selected{% endif %}>{% trans "Русский" %}
+                        <option value="ru"
+                                {% if request.session.django_language == 'ru' %}selected{% endif %}>{% trans "Русский" %}
                         </option>
                     </select>
                 </div>
@@ -274,6 +276,65 @@
             console.error('Ошибка сети:', error);
         });
     });
+    
+   const translations = {
+    ru: {
+        collapse: 'Свернуть',
+        expand: 'Развернуть'
+    },
+    en: {
+        collapse: 'Collapse',
+        expand: 'Expand'
+    }
+};
+
+// Получаем текущий язык из сессии
+const currentLanguage = '{{ current_language|default:"ru" }}';
+window.currentLanguage = currentLanguage; // Сохраняем в глобальную переменную
+window.translations = translations; // Сохраняем переводы в глобальную переменную
+
+// Проверка на наличие текущего языка в переводах
+if (!translations[currentLanguage]) {
+    console.error(`Язык "${currentLanguage}" не поддерживается.`);
+    window.currentLanguage = 'en'; // Установите язык по умолчанию, если текущий язык не поддерживается
+}
+
+// Инициализация текста кнопки при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleCompletedListButton = document.getElementById('toggleCompletedList');
+    const completedList = document.getElementById('completedList');
+
+    if (toggleCompletedListButton) {
+        // Устанавливаем начальный текст кнопки на "Развернуть"
+        toggleCompletedListButton.textContent = translations[window.currentLanguage].expand; 
+
+        // Убедитесь, что список изначально скрыт
+        completedList.style.display = 'none';
+
+        // Добавляем обработчик события для кнопки
+        toggleCompletedListButton.addEventListener('click', toggleCompletedList);
+    } else {
+        console.error('Кнопка для переключения списка выполненных задач не найдена.');
+    }
+});
+
+function toggleCompletedList() {
+    const completedList = document.getElementById('completedList');
+    const toggleCompletedListButton = document.getElementById('toggleCompletedList');
+
+    // Проверяем, виден ли список
+    const isVisible = completedList.style.display !== 'none';
+
+    // Переключаем видимость списка и текст кнопки
+    if (isVisible) {
+        completedList.style.display = 'none'; // Скрываем список
+        toggleCompletedListButton.textContent = translations[window.currentLanguage].expand; // Устанавливаем текст "Развернуть"
+    } else {
+        completedList.style.display = 'block'; // Показываем список
+        toggleCompletedListButton.textContent = translations[window.currentLanguage].collapse; // Устанавливаем текст "Свернуть"
+    }
+}
+
 
 
 </script>
