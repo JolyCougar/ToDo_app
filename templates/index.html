@@ -99,15 +99,17 @@
             <span class="close" id="closeSettingsModal">&times;</span>
             <h2>{% trans "Настройки" %}</h2>
             <form id="settingsForm" novalidate>
-                
+
                 <div class="form-group">
-                <label for="languageSelect">{% trans "Язык:" %}</label>
-                <select id="languageSelect">
-                    <option value="en">English</option>
-                    <option value="ru" selected>Русский</option>
-                </select>
-            </div>
-                
+                    <label for="languageSelect">{% trans "Язык:" %}</label>
+                    <select id="languageSelect">
+                        <option value="en" {% if request.session.django_language == 'en' %}selected{% endif %}>{% trans "English" %}
+                        </option>
+                        <option value="ru" {% if request.session.django_language == 'ru' %}selected{% endif %}>{% trans "Русский" %}
+                        </option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label for="fontSelect">{% trans "Шрифт:" %}</label>
                     <select id="fontSelect">
@@ -147,7 +149,8 @@
                     </select>
                 </div>
                 <div class="form-group" id="customBackgroundGroup" style="display: none;">
-                    <label for="customBackgroundInput" class="file-input-label">{% trans "Загрузить свой фон" %}:</label>
+                    <label for="customBackgroundInput"
+                           class="file-input-label">{% trans "Загрузить свой фон" %}:</label>
                     <input type="file" id="customBackgroundInput" accept="image/*" class="file-input">
                 </div>
                 <div class="form-group">
@@ -190,7 +193,8 @@
         <section>
             <h2>
                 {% trans "Выполненные задачи" %}
-                <button id="toggleCompletedList" aria-label="{% trans "Развернуть список выполненных задач" %}">{% trans "Развернуть" %}</button>
+                <button id="toggleCompletedList"
+                        aria-label="{% trans "Развернуть список выполненных задач" %}">{% trans "Развернуть" %}</button>
             </h2>
             <ul class="completed-list" id="completedList">
                 {% for task in task_list %}
@@ -240,7 +244,7 @@
         })
             .then(response => {
                 if (response.ok) {
-                    
+
                     document.getElementById('settingsModal').style.display = 'none'; // Закрываем модальное окно
                 } else {
                     console.error('Произошла ошибка при обновлении частоты удаления задач.');
@@ -251,28 +255,27 @@
             });
     });
 
-    document.getElementById('languageSelect').addEventListener('change', function() {
-    const selectedLanguage = this.value;
-    // Отправка запроса на сервер для переключения языка
-    fetch(`/set_language/${selectedLanguage}/`, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-        },
-    }).then(response => {
-        if (response.ok) {
-            // Перезагрузить страницу, чтобы применить изменения языка
-            location.reload();
-        } else {
-            console.error('Ошибка при переключении языка');
-        }
-    }).catch(error => {
-        console.error('Ошибка сети:', error);
+    document.getElementById('languageSelect').addEventListener('change', function () {
+        const selectedLanguage = this.value;
+        // Отправка запроса на сервер для переключения языка
+        fetch(`/set_language/${selectedLanguage}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        }).then(response => {
+            if (response.ok) {
+                // Перезагрузить страницу, чтобы применить изменения языка
+                location.reload();
+            } else {
+                console.error('Ошибка при переключении языка');
+            }
+        }).catch(error => {
+            console.error('Ошибка сети:', error);
+        });
     });
-});
 
-    
-    
+
 </script>
 </body>
 </html>

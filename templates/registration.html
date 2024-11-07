@@ -18,14 +18,14 @@
     <main>
         <form id="registrationForm" method="post" novalidate>
             {% csrf_token %}
-            {{ form.first_name.label_tag }} {{ form.first_name }}  <!-- Обязательное поле -->
-            {{ form.username.label_tag }} {{ form.username }}  <!-- Обязательное поле -->
+            {% trans "Имя" %}: {{ form.first_name }}  <!-- Обязательное поле -->
+            {% trans "Имя пользователя" %}: {{ form.username }}  <!-- Обязательное поле -->
             <p class="error-message" id="username-error" style="display: none;"></p>
             <!-- Сообщение об ошибке для имени пользователя -->
-            {{ form.email.label_tag }} {{ form.email }}  <!-- Обязательное поле -->
+            {% trans "Адрес электронной почты:" %} {{ form.email }}  <!-- Обязательное поле -->
             <p class="error-message" id="email-error" style="display: none;"></p> <!-- Сообщение об ошибке для email -->
-            {{ form.password.label_tag }} <input type="password" id="id_password" name="password" required>
-            {{ form.confirm_password.label_tag }} <input type="password" id="id_confirm_password"
+            {% trans "Пароль" %}: <input type="password" id="id_password" name="password" required>
+            {% trans "Подтвердите пароль:" %} <input type="password" id="id_confirm_password"
                                                          name="confirm_password" required>
             <span class="show-password" id="togglePassword"
                   style="text-decoration: underline; cursor: pointer;">{% trans "Показать пароль" %}</span>

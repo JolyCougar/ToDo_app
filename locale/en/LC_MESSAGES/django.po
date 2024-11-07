@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-07 08:49+0300\n"
+"POT-Creation-Date: 2024-11-07 09:26+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -175,103 +175,111 @@ msgstr "Add"
 msgid "Язык:"
 msgstr "Language:"
 
-#: templates/index.html:112
+#: templates/index.html:106
+msgid "English"
+msgstr "English"
+
+#: templates/index.html:108
+msgid "Русский"
+msgstr "Russian"
+
+#: templates/index.html:114
 msgid "Шрифт:"
 msgstr "Font:"
 
-#: templates/index.html:123
+#: templates/index.html:125
 msgid "Размер шрифта:"
 msgstr "Font size:"
 
-#: templates/index.html:135
+#: templates/index.html:137
 msgid "Отображать выполненные задачи"
 msgstr "Display completed tasks"
 
-#: templates/index.html:140
+#: templates/index.html:142
 msgid "Фон"
 msgstr "Background"
 
-#: templates/index.html:142
+#: templates/index.html:144
 msgid "По умолчанию"
 msgstr "Default"
 
-#: templates/index.html:143
+#: templates/index.html:145
 msgid "Фон 1"
 msgstr "Background 1"
 
-#: templates/index.html:144
+#: templates/index.html:146
 msgid "Фон 2"
 msgstr "Background 2"
 
-#: templates/index.html:145
+#: templates/index.html:147
 msgid "Фон 3"
 msgstr "Background 3"
 
-#: templates/index.html:146
+#: templates/index.html:148
 msgid "Пользовательский фон"
 msgstr "Custom Background"
 
-#: templates/index.html:150
+#: templates/index.html:153
 msgid "Загрузить свой фон"
 msgstr "Upload your own background"
 
-#: templates/index.html:154
+#: templates/index.html:157
 msgid "Частота удаления выполненных задач"
 msgstr "Frequency of deleting completed tasks"
 
-#: templates/index.html:156
+#: templates/index.html:159
 msgid "Никогда"
 msgstr "Never"
 
-#: templates/index.html:157
+#: templates/index.html:160
 msgid "Раз в минуту"
 msgstr "Once a minute"
 
-#: templates/index.html:158
+#: templates/index.html:161
 msgid "Раз в час"
 msgstr "Once an hour"
 
-#: templates/index.html:159
+#: templates/index.html:162
 msgid "Раз в день"
 msgstr "Once a day"
 
-#: templates/index.html:160
+#: templates/index.html:163
 msgid "Раз в неделю"
 msgstr "Once a week"
 
-#: templates/index.html:161
+#: templates/index.html:164
 msgid "Раз в месяц"
 msgstr "Once a month"
 
-#: templates/index.html:165
+#: templates/index.html:168
 msgid "Сохранить настройки"
 msgstr "Save settings"
 
-#: templates/index.html:173
+#: templates/index.html:176
 msgid "Невыполненные задачи"
 msgstr "Uncompleted tasks"
 
-#: templates/index.html:183 templates/index.html:201
+#: templates/index.html:186 templates/index.html:205
 msgid "Удалить задачу"
 msgstr "Delete task"
 
-#: templates/index.html:192
+#: templates/index.html:195
 msgid "Выполненные задачи"
 msgstr "Completed tasks"
 
-#: templates/index.html:193
+#: templates/index.html:197
 msgid "Развернуть список выполненных задач"
 msgstr "Expand the list of completed tasks"
 
-#: templates/index.html:193
+#: templates/index.html:197
 msgid "Развернуть"
 msgstr "Expand"
 
-#: templates/index.html:213
+#: templates/index.html:217
 msgid "Этот сайт использует cookies для улучшения пользовательского опыта."
 msgstr "This site uses cookies to improve your user experience."
 
-#: templates/index.html:214
+#: templates/index.html:218
 msgid "Принять"
 msgstr "Accept"
 
@@ -283,11 +291,11 @@ msgstr "Sign In"
 msgid "Регистрация прошла успешно!"
 msgstr "Registration was successful!"
 
-#: templates/login.html:95
+#: templates/login.html:95 templates/registration.html:22
 msgid "Имя пользователя"
 msgstr "Username"
 
-#: templates/login.html:99
+#: templates/login.html:99 templates/registration.html:27
 msgid "Пароль"
 msgstr "Password"
 
@@ -398,6 +406,7 @@ msgid "Назад к задачам"
 msgstr "Back to tasks"
 
 #: templates/profile.html:183 templates/profile.html:252
+#: templates/registration.html:21
 msgid "Имя"
 msgstr "First name"
 
@@ -453,6 +462,14 @@ msgstr "Save changes"
 #: templates/registration.html:7 templates/registration.html:15
 msgid "Регистрация"
 msgstr "Sign Up"
+
+#: templates/registration.html:25
+msgid "Адрес электронной почты:"
+msgstr "E-mail address"
+
+#: templates/registration.html:28
+msgid "Подтвердите пароль:"
+msgstr "Confirm new password"
 
 #: templates/registration.html:31
 msgid "Показать пароль"
@@ -619,3 +636,8 @@ msgstr "log in"
 #: templates/verification_failed.html:30
 msgid "Вернуться на главную страницу"
 msgstr "Return to main page"
+
+#, fuzzy
+#~| msgid "лицензионным соглашением"
+#~ msgid "Я согласен с лицензионным соглашением"
+#~ msgstr "I agree with license agreement"
