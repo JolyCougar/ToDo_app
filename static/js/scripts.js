@@ -4,7 +4,6 @@ const taskList = document.getElementById('taskList');
 const completedList = document.getElementById('completedList');
 const cookieBanner = document.getElementById('cookieBanner');
 const acceptCookiesButton = document.getElementById('acceptCookies');
-const toggleCompletedListButton = document.getElementById('toggleCompletedList');
 const addTaskButton = document.getElementById('addTaskButton');
 const taskInput = document.getElementById('taskInput');
 const taskDescription = document.getElementById('taskDescription');
@@ -117,16 +116,7 @@ if (cookieBanner) {
     }
 }
 
-function toggleCompletedList() {
-    const isHidden = completedList.classList.contains('show');
-    if (isHidden) {
-        completedList.classList.remove('show');
-        toggleCompletedListButton.textContent = 'Развернуть';
-    } else {
-        completedList.classList.add('show');
-        toggleCompletedListButton.textContent = 'Свернуть';
-    }
-}
+
 
 function showModal() {
     modal.style.display = 'flex';
