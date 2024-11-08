@@ -14,6 +14,9 @@ services:
       - db
     ports:
       - "8000:8000"
+    networks:
+      - my_network
+    restart: always
 
   db:
     image: postgres:16-alpine
@@ -21,6 +24,9 @@ services:
         - postgres_data:/var/lib/postgresql/data
     env_file:
         - ./.env.db
+    networks:
+      - my_network
+    restart: always
 
   celery:
     build:
@@ -29,6 +35,9 @@ services:
     depends_on:
       - web
       - redis
+    networks:
+      - my_network
+    restart: always
 
   celery-beat:
     build:
@@ -37,11 +46,17 @@ services:
     depends_on:
       - web
       - redis
+    networks:
+      - my_network
+    restart: always
 
   redis:
     image: redis:alpine
     ports:
         - "6379:6379"
+    networks:
+      - my_network
+    restart: always
 
 
   nginx:
@@ -54,6 +69,9 @@ services:
       - "80:80"
     depends_on:
       - web
+    networks:
+      - my_network
+    restart: always
 
 
 volumes:
@@ -61,3 +79,8 @@ volumes:
   static_volume:
   media_volume:
   log_volume:
+
+
+networks:
+  my_network:
+    driver: bridge
