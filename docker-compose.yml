@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - static_volume:/usr/src/app/web/static
+      - media_volume:/usr/src/app/web/media
+      - log_volume:/usr/src/app/web/log
+    env_file:
+        - ./.env
+#    depends_on:
+#        - db
+    ports:
+      - "8000:8000"
+#  db:
+#    image: postgres:16-alpine
+#    volumes:
+#        - postgres_data:/var/lib/postgresql/data
+#    env_file:
+#        - ./.env
+  celery:
+    build: .
+    command: celery -A toDo_app worker --loglevel=info
+  celery-beat:
+    build: .
+    command: celery -A toDo_app beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+  redis:
+    image: redis:alpine
+    ports:
+        - "6379:6379"
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  log_volume:

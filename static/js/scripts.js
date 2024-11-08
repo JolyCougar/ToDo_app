@@ -73,8 +73,6 @@ dateDisplay.textContent = currentDate.toLocaleDateString('ru-RU', {
 updateIncompleteCount();
 
 // Обработчики событий
-
-toggleCompletedListButton.addEventListener('click', toggleCompletedList);
 addTaskButton.addEventListener('click', showModal);
 closeModal.addEventListener('click', hideModal);
 window.addEventListener('click', hideModalOnClickOutside);

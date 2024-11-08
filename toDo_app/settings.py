@@ -1,18 +1,17 @@
 from pathlib import Path
 import os.path
 from decouple import config
-from celery.schedules import crontab
 from django.urls import reverse_lazy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 logs_dir = BASE_DIR / 'logs'
 logs_dir.mkdir(exist_ok=True)
 
-SECRET_KEY = 'django-insecure-zgb0lv@4_f1c+$ri*kh2k+=y*11m+*i!9$oz@y!eqrqpzgg9ue'
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
-DEBUG = True
+DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 INSTALLED_APPS = [
     "admin_interface",
@@ -51,8 +50,7 @@ ROOT_URLCONF = 'toDo_app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,21 +68,14 @@ WSGI_APPLICATION = 'toDo_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': config('SQL_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': config('SQL_DATABASE', os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': config('SQL_USER', 'user'),
+        'PASSWORD': config('SQL_PASSWORD', 'password'),
+        'HOST': config('SQL_HOST', 'game_db'),
+        'PORT': config('SQL_PORT', '5432'),
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'toDo_app',
-#         'USER': 'postgres',
-#         'PASSWORD': '123456',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -123,9 +114,10 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [STATIC_DIR]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# STATICFILES_DIRS = [STATIC_DIR]
+# STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
@@ -152,6 +144,7 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+CELERY_BEAT_SCHEDULER = config('CELERY_BEAT_SCHEDULER')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
