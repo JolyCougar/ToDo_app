@@ -68,15 +68,14 @@ WSGI_APPLICATION = 'toDo_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': config('SQL_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': config('SQL_DATABASE', os.path.join(BASE_DIR, 'db.sqlite3')),
-        'USER': config('SQL_USER', 'user'),
-        'PASSWORD': config('SQL_PASSWORD', 'password'),
-        'HOST': config('SQL_HOST', 'game_db'),
-        'PORT': config('SQL_PORT', '5432'),
+        'ENGINE': config('ENGINE_DB', 'django.db.backends.sqlite3'),
+        'NAME': config('NAME_DB', os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': config('USER_DB', 'user'),
+        'PASSWORD': config('PASSWORD_DB', 'password'),
+        'HOST': config('HOST_DB', 'db'),
+        'PORT': config('PORT_DB', '5432'),
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
