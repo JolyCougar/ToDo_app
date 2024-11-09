@@ -139,7 +139,7 @@ class RegisterView(CreateView):
             messages.success(self.request, message_success)
         except Exception as e:
             message_warning = _('Регистрация успешна, но не удалось отправить письмо с подтверждением. '
-                               'Пожалуйста попробуйте отправить письмо через несколько минут')
+                                'Пожалуйста попробуйте отправить письмо через несколько минут')
             messages.warning(self.request, message_warning)
 
         return super().form_valid(form)
@@ -345,7 +345,7 @@ class ChangeEmailView(View):
         logger.info(f'Пользователь {request.user.username} сменил E-mail.')
 
         message_success = _('Новый адрес электронной почты был установлен.'
-                           'Проверьте ваш почтовый ящик для подтверждения.')
+                            'Проверьте ваш почтовый ящик для подтверждения.')
         messages.success(request, message_success)
         return redirect('task:task_view')
 
@@ -386,8 +386,8 @@ class CheckUsernameView(View):
         username = request.GET.get('username', None)
         if username:
             exists = User.objects.filter(username=username).exists()
-            logger.info(f'Попытка регистрации пользователь {username} cуществует.')
             return JsonResponse({'exists': exists})
+        logger.info(f'Попытка регистрации пользователь {username} cуществует.')
         return JsonResponse({'exists': False})
 
 
@@ -407,8 +407,8 @@ class CheckEmailView(View):
         email = request.GET.get('email', None)
         if email:
             exists = User.objects.filter(email=email).exists()
-            logger.info(f'Попытка регистрации пользователь с данной почтой уже существует.')
             return JsonResponse({'exists': exists})
+        logger.info(f'Попытка регистрации пользователь с данной почтой уже существует.')
         return JsonResponse({'exists': False})
 
 

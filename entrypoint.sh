@@ -20,8 +20,6 @@ then
     echo "PostgreSQL started"
 fi
 
-# Убедитесь, что вы хотите сбросить данные
-python manage.py flush --no-input
 python manage.py migrate
 
 exec "$@"
