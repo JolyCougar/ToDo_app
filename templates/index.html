@@ -104,10 +104,10 @@
                     <label for="languageSelect">{% trans "Язык:" %}</label>
                     <select id="languageSelect">
                         <option value="en"
-                                {% if request.session.django_language == 'en' %}selected{% endif %}>{% trans "English" %}
+                                {% if current_language == 'en' %}selected{% endif %}>{% trans "English" %}
                         </option>
                         <option value="ru"
-                                {% if request.session.django_language == 'ru' %}selected{% endif %}>{% trans "Русский" %}
+                                {% if current_language == 'ru' %}selected{% endif %}>{% trans "Русский" %}
                         </option>
                     </select>
                 </div>
