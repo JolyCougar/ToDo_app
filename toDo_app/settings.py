@@ -11,7 +11,7 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '172.17.0.1']
 
 INSTALLED_APPS = [
     "admin_interface",

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% load static i18n %}
-<html lang="ru">
+<html lang="{{ current_language }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +26,7 @@
             <p class="error-message" id="email-error" style="display: none;"></p> <!-- Сообщение об ошибке для email -->
             {% trans "Пароль" %}: <input type="password" id="id_password" name="password" required>
             {% trans "Подтвердите пароль:" %} <input type="password" id="id_confirm_password"
-                                                         name="confirm_password" required>
+                                                     name="confirm_password" required>
             <span class="show-password" id="togglePassword"
                   style="text-decoration: underline; cursor: pointer;">{% trans "Показать пароль" %}</span>
             <!-- Кнопка для показа пароля -->
@@ -115,7 +115,173 @@
 </div>
 
 <script src="{% static 'js/scripts.js' %}"></script>
-<script src="{% static 'js/scripts_reg.js' %}"></script>
 
+<script>
+
+    // Объект с текстами для разных языков
+    const translations = {
+        en: {
+            modalTitle: "License Agreement",
+            accept: "Accept",
+            close: "Close",
+            usernameExists: "Username already exists.",
+            emailExists: "Email already exists.",
+            passwordComplexity: "Password must be at least 8 characters long, including uppercase letters, numbers, and special characters.",
+            passwordsDoNotMatch: "Passwords do not match.",
+            invalidEmail: "Please enter a valid email address.",
+            licenseAgreement: "You must agree to the license agreement.",
+            errorOccurred: "An error occurred. Please try again later.",
+            showPassword: "Show Password",
+            hidePassword: "Hide Password"
+        },
+        ru: {
+            modalTitle: "Лицензионное соглашение",
+            accept: "Принять",
+            close: "Закрыть",
+            usernameExists: "Пользователь с таким именем уже существует.",
+            emailExists: "Пользователь с таким email уже существует.",
+            passwordComplexity: "Пароль должен содержать минимум 8 символов, включая заглавные буквы, цифры и специальные символы.",
+            passwordsDoNotMatch: "Пароли не совпадают.",
+            invalidEmail: "Введите корректный e-mail адрес.",
+            licenseAgreement: "Вы должны согласиться с лицензионным соглашением.",
+            errorOccurred: "Произошла ошибка. Пожалуйста, попробуйте позже.",
+            showPassword: "Показать пароль",
+            hidePassword: "Скрыть пароль"
+        }
+    };
+
+    // Установите язык по умолчанию
+    const currentLanguage = '{{ current_language|default:"ru" }}';
+
+    // Функция для получения перевода
+    function translate(key) {
+        return translations[currentLanguage][key] || key;
+    }
+
+    // Открытие и закрытие модального окна
+    const licenseModal = document.getElementById("licenseModal");
+    const openModalButton = document.getElementById("openModal");
+    const closeModalButton = document.getElementsByClassName("close")[0];
+    const acceptLicenseButton = document.getElementById("acceptLicense");
+
+    openModalButton.onclick = function (event) {
+        event.preventDefault(); // Предотвращаем переход по ссылке
+        licenseModal.style.display = "block";
+        document.getElementById("modalTitle").textContent = translate("modalTitle");
+        acceptLicenseButton.textContent = translate("accept");
+        closeModalButton.textContent = translate("close");
+    }
+
+    closeModalButton.onclick = function () {
+        licenseModal.style.display = "none";
+    }
+
+    acceptLicenseButton.onclick = function () {
+        licenseModal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target === licenseModal) {
+            licenseModal.style.display = "none";
+        }
+    }
+
+    // Проверка существования пользователя и других условий
+    document.getElementById("registrationForm").onsubmit = function (event) {
+        event.preventDefault(); // Предотвращаем отправку формы для проверки
+
+        const usernameInput = document.getElementById("id_username").value;
+        const passwordInput = document.getElementById("id_password").value;
+        const confirmPasswordInput = document.getElementById("id_confirm_password").value;
+        const emailInput = document.getElementById("id_email").value;
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+]{8,}$/; // Обновлено для включения специальных символов
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const errorMessageElement = document.getElementById("error-message");
+        const usernameErrorElement = document.getElementById("username-error");
+        const emailErrorElement = document.getElementById("email-error");
+
+        // Сброс сообщений об ошибках
+        errorMessageElement.style.display = "none";
+        usernameErrorElement.style.display = "none";
+        emailErrorElement.style.display = "none";
+
+        // Проверка существования имени пользователя
+        fetch(`/check-username/?username=${encodeURIComponent(usernameInput)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    usernameErrorElement.textContent = translate("usernameExists");
+                    usernameErrorElement.style.display = "block";
+                    return; // Прерываем выполнение
+                }
+
+                // Проверка существования email
+                fetch(`/check-email/?email=${encodeURIComponent(emailInput)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            emailErrorElement.textContent = translate("emailExists");
+                            emailErrorElement.style.display = "block";
+                            return; // Прерываем выполнение
+                        }
+                        // Проверка сложности пароля
+                        if (!passwordPattern.test(passwordInput)) {
+                            errorMessageElement.textContent = translate("passwordComplexity");
+                            errorMessageElement.style.display = "block";
+                            return; // Отменяем отправку формы
+                        }
+
+                        // Проверка совпадения пароля и подтверждения пароля
+                        if (passwordInput !== confirmPasswordInput) {
+                            errorMessageElement.textContent = translate("passwordsDoNotMatch");
+                            errorMessageElement.style.display = "block";
+                            return; // Отменяем отправку формы
+                        }
+
+                        // Проверка корректности e-mail
+                        if (!emailPattern.test(emailInput)) {
+                            errorMessageElement.textContent = translate("invalidEmail");
+                            errorMessageElement.style.display = "block";
+                            return; // Отменяем отправку формы
+                        }
+
+                        // Проверка нажатия чекбокса согласия на лицензионное соглашение
+                        const licenseCheckbox = document.getElementById("licenseAgreement");
+                        if (!licenseCheckbox.checked) {
+                            errorMessageElement.textContent = translate("licenseAgreement");
+                            errorMessageElement.style.display = "block";
+                            return; // Отменяем отправку формы
+                        }
+
+                        // Если все проверки пройдены, отправляем форму
+                        this.submit();
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при проверке email:', error);
+                        errorMessageElement.textContent = translate("errorOccurred");
+                        errorMessageElement.style.display = "block";
+                    });
+            })
+            .catch(error => {
+                console.error('Ошибка при проверке имени пользователя:', error);
+                errorMessageElement.textContent = translate("errorOccurred");
+                errorMessageElement.style.display = "block";
+            });
+    }
+
+    // Функция для показа/скрытия пароля
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordField = document.getElementById("id_password");
+    const confirmPasswordField = document.getElementById("id_confirm_password");
+
+    togglePassword.onclick = function () {
+        const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+        passwordField.setAttribute("type", type);
+        confirmPasswordField.setAttribute("type", type); // Меняем тип и для поля подтверждения
+        this.textContent = type === "password" ? translate("showPassword") : translate("hidePassword"); // Меняем текст
+    }
+
+
+</script>
 </body>
 </html>
