@@ -13,7 +13,7 @@ def profile_preview_directory_path(instance: "Profile", filename: str) -> str:
     Returns: str: Путь для сохранения изображения.
     """
 
-    return "media/profile_{pk}/{filename}".format(
+    return "profile_{pk}/{filename}".format(
         pk=instance.pk,
         filename=filename,
     )
