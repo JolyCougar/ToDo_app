@@ -4,7 +4,7 @@ services:
   web:
     build:
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: Dockerfileprod
     command: gunicorn toDo_app.wsgi:application --bind 0.0.0.0:8000 --workers 3 --max-requests 1000 --max-requests-jitter 100 --timeout 30 --log-level debug
     volumes:
       - log_volume:/home/app/web/static/log
