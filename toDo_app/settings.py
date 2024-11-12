@@ -9,9 +9,9 @@ logs_dir.mkdir(exist_ok=True)
 
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
-DEBUG = config('DEBUG')
+DEBUG = config('DEBUG', False)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '172.17.0.1', '77.221.151.177']
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS').split(' ')
 
 INSTALLED_APPS = [
     "admin_interface",
